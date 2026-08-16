@@ -61,6 +61,39 @@ Updated: 16 August 2026
 - Added registration confirmation UX and logout control.
 - Pin-compatible Supabase SDK versions support the current Node 20 runtime.
 
+## Completed — Stage 7: Organization packages & virtual communications staff
+- Added DUTA ORGANISASI Free (RM0), DUTA ORGANISASI+ (RM49.90/month), and DUTA ORGANISASI PRO (RM99.90/month) package definitions and cumulative feature entitlements.
+- Added package comparison UI at `/organisasi/paket` and plan discovery from the organization home/dashboard.
+- Expanded Sekretaris Digital into a virtual communications workspace at `/organisasi/[id]/sekretaris`.
+- Document tools cover invitations, notices, announcements, agendas, minutes, summaries, officer tasks, proposals, activity reports, accountability reports, and archives.
+- Publication tools cover flyers, posters, greeting cards, digital invitations, banners, and visual announcements, including 11 culturally relevant greeting templates.
+- Added draft → edit → review → approve/publish separation; AI output never auto-publishes.
+- Added PRO audio meeting flow with consent, 25 MB/type validation, transcript/summary/action-item outputs, and explicit ephemeral audio deletion. Schema stores no audio object or storage key.
+- Added organization subscriptions/payments, branches, attendance, tasks, publication templates/projects, and meeting transcript schema.
+- Added package + role double authorization, audit events, Supabase-native RLS, migration `0002`, and incremental deployment SQL `db/organization-packages.sql`.
+- Added provider-agnostic communications AI and transcription interfaces with safe unconfigured-provider behavior.
+
+## Completed — Stage 8: Source-backed emergency directory
+- Recorded all 28 supplied official-channel screenshots as immutable evidence assets with database metadata.
+- Added six geographic mission records: KBRI Kuala Lumpur, KJRI Johor Bahru, KJRI Penang, KJRI Kuching, KJRI Kota Kinabalu, and KRI Tawau.
+- Added 14 contact records with E.164 normalization, purpose, source channel, last-checked date, and warnings where WhatsApp availability is not explicit.
+- Verified KBRI Kuala Lumpur WhatsApp Perlindungan WNI from its official protection-service page on 17 Aug 2026; no number was invented from the supplied tariff images.
+- Added `/jaga-diri` on-device nearest-office calculation, manual state selection, telephone links, wa.me links, prefilled help message, explicit location consent, and no coordinate persistence.
+- Clearly distinguishes confirmed WhatsApp, mobile hotline, telephone, and appointment-only numbers.
+- Added emergency API, PostgreSQL tables, RLS, migration `0003`, existing-database deployment SQL, and fresh bootstrap integration.
+- Safety UI states that geographic proximity is not official jurisdiction and users must not wait for chat replies during immediate danger.
+
+## Completed — Stage 9: Idempotent Supabase recovery
+- Added `db/official-emergency-upsert.sql` for databases where the base bootstrap or feature migrations were partially applied.
+- Script is repeatable and non-destructive: no DROP, TRUNCATE, or DELETE operations.
+- Uses conditional table/index/policy creation, enables RLS, upserts all emergency records, and returns verification counts in one run.
+
+## Completed — Stage 10: Live Supabase emergency directory
+- `/api/safety/contacts` now reads the six offices and 14 contacts directly from Supabase through public RLS policies.
+- `/jaga-diri` fetches the live directory, displays live/fallback status, and recalculates nearest-office ordering from current database values.
+- A bundled verified fallback remains available if Supabase is temporarily unreachable.
+- Live verification against the configured Supabase project returned `LIVE_SUPABASE`, 6 offices, and 14 contacts.
+
 ## In progress / not production-complete
 - PostgreSQL deployment, migration execution and RLS integration in transaction context.
 - Email verification, password recovery, account deletion execution and OAuth/phone adapters.

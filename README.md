@@ -27,6 +27,24 @@ npm run db:seed:sources
 ```
 The seed is idempotent and imports exactly the 27 approved official channels.
 
+If the original bootstrap has already been applied, deploy the organization-package expansion separately in Supabase SQL Editor:
+```text
+db/organization-packages.sql
+```
+This adds DUTA ORGANISASI Free/Plus/Pro persistence, branches, attendance, tasks, publication projects/templates, and ephemeral meeting-transcript records.
+
+For an existing database, deploy the official emergency directory separately:
+```text
+db/official-emergency-records.sql
+```
+It records six missions, 14 source-backed contacts, and metadata for all 28 supplied evidence images. The full `supabase-bootstrap.sql` already includes this data for a fresh database.
+
+If database installation status is uncertain or partially applied, use the safe repeatable deployment instead:
+```text
+db/official-emergency-upsert.sql
+```
+This script uses `CREATE TABLE/INDEX IF NOT EXISTS`, conditionally creates RLS policies, and upserts records without dropping existing objects.
+
 ## Safety and data
 - The 27 official channels are sourced only from the provided `data KBRI KJRI.pdf`.
 - Last-checked date is 16 Aug 2026, matching that supplied source document.

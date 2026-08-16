@@ -34,6 +34,17 @@ ALTER TABLE public.notifications ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.reports ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.audit_logs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.sessions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.organization_subscriptions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.organization_payments ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.organization_branches ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.organization_attendance ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.organization_tasks ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.publication_templates ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.publication_projects ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.meeting_transcripts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.official_offices ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.official_contacts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.official_evidence ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY users_self_select ON public.users FOR SELECT TO authenticated USING (id=auth.uid() OR public.has_system_role(ARRAY['MODERATOR','SUPER_ADMIN']::public.user_role[]));
 CREATE POLICY users_self_update ON public.users FOR UPDATE TO authenticated USING (id=auth.uid()) WITH CHECK (id=auth.uid());
@@ -45,6 +56,12 @@ CREATE POLICY notifications_owner_select ON public.notifications FOR SELECT TO a
 CREATE POLICY notifications_owner_update ON public.notifications FOR UPDATE TO authenticated USING (user_id=auth.uid()) WITH CHECK (user_id=auth.uid());
 
 CREATE POLICY official_sources_public ON public.official_sources FOR SELECT TO anon,authenticated USING (active=true);
+CREATE POLICY official_offices_public ON public.official_offices FOR SELECT TO anon,authenticated USING (active=true);
+CREATE POLICY official_contacts_public ON public.official_contacts FOR SELECT TO anon,authenticated USING (active=true);
+CREATE POLICY official_evidence_read ON public.official_evidence FOR SELECT TO authenticated USING (true);
+CREATE POLICY official_offices_editor ON public.official_offices FOR ALL TO authenticated USING (public.has_system_role(ARRAY['EDITOR','SUPER_ADMIN']::public.user_role[])) WITH CHECK (public.has_system_role(ARRAY['EDITOR','SUPER_ADMIN']::public.user_role[]));
+CREATE POLICY official_contacts_editor ON public.official_contacts FOR ALL TO authenticated USING (public.has_system_role(ARRAY['EDITOR','SUPER_ADMIN']::public.user_role[])) WITH CHECK (public.has_system_role(ARRAY['EDITOR','SUPER_ADMIN']::public.user_role[]));
+CREATE POLICY official_evidence_editor ON public.official_evidence FOR ALL TO authenticated USING (public.has_system_role(ARRAY['EDITOR','SUPER_ADMIN']::public.user_role[])) WITH CHECK (public.has_system_role(ARRAY['EDITOR','SUPER_ADMIN']::public.user_role[]));
 CREATE POLICY official_sources_editor ON public.official_sources FOR ALL TO authenticated USING (public.has_system_role(ARRAY['EDITOR','SUPER_ADMIN']::public.user_role[])) WITH CHECK (public.has_system_role(ARRAY['EDITOR','SUPER_ADMIN']::public.user_role[]));
 CREATE POLICY contents_public ON public.contents FOR SELECT TO anon,authenticated USING (status='ACTIVE');
 CREATE POLICY contents_editor ON public.contents FOR ALL TO authenticated USING (author_id=auth.uid() OR public.has_system_role(ARRAY['EDITOR','SUPER_ADMIN']::public.user_role[])) WITH CHECK (author_id=auth.uid() OR public.has_system_role(ARRAY['EDITOR','SUPER_ADMIN']::public.user_role[]));
@@ -85,4 +102,21 @@ CREATE POLICY reports_create ON public.reports FOR INSERT TO authenticated WITH 
 CREATE POLICY reports_review ON public.reports FOR SELECT TO authenticated USING (reporter_id=auth.uid() OR public.has_system_role(ARRAY['MODERATOR','SUPER_ADMIN']::public.user_role[]));
 CREATE POLICY reports_moderate ON public.reports FOR UPDATE TO authenticated USING (public.has_system_role(ARRAY['MODERATOR','SUPER_ADMIN']::public.user_role[]));
 CREATE POLICY audit_admin ON public.audit_logs FOR SELECT TO authenticated USING (public.has_system_role(ARRAY['SUPER_ADMIN']::public.user_role[]));
+CREATE POLICY org_subscription_read ON public.organization_subscriptions FOR SELECT TO authenticated USING (public.has_org_role(organization_id,ARRAY['OWNER','ADMIN']::public.organization_role[]) OR public.has_system_role(ARRAY['SUPER_ADMIN']::public.user_role[]));
+CREATE POLICY org_subscription_manage ON public.organization_subscriptions FOR ALL TO authenticated USING (public.has_org_role(organization_id,ARRAY['OWNER']::public.organization_role[]) OR public.has_system_role(ARRAY['SUPER_ADMIN']::public.user_role[]));
+CREATE POLICY org_payment_read ON public.organization_payments FOR SELECT TO authenticated USING (EXISTS(SELECT 1 FROM public.organization_subscriptions s WHERE s.id=subscription_id AND public.has_org_role(s.organization_id,ARRAY['OWNER']::public.organization_role[])) OR public.has_system_role(ARRAY['SUPER_ADMIN']::public.user_role[]));
+CREATE POLICY org_branch_read ON public.organization_branches FOR SELECT TO authenticated USING (public.has_org_role(organization_id,ARRAY['OWNER','ADMIN','SECRETARY','TREASURER','STAFF','MEMBER']::public.organization_role[]));
+CREATE POLICY org_branch_manage ON public.organization_branches FOR ALL TO authenticated USING (public.has_org_role(organization_id,ARRAY['OWNER','ADMIN']::public.organization_role[]));
+CREATE POLICY org_attendance_read ON public.organization_attendance FOR SELECT TO authenticated USING (user_id=auth.uid() OR public.has_org_role(organization_id,ARRAY['OWNER','ADMIN','SECRETARY','STAFF']::public.organization_role[]));
+CREATE POLICY org_attendance_manage ON public.organization_attendance FOR ALL TO authenticated USING (public.has_org_role(organization_id,ARRAY['OWNER','ADMIN','SECRETARY','STAFF']::public.organization_role[]));
+CREATE POLICY org_task_scope ON public.organization_tasks FOR SELECT TO authenticated USING (assignee_id=auth.uid() OR created_by=auth.uid() OR public.has_org_role(organization_id,ARRAY['OWNER','ADMIN','SECRETARY']::public.organization_role[]));
+CREATE POLICY org_task_manage ON public.organization_tasks FOR ALL TO authenticated USING (created_by=auth.uid() OR public.has_org_role(organization_id,ARRAY['OWNER','ADMIN','SECRETARY']::public.organization_role[]));
+CREATE POLICY publication_template_read ON public.publication_templates FOR SELECT TO authenticated USING (organization_id IS NULL OR public.has_org_role(organization_id,ARRAY['OWNER','ADMIN','SECRETARY','STAFF','MEMBER']::public.organization_role[]));
+CREATE POLICY publication_template_manage ON public.publication_templates FOR ALL TO authenticated USING (organization_id IS NOT NULL AND public.has_org_role(organization_id,ARRAY['OWNER','ADMIN']::public.organization_role[]) OR public.has_system_role(ARRAY['EDITOR','SUPER_ADMIN']::public.user_role[]));
+CREATE POLICY publication_project_read ON public.publication_projects FOR SELECT TO authenticated USING (public.has_org_role(organization_id,ARRAY['OWNER','ADMIN','SECRETARY','STAFF']::public.organization_role[]));
+CREATE POLICY publication_project_create ON public.publication_projects FOR INSERT TO authenticated WITH CHECK (created_by=auth.uid() AND public.has_org_role(organization_id,ARRAY['OWNER','ADMIN','SECRETARY','STAFF']::public.organization_role[]));
+CREATE POLICY publication_project_update ON public.publication_projects FOR UPDATE TO authenticated USING (created_by=auth.uid() OR public.has_org_role(organization_id,ARRAY['OWNER','ADMIN']::public.organization_role[]));
+CREATE POLICY transcript_read ON public.meeting_transcripts FOR SELECT TO authenticated USING (public.has_org_role(organization_id,ARRAY['OWNER','ADMIN','SECRETARY']::public.organization_role[]));
+CREATE POLICY transcript_create ON public.meeting_transcripts FOR INSERT TO authenticated WITH CHECK (created_by=auth.uid() AND consent_confirmed=true AND public.has_org_role(organization_id,ARRAY['OWNER','ADMIN','SECRETARY']::public.organization_role[]));
+CREATE POLICY transcript_update ON public.meeting_transcripts FOR UPDATE TO authenticated USING (created_by=auth.uid() OR public.has_org_role(organization_id,ARRAY['OWNER','ADMIN']::public.organization_role[]));
 -- public.sessions is retained for migration compatibility but denied to client roles; Supabase Auth owns active sessions.

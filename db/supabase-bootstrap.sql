@@ -1,5 +1,5 @@
 -- DUTA RANTAU Supabase bootstrap
--- Generated 16 Aug 2026. Run once in Supabase SQL Editor on an empty project.
+-- Run once in Supabase SQL Editor on an empty project.
 BEGIN;
 
 -- db/migrations/0000_next_marrow.sql
@@ -353,6 +353,194 @@ CREATE INDEX "notification_user_idx" ON "notifications" USING btree ("user_id","
 CREATE INDEX "org_document_idx" ON "organization_documents" USING btree ("organization_id","type");
 CREATE INDEX "org_letter_idx" ON "organization_letters" USING btree ("organization_id","direction");
 CREATE UNIQUE INDEX "payment_provider_ref_uq" ON "payments" USING btree ("provider","provider_reference");
+-- db/migrations/0002_reflective_magdalene.sql
+CREATE TABLE "meeting_transcripts" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"organization_id" uuid NOT NULL,
+	"meeting_id" uuid NOT NULL,
+	"created_by" uuid NOT NULL,
+	"language" text DEFAULT 'id' NOT NULL,
+	"transcript" text NOT NULL,
+	"summary" text NOT NULL,
+	"action_items" jsonb DEFAULT '[]'::jsonb NOT NULL,
+	"consent_confirmed" boolean DEFAULT false NOT NULL,
+	"audio_deleted_at" timestamp with time zone NOT NULL,
+	"approved_at" timestamp with time zone,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+
+CREATE TABLE "organization_attendance" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"organization_id" uuid NOT NULL,
+	"event_id" uuid,
+	"meeting_id" uuid,
+	"user_id" uuid NOT NULL,
+	"status" text NOT NULL,
+	"checked_in_at" timestamp with time zone,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+
+CREATE TABLE "organization_branches" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"organization_id" uuid NOT NULL,
+	"name" text NOT NULL,
+	"state" text,
+	"city" text,
+	"contact" text,
+	"active" boolean DEFAULT true NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+
+CREATE TABLE "organization_payments" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"subscription_id" uuid NOT NULL,
+	"provider" text NOT NULL,
+	"provider_reference" text,
+	"amount_myr" numeric(10, 2) NOT NULL,
+	"status" text NOT NULL,
+	"invoice_number" text,
+	"failure_code" text,
+	"paid_at" timestamp with time zone,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+
+CREATE TABLE "organization_subscriptions" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"organization_id" uuid NOT NULL,
+	"plan" text DEFAULT 'FREE' NOT NULL,
+	"status" text DEFAULT 'ACTIVE' NOT NULL,
+	"price_myr" numeric(10, 2) DEFAULT '0' NOT NULL,
+	"provider" text,
+	"provider_reference" text,
+	"start_date" timestamp with time zone DEFAULT now() NOT NULL,
+	"renewal_date" timestamp with time zone,
+	"cancelled_at" timestamp with time zone,
+	"grace_ends_at" timestamp with time zone,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+
+CREATE TABLE "organization_tasks" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"organization_id" uuid NOT NULL,
+	"assignee_id" uuid,
+	"created_by" uuid NOT NULL,
+	"title" text NOT NULL,
+	"description" text,
+	"due_at" timestamp with time zone,
+	"status" text DEFAULT 'OPEN' NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+
+CREATE TABLE "publication_projects" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"organization_id" uuid NOT NULL,
+	"created_by" uuid NOT NULL,
+	"approved_by" uuid,
+	"type" text NOT NULL,
+	"title" text NOT NULL,
+	"prompt" text,
+	"content" jsonb NOT NULL,
+	"status" text DEFAULT 'DRAFT' NOT NULL,
+	"published_at" timestamp with time zone,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+
+CREATE TABLE "publication_templates" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"organization_id" uuid,
+	"name" text NOT NULL,
+	"type" text NOT NULL,
+	"category" text NOT NULL,
+	"schema" jsonb NOT NULL,
+	"active" boolean DEFAULT true NOT NULL,
+	"created_by" uuid,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+
+ALTER TABLE "meeting_transcripts" ADD CONSTRAINT "meeting_transcripts_organization_id_organizations_id_fk" FOREIGN KEY ("organization_id") REFERENCES "public"."organizations"("id") ON DELETE cascade ON UPDATE no action;
+ALTER TABLE "meeting_transcripts" ADD CONSTRAINT "meeting_transcripts_meeting_id_organization_meetings_id_fk" FOREIGN KEY ("meeting_id") REFERENCES "public"."organization_meetings"("id") ON DELETE cascade ON UPDATE no action;
+ALTER TABLE "meeting_transcripts" ADD CONSTRAINT "meeting_transcripts_created_by_users_id_fk" FOREIGN KEY ("created_by") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;
+ALTER TABLE "organization_attendance" ADD CONSTRAINT "organization_attendance_organization_id_organizations_id_fk" FOREIGN KEY ("organization_id") REFERENCES "public"."organizations"("id") ON DELETE cascade ON UPDATE no action;
+ALTER TABLE "organization_attendance" ADD CONSTRAINT "organization_attendance_event_id_events_id_fk" FOREIGN KEY ("event_id") REFERENCES "public"."events"("id") ON DELETE cascade ON UPDATE no action;
+ALTER TABLE "organization_attendance" ADD CONSTRAINT "organization_attendance_meeting_id_organization_meetings_id_fk" FOREIGN KEY ("meeting_id") REFERENCES "public"."organization_meetings"("id") ON DELETE cascade ON UPDATE no action;
+ALTER TABLE "organization_attendance" ADD CONSTRAINT "organization_attendance_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;
+ALTER TABLE "organization_branches" ADD CONSTRAINT "organization_branches_organization_id_organizations_id_fk" FOREIGN KEY ("organization_id") REFERENCES "public"."organizations"("id") ON DELETE cascade ON UPDATE no action;
+ALTER TABLE "organization_payments" ADD CONSTRAINT "organization_payments_subscription_id_organization_subscriptions_id_fk" FOREIGN KEY ("subscription_id") REFERENCES "public"."organization_subscriptions"("id") ON DELETE cascade ON UPDATE no action;
+ALTER TABLE "organization_subscriptions" ADD CONSTRAINT "organization_subscriptions_organization_id_organizations_id_fk" FOREIGN KEY ("organization_id") REFERENCES "public"."organizations"("id") ON DELETE cascade ON UPDATE no action;
+ALTER TABLE "organization_tasks" ADD CONSTRAINT "organization_tasks_organization_id_organizations_id_fk" FOREIGN KEY ("organization_id") REFERENCES "public"."organizations"("id") ON DELETE cascade ON UPDATE no action;
+ALTER TABLE "organization_tasks" ADD CONSTRAINT "organization_tasks_assignee_id_users_id_fk" FOREIGN KEY ("assignee_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;
+ALTER TABLE "organization_tasks" ADD CONSTRAINT "organization_tasks_created_by_users_id_fk" FOREIGN KEY ("created_by") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;
+ALTER TABLE "publication_projects" ADD CONSTRAINT "publication_projects_organization_id_organizations_id_fk" FOREIGN KEY ("organization_id") REFERENCES "public"."organizations"("id") ON DELETE cascade ON UPDATE no action;
+ALTER TABLE "publication_projects" ADD CONSTRAINT "publication_projects_created_by_users_id_fk" FOREIGN KEY ("created_by") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;
+ALTER TABLE "publication_projects" ADD CONSTRAINT "publication_projects_approved_by_users_id_fk" FOREIGN KEY ("approved_by") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;
+ALTER TABLE "publication_templates" ADD CONSTRAINT "publication_templates_organization_id_organizations_id_fk" FOREIGN KEY ("organization_id") REFERENCES "public"."organizations"("id") ON DELETE cascade ON UPDATE no action;
+ALTER TABLE "publication_templates" ADD CONSTRAINT "publication_templates_created_by_users_id_fk" FOREIGN KEY ("created_by") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;
+CREATE UNIQUE INDEX "meeting_transcript_meeting_uq" ON "meeting_transcripts" USING btree ("meeting_id");
+CREATE UNIQUE INDEX "org_attendance_uq" ON "organization_attendance" USING btree ("organization_id","event_id","meeting_id","user_id");
+CREATE INDEX "org_branch_idx" ON "organization_branches" USING btree ("organization_id","active");
+CREATE UNIQUE INDEX "org_payment_provider_ref_uq" ON "organization_payments" USING btree ("provider","provider_reference");
+CREATE UNIQUE INDEX "org_subscription_org_uq" ON "organization_subscriptions" USING btree ("organization_id");
+CREATE INDEX "org_task_idx" ON "organization_tasks" USING btree ("organization_id","status");
+CREATE INDEX "publication_project_idx" ON "publication_projects" USING btree ("organization_id","status","type");
+CREATE INDEX "publication_template_idx" ON "publication_templates" USING btree ("organization_id","type","active");
+-- db/migrations/0003_stiff_sunspot.sql
+CREATE TABLE "official_contacts" (
+	"id" text PRIMARY KEY NOT NULL,
+	"office_id" text NOT NULL,
+	"label" text NOT NULL,
+	"display_number" text NOT NULL,
+	"e164" text NOT NULL,
+	"channel" text NOT NULL,
+	"purpose" text NOT NULL,
+	"warning" text,
+	"whatsapp_confirmed" boolean DEFAULT false NOT NULL,
+	"active" boolean DEFAULT true NOT NULL,
+	"last_checked" timestamp with time zone NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+
+CREATE TABLE "official_evidence" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"office_id" text,
+	"institution" text NOT NULL,
+	"evidence_type" text NOT NULL,
+	"file_path" text NOT NULL,
+	"captured_at" timestamp with time zone NOT NULL,
+	"effective_date" timestamp with time zone,
+	"verification_status" text DEFAULT 'SUPPLIED_OFFICIAL_SCREENSHOT' NOT NULL,
+	"extracted_data" jsonb DEFAULT '{}'::jsonb NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+
+CREATE TABLE "official_offices" (
+	"id" text PRIMARY KEY NOT NULL,
+	"institution" text NOT NULL,
+	"city" text NOT NULL,
+	"region" text NOT NULL,
+	"latitude" numeric(9, 6) NOT NULL,
+	"longitude" numeric(9, 6) NOT NULL,
+	"official_url" text NOT NULL,
+	"source_channel" text NOT NULL,
+	"last_checked" timestamp with time zone NOT NULL,
+	"active" boolean DEFAULT true NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+
+ALTER TABLE "official_contacts" ADD CONSTRAINT "official_contacts_office_id_official_offices_id_fk" FOREIGN KEY ("office_id") REFERENCES "public"."official_offices"("id") ON DELETE cascade ON UPDATE no action;
+ALTER TABLE "official_evidence" ADD CONSTRAINT "official_evidence_office_id_official_offices_id_fk" FOREIGN KEY ("office_id") REFERENCES "public"."official_offices"("id") ON DELETE set null ON UPDATE no action;
+CREATE INDEX "official_contact_office_idx" ON "official_contacts" USING btree ("office_id","active");
+CREATE UNIQUE INDEX "official_evidence_path_uq" ON "official_evidence" USING btree ("file_path");
+CREATE INDEX "official_evidence_office_idx" ON "official_evidence" USING btree ("office_id","evidence_type");
 -- Supabase Auth profile synchronization
 -- Run after Drizzle migrations in the Supabase SQL Editor.
 -- Keeps authorization roles in public.users; never trusts role from signup metadata.
@@ -421,6 +609,17 @@ ALTER TABLE public.notifications ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.reports ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.audit_logs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.sessions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.organization_subscriptions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.organization_payments ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.organization_branches ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.organization_attendance ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.organization_tasks ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.publication_templates ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.publication_projects ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.meeting_transcripts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.official_offices ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.official_contacts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.official_evidence ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY users_self_select ON public.users FOR SELECT TO authenticated USING (id=auth.uid() OR public.has_system_role(ARRAY['MODERATOR','SUPER_ADMIN']::public.user_role[]));
 CREATE POLICY users_self_update ON public.users FOR UPDATE TO authenticated USING (id=auth.uid()) WITH CHECK (id=auth.uid());
@@ -432,6 +631,12 @@ CREATE POLICY notifications_owner_select ON public.notifications FOR SELECT TO a
 CREATE POLICY notifications_owner_update ON public.notifications FOR UPDATE TO authenticated USING (user_id=auth.uid()) WITH CHECK (user_id=auth.uid());
 
 CREATE POLICY official_sources_public ON public.official_sources FOR SELECT TO anon,authenticated USING (active=true);
+CREATE POLICY official_offices_public ON public.official_offices FOR SELECT TO anon,authenticated USING (active=true);
+CREATE POLICY official_contacts_public ON public.official_contacts FOR SELECT TO anon,authenticated USING (active=true);
+CREATE POLICY official_evidence_read ON public.official_evidence FOR SELECT TO authenticated USING (true);
+CREATE POLICY official_offices_editor ON public.official_offices FOR ALL TO authenticated USING (public.has_system_role(ARRAY['EDITOR','SUPER_ADMIN']::public.user_role[])) WITH CHECK (public.has_system_role(ARRAY['EDITOR','SUPER_ADMIN']::public.user_role[]));
+CREATE POLICY official_contacts_editor ON public.official_contacts FOR ALL TO authenticated USING (public.has_system_role(ARRAY['EDITOR','SUPER_ADMIN']::public.user_role[])) WITH CHECK (public.has_system_role(ARRAY['EDITOR','SUPER_ADMIN']::public.user_role[]));
+CREATE POLICY official_evidence_editor ON public.official_evidence FOR ALL TO authenticated USING (public.has_system_role(ARRAY['EDITOR','SUPER_ADMIN']::public.user_role[])) WITH CHECK (public.has_system_role(ARRAY['EDITOR','SUPER_ADMIN']::public.user_role[]));
 CREATE POLICY official_sources_editor ON public.official_sources FOR ALL TO authenticated USING (public.has_system_role(ARRAY['EDITOR','SUPER_ADMIN']::public.user_role[])) WITH CHECK (public.has_system_role(ARRAY['EDITOR','SUPER_ADMIN']::public.user_role[]));
 CREATE POLICY contents_public ON public.contents FOR SELECT TO anon,authenticated USING (status='ACTIVE');
 CREATE POLICY contents_editor ON public.contents FOR ALL TO authenticated USING (author_id=auth.uid() OR public.has_system_role(ARRAY['EDITOR','SUPER_ADMIN']::public.user_role[])) WITH CHECK (author_id=auth.uid() OR public.has_system_role(ARRAY['EDITOR','SUPER_ADMIN']::public.user_role[]));
@@ -472,9 +677,25 @@ CREATE POLICY reports_create ON public.reports FOR INSERT TO authenticated WITH 
 CREATE POLICY reports_review ON public.reports FOR SELECT TO authenticated USING (reporter_id=auth.uid() OR public.has_system_role(ARRAY['MODERATOR','SUPER_ADMIN']::public.user_role[]));
 CREATE POLICY reports_moderate ON public.reports FOR UPDATE TO authenticated USING (public.has_system_role(ARRAY['MODERATOR','SUPER_ADMIN']::public.user_role[]));
 CREATE POLICY audit_admin ON public.audit_logs FOR SELECT TO authenticated USING (public.has_system_role(ARRAY['SUPER_ADMIN']::public.user_role[]));
+CREATE POLICY org_subscription_read ON public.organization_subscriptions FOR SELECT TO authenticated USING (public.has_org_role(organization_id,ARRAY['OWNER','ADMIN']::public.organization_role[]) OR public.has_system_role(ARRAY['SUPER_ADMIN']::public.user_role[]));
+CREATE POLICY org_subscription_manage ON public.organization_subscriptions FOR ALL TO authenticated USING (public.has_org_role(organization_id,ARRAY['OWNER']::public.organization_role[]) OR public.has_system_role(ARRAY['SUPER_ADMIN']::public.user_role[]));
+CREATE POLICY org_payment_read ON public.organization_payments FOR SELECT TO authenticated USING (EXISTS(SELECT 1 FROM public.organization_subscriptions s WHERE s.id=subscription_id AND public.has_org_role(s.organization_id,ARRAY['OWNER']::public.organization_role[])) OR public.has_system_role(ARRAY['SUPER_ADMIN']::public.user_role[]));
+CREATE POLICY org_branch_read ON public.organization_branches FOR SELECT TO authenticated USING (public.has_org_role(organization_id,ARRAY['OWNER','ADMIN','SECRETARY','TREASURER','STAFF','MEMBER']::public.organization_role[]));
+CREATE POLICY org_branch_manage ON public.organization_branches FOR ALL TO authenticated USING (public.has_org_role(organization_id,ARRAY['OWNER','ADMIN']::public.organization_role[]));
+CREATE POLICY org_attendance_read ON public.organization_attendance FOR SELECT TO authenticated USING (user_id=auth.uid() OR public.has_org_role(organization_id,ARRAY['OWNER','ADMIN','SECRETARY','STAFF']::public.organization_role[]));
+CREATE POLICY org_attendance_manage ON public.organization_attendance FOR ALL TO authenticated USING (public.has_org_role(organization_id,ARRAY['OWNER','ADMIN','SECRETARY','STAFF']::public.organization_role[]));
+CREATE POLICY org_task_scope ON public.organization_tasks FOR SELECT TO authenticated USING (assignee_id=auth.uid() OR created_by=auth.uid() OR public.has_org_role(organization_id,ARRAY['OWNER','ADMIN','SECRETARY']::public.organization_role[]));
+CREATE POLICY org_task_manage ON public.organization_tasks FOR ALL TO authenticated USING (created_by=auth.uid() OR public.has_org_role(organization_id,ARRAY['OWNER','ADMIN','SECRETARY']::public.organization_role[]));
+CREATE POLICY publication_template_read ON public.publication_templates FOR SELECT TO authenticated USING (organization_id IS NULL OR public.has_org_role(organization_id,ARRAY['OWNER','ADMIN','SECRETARY','STAFF','MEMBER']::public.organization_role[]));
+CREATE POLICY publication_template_manage ON public.publication_templates FOR ALL TO authenticated USING (organization_id IS NOT NULL AND public.has_org_role(organization_id,ARRAY['OWNER','ADMIN']::public.organization_role[]) OR public.has_system_role(ARRAY['EDITOR','SUPER_ADMIN']::public.user_role[]));
+CREATE POLICY publication_project_read ON public.publication_projects FOR SELECT TO authenticated USING (public.has_org_role(organization_id,ARRAY['OWNER','ADMIN','SECRETARY','STAFF']::public.organization_role[]));
+CREATE POLICY publication_project_create ON public.publication_projects FOR INSERT TO authenticated WITH CHECK (created_by=auth.uid() AND public.has_org_role(organization_id,ARRAY['OWNER','ADMIN','SECRETARY','STAFF']::public.organization_role[]));
+CREATE POLICY publication_project_update ON public.publication_projects FOR UPDATE TO authenticated USING (created_by=auth.uid() OR public.has_org_role(organization_id,ARRAY['OWNER','ADMIN']::public.organization_role[]));
+CREATE POLICY transcript_read ON public.meeting_transcripts FOR SELECT TO authenticated USING (public.has_org_role(organization_id,ARRAY['OWNER','ADMIN','SECRETARY']::public.organization_role[]));
+CREATE POLICY transcript_create ON public.meeting_transcripts FOR INSERT TO authenticated WITH CHECK (created_by=auth.uid() AND consent_confirmed=true AND public.has_org_role(organization_id,ARRAY['OWNER','ADMIN','SECRETARY']::public.organization_role[]));
+CREATE POLICY transcript_update ON public.meeting_transcripts FOR UPDATE TO authenticated USING (created_by=auth.uid() OR public.has_org_role(organization_id,ARRAY['OWNER','ADMIN']::public.organization_role[]));
 -- public.sessions is retained for migration compatibility but denied to client roles; Supabase Auth owns active sessions.
 
--- 27 approved official channels from supplied data KBRI KJRI.pdf
 INSERT INTO public.official_sources (institution,channel,url,category,priority,trust_level,last_checked,active) VALUES
   ('KBRI Kuala Lumpur','Situs resmi','https://kemlu.go.id/kualalumpur','kantor, konsuler, perlindungan, imigrasi','P0','OFFICIAL_VERIFIED','2026-08-16T00:00:00Z',true),
   ('KBRI Kuala Lumpur','Instagram','https://www.instagram.com/indonesiainkualalumpur/','pengumuman, konsuler, perlindungan, imigrasi','P0','OFFICIAL_VERIFIED','2026-08-16T00:00:00Z',true),
@@ -504,5 +725,58 @@ INSERT INTO public.official_sources (institution,channel,url,category,priority,t
   ('Atase Perhubungan','Instagram','https://www.instagram.com/ataseperhubungan.kl/','transportasi, pelaut, perjalanan','P0','OFFICIAL_VERIFIED','2026-08-16T00:00:00Z',true),
   ('Atase Perdagangan','Instagram','https://www.instagram.com/atdag.kualalumpur/','perdagangan, bisnis, ekspor, ekonomi','P1','OFFICIAL_VERIFIED','2026-08-16T00:00:00Z',true)
 ON CONFLICT (url) DO UPDATE SET institution=excluded.institution,channel=excluded.channel,category=excluded.category,priority=excluded.priority,last_checked=excluded.last_checked,active=true,updated_at=now();
+
+-- Emergency directory and 28 supplied evidence records
+INSERT INTO public.official_offices (id,institution,city,region,latitude,longitude,official_url,source_channel,last_checked,active) VALUES
+('kbri-kl','KBRI Kuala Lumpur','Kuala Lumpur','Semenanjung Malaysia',3.139,101.687,'https://kemlu.go.id/kualalumpur','Halaman resmi KBRI Kuala Lumpur — Pelayanan Perlindungan WNI & BHI; lampiran tarif dari kanal resmi','2026-08-17T00:00:00Z',true),
+('kjri-jb','KJRI Johor Bahru','Johor Bahru','Johor',1.4927,103.7414,'https://kemlu.go.id/johorbahru','Kanal resmi KJRI Johor Bahru pada poster tarif','2026-08-10T00:00:00Z',true),
+('kjri-penang','KJRI Penang','George Town','Pulau Pinang',5.4141,100.3288,'https://kemlu.go.id/penang','Profil resmi KJRI Penang yang disertakan','2026-08-10T00:00:00Z',true),
+('kjri-kuching','KJRI Kuching','Kuching','Sarawak',1.5533,110.3592,'https://kemlu.go.id/kuching','Poster dan akun resmi KJRI Kuching yang disertakan','2026-08-10T00:00:00Z',true),
+('kjri-kk','KJRI Kota Kinabalu','Kota Kinabalu','Sabah',5.9804,116.0735,'https://kemlu.go.id/kotakinabalu','Pengumuman resmi TEMAN BAIK KJRI Kota Kinabalu yang disertakan','2026-08-10T00:00:00Z',true),
+('kri-tawau','KRI Tawau','Tawau','Sabah Timur',4.2448,117.8912,'https://kemlu.go.id/tawau','Pengumuman dan profil resmi KRI Tawau yang disertakan','2026-08-10T00:00:00Z',true) ON CONFLICT (id) DO UPDATE SET institution=excluded.institution,city=excluded.city,region=excluded.region,latitude=excluded.latitude,longitude=excluded.longitude,official_url=excluded.official_url,source_channel=excluded.source_channel,last_checked=excluded.last_checked,active=true;
+INSERT INTO public.official_contacts (id,office_id,label,display_number,e164,channel,purpose,warning,whatsapp_confirmed,active,last_checked) VALUES
+('kl-protection-wa','kbri-kl','WhatsApp Perlindungan WNI','+60 17 500 7047','60175007047','WHATSAPP_CONFIRMED','Perlindungan WNI','Diverifikasi pada halaman resmi KBRI Kuala Lumpur; periksa kembali kanal resmi jika tidak tersambung.',true,true,'2026-08-17T00:00:00Z'),
+('jb-pengaduan','kjri-jb','Pengaduan / Ksatria','+60 10 528 8040','60105288040','WHATSAPP_CONFIRMED','Pengaduan dan bantuan kasus',NULL,true,true,'2026-08-10T00:00:00Z'),
+('penang-protection','kjri-penang','Pengaduan & Perlindungan WNI','+60 10 949 1859','60109491859','HOTLINE_MOBILE','Pengaduan dan perlindungan WNI','Sumber menyebut hotline; ketersediaan WhatsApp belum dinyatakan secara eksplisit.',false,true,'2026-08-10T00:00:00Z'),
+('penang-service','kjri-penang','Pelayanan KJRI Penang','+60 11 1246 0970','601112460970','HOTLINE_MOBILE','Informasi pelayanan','Sumber menyebut hotline; ketersediaan WhatsApp belum dinyatakan secara eksplisit.',false,true,'2026-08-10T00:00:00Z'),
+('kuching-general','kjri-kuching','Pengaduan Umum','+60 16 886 6734','60168866734','HOTLINE_MOBILE','Pengaduan umum','Poster menyebut hotline; ketersediaan WhatsApp belum dinyatakan secara eksplisit.',false,true,'2026-08-10T00:00:00Z'),
+('kuching-death','kjri-kuching','Kematian WNI','+60 16 889 9734','60168899734','HOTLINE_MOBILE','Bantuan kematian WNI',NULL,false,true,'2026-08-10T00:00:00Z'),
+('kuching-labour','kjri-kuching','Ketenagakerjaan','+60 12 880 1288','60128801288','HOTLINE_MOBILE','Masalah ketenagakerjaan',NULL,false,true,'2026-08-10T00:00:00Z'),
+('kuching-immigration','kjri-kuching','Imigrasi','+60 10 595 4699','60105954699','HOTLINE_MOBILE','Informasi imigrasi',NULL,false,true,'2026-08-10T00:00:00Z'),
+('kuching-apowakim','kjri-kuching','APOWAKIM Imigrasi','+60 10 954 6570','60109546570','WHATSAPP_CONFIRMED','Pendaftaran paspor/SPLP melalui WhatsApp resmi','Bukan nomor darurat umum; gunakan khusus layanan paspor/SPLP.',true,true,'2026-08-10T00:00:00Z'),
+('kk-hotline','kjri-kk','Hotline KJRI Kota Kinabalu','+60 14 606 0067','60146060067','HOTLINE_MOBILE','Pertanyaan dan informasi lain',NULL,false,true,'2026-08-10T00:00:00Z'),
+('kk-appointment','kjri-kk','TEMAN BAIK — Jadwal Temu Janji','+62 857 2030 5600','6285720305600','APPOINTMENT_ONLY','Hanya menyampaikan jadwal temu janji','Bukan hotline darurat dan bukan untuk pertanyaan umum.',false,true,'2026-08-10T00:00:00Z'),
+('tawau-immigration','kri-tawau','Keimigrasian Mendesak','+60 11 1623 0800','601116230800','HOTLINE_MOBILE','Keperluan keimigrasian mendesak','Nomor dibaca dari poster resmi yang disertakan; verifikasi kembali pada kanal resmi.',false,true,'2026-08-10T00:00:00Z'),
+('tawau-consular','kri-tawau','Kekonsuleran Mendesak','+60 19 822 6800','60198226800','HOTLINE_MOBILE','Keperluan kekonsuleran mendesak',NULL,false,true,'2026-08-10T00:00:00Z'),
+('tawau-office','kri-tawau','Telepon Kantor','+60 89 772 052','6089772052','PHONE','Kontak kantor KRI Tawau',NULL,false,true,'2026-08-10T00:00:00Z') ON CONFLICT (id) DO UPDATE SET label=excluded.label,display_number=excluded.display_number,e164=excluded.e164,channel=excluded.channel,purpose=excluded.purpose,warning=excluded.warning,whatsapp_confirmed=excluded.whatsapp_confirmed,active=true,last_checked=excluded.last_checked;
+INSERT INTO public.official_evidence (office_id,institution,evidence_type,file_path,captured_at,verification_status,extracted_data) VALUES
+('kjri-kk','KJRI Kota Kinabalu','CONTACT_OR_SERVICE','/evidence/official-2026-08-10/WhatsApp Image 2026-08-10 at 19.08.34.jpeg','2026-08-10T00:00:00Z','SUPPLIED_OFFICIAL_SCREENSHOT','{"originalFilename": "WhatsApp Image 2026-08-10 at 19.08.34.jpeg"}'::jsonb),
+('kjri-kk','KJRI Kota Kinabalu','CONTACT_OR_SERVICE','/evidence/official-2026-08-10/WhatsApp Image 2026-08-10 at 19.08.35 (1).jpeg','2026-08-10T00:00:00Z','SUPPLIED_OFFICIAL_SCREENSHOT','{"originalFilename": "WhatsApp Image 2026-08-10 at 19.08.35 (1).jpeg"}'::jsonb),
+('kjri-kk','KJRI Kota Kinabalu','CONTACT_OR_SERVICE','/evidence/official-2026-08-10/WhatsApp Image 2026-08-10 at 19.08.35 (3).jpeg','2026-08-10T00:00:00Z','SUPPLIED_OFFICIAL_SCREENSHOT','{"originalFilename": "WhatsApp Image 2026-08-10 at 19.08.35 (3).jpeg"}'::jsonb),
+('kjri-kk','KJRI Kota Kinabalu','CONTACT_OR_SERVICE','/evidence/official-2026-08-10/WhatsApp Image 2026-08-10 at 19.08.35.jpeg','2026-08-10T00:00:00Z','SUPPLIED_OFFICIAL_SCREENSHOT','{"originalFilename": "WhatsApp Image 2026-08-10 at 19.08.35.jpeg"}'::jsonb),
+('kjri-kk','KJRI Kota Kinabalu','TARIFF','/evidence/official-2026-08-10/WhatsApp Image 2026-08-10 at 19.08.36 (2).jpeg','2026-08-10T00:00:00Z','SUPPLIED_OFFICIAL_SCREENSHOT','{"originalFilename": "WhatsApp Image 2026-08-10 at 19.08.36 (2).jpeg"}'::jsonb),
+('kjri-kk','KJRI Kota Kinabalu','TARIFF','/evidence/official-2026-08-10/WhatsApp Image 2026-08-10 at 19.08.36.jpeg','2026-08-10T00:00:00Z','SUPPLIED_OFFICIAL_SCREENSHOT','{"originalFilename": "WhatsApp Image 2026-08-10 at 19.08.36.jpeg"}'::jsonb),
+('kjri-kuching','KJRI Kuching','CONTACT_OR_SERVICE','/evidence/official-2026-08-10/WhatsApp Image 2026-08-10 at 19.20.06.jpeg','2026-08-10T00:00:00Z','SUPPLIED_OFFICIAL_SCREENSHOT','{"originalFilename": "WhatsApp Image 2026-08-10 at 19.20.06.jpeg"}'::jsonb),
+('kjri-kuching','KJRI Kuching','CONTACT_OR_SERVICE','/evidence/official-2026-08-10/WhatsApp Image 2026-08-10 at 19.20.07 (1).jpeg','2026-08-10T00:00:00Z','SUPPLIED_OFFICIAL_SCREENSHOT','{"originalFilename": "WhatsApp Image 2026-08-10 at 19.20.07 (1).jpeg"}'::jsonb),
+('kjri-kuching','KJRI Kuching','CONTACT_OR_SERVICE','/evidence/official-2026-08-10/WhatsApp Image 2026-08-10 at 19.20.07.jpeg','2026-08-10T00:00:00Z','SUPPLIED_OFFICIAL_SCREENSHOT','{"originalFilename": "WhatsApp Image 2026-08-10 at 19.20.07.jpeg"}'::jsonb),
+('kjri-kuching','KJRI Kuching','CONTACT_OR_SERVICE','/evidence/official-2026-08-10/WhatsApp Image 2026-08-10 at 19.20.08 (1).jpeg','2026-08-10T00:00:00Z','SUPPLIED_OFFICIAL_SCREENSHOT','{"originalFilename": "WhatsApp Image 2026-08-10 at 19.20.08 (1).jpeg"}'::jsonb),
+('kjri-kuching','KJRI Kuching','CONTACT_OR_SERVICE','/evidence/official-2026-08-10/WhatsApp Image 2026-08-10 at 19.20.08.jpeg','2026-08-10T00:00:00Z','SUPPLIED_OFFICIAL_SCREENSHOT','{"originalFilename": "WhatsApp Image 2026-08-10 at 19.20.08.jpeg"}'::jsonb),
+('kjri-kuching','KJRI Kuching','CONTACT_OR_SERVICE','/evidence/official-2026-08-10/WhatsApp Image 2026-08-10 at 19.20.09.jpeg','2026-08-10T00:00:00Z','SUPPLIED_OFFICIAL_SCREENSHOT','{"originalFilename": "WhatsApp Image 2026-08-10 at 19.20.09.jpeg"}'::jsonb),
+('kbri-kl','KBRI Kuala Lumpur','TARIFF','/evidence/official-2026-08-10/WhatsApp Image 2026-08-10 at 22.05.36.jpeg','2026-08-10T00:00:00Z','SUPPLIED_OFFICIAL_SCREENSHOT','{"originalFilename": "WhatsApp Image 2026-08-10 at 22.05.36.jpeg"}'::jsonb),
+('kbri-kl','KBRI Kuala Lumpur','TARIFF','/evidence/official-2026-08-10/WhatsApp Image 2026-08-10 at 22.05.37.jpeg','2026-08-10T00:00:00Z','SUPPLIED_OFFICIAL_SCREENSHOT','{"originalFilename": "WhatsApp Image 2026-08-10 at 22.05.37.jpeg"}'::jsonb),
+('kjri-jb','KJRI Johor Bahru','TARIFF','/evidence/official-2026-08-10/WhatsApp Image 2026-08-10 at 22.18.01.jpeg','2026-08-10T00:00:00Z','SUPPLIED_OFFICIAL_SCREENSHOT','{"originalFilename": "WhatsApp Image 2026-08-10 at 22.18.01.jpeg"}'::jsonb),
+('kjri-jb','KJRI Johor Bahru','TARIFF','/evidence/official-2026-08-10/WhatsApp Image 2026-08-10 at 22.18.02.jpeg','2026-08-10T00:00:00Z','SUPPLIED_OFFICIAL_SCREENSHOT','{"originalFilename": "WhatsApp Image 2026-08-10 at 22.18.02.jpeg"}'::jsonb),
+('kjri-penang','KJRI Penang','CONTACT_OR_SERVICE','/evidence/official-2026-08-10/WhatsApp Image 2026-08-10 at 22.51.08.jpeg','2026-08-10T00:00:00Z','SUPPLIED_OFFICIAL_SCREENSHOT','{"originalFilename": "WhatsApp Image 2026-08-10 at 22.51.08.jpeg"}'::jsonb),
+('kjri-penang','KJRI Penang','CONTACT_OR_SERVICE','/evidence/official-2026-08-10/WhatsApp Image 2026-08-10 at 22.51.09.jpeg','2026-08-10T00:00:00Z','SUPPLIED_OFFICIAL_SCREENSHOT','{"originalFilename": "WhatsApp Image 2026-08-10 at 22.51.09.jpeg"}'::jsonb),
+('kjri-penang','KJRI Penang','CONTACT_OR_SERVICE','/evidence/official-2026-08-10/WhatsApp Image 2026-08-10 at 22.51.10.jpeg','2026-08-10T00:00:00Z','SUPPLIED_OFFICIAL_SCREENSHOT','{"originalFilename": "WhatsApp Image 2026-08-10 at 22.51.10.jpeg"}'::jsonb),
+('kjri-penang','KJRI Penang','CONTACT_OR_SERVICE','/evidence/official-2026-08-10/WhatsApp Image 2026-08-10 at 22.59.31.jpeg','2026-08-10T00:00:00Z','SUPPLIED_OFFICIAL_SCREENSHOT','{"originalFilename": "WhatsApp Image 2026-08-10 at 22.59.31.jpeg"}'::jsonb),
+('kri-tawau','KRI Tawau','TARIFF','/evidence/official-2026-08-10/WhatsApp Image 2026-08-10 at 23.12.53 (1).jpeg','2026-08-10T00:00:00Z','SUPPLIED_OFFICIAL_SCREENSHOT','{"originalFilename": "WhatsApp Image 2026-08-10 at 23.12.53 (1).jpeg"}'::jsonb),
+('kri-tawau','KRI Tawau','CONTACT_OR_SERVICE','/evidence/official-2026-08-10/WhatsApp Image 2026-08-10 at 23.12.53.jpeg','2026-08-10T00:00:00Z','SUPPLIED_OFFICIAL_SCREENSHOT','{"originalFilename": "WhatsApp Image 2026-08-10 at 23.12.53.jpeg"}'::jsonb),
+('kri-tawau','KRI Tawau','TARIFF','/evidence/official-2026-08-10/WhatsApp Image 2026-08-10 at 23.12.54 (1).jpeg','2026-08-10T00:00:00Z','SUPPLIED_OFFICIAL_SCREENSHOT','{"originalFilename": "WhatsApp Image 2026-08-10 at 23.12.54 (1).jpeg"}'::jsonb),
+('kri-tawau','KRI Tawau','CONTACT_OR_SERVICE','/evidence/official-2026-08-10/WhatsApp Image 2026-08-10 at 23.12.54 (2).jpeg','2026-08-10T00:00:00Z','SUPPLIED_OFFICIAL_SCREENSHOT','{"originalFilename": "WhatsApp Image 2026-08-10 at 23.12.54 (2).jpeg"}'::jsonb),
+('kri-tawau','KRI Tawau','TARIFF','/evidence/official-2026-08-10/WhatsApp Image 2026-08-10 at 23.12.54.jpeg','2026-08-10T00:00:00Z','SUPPLIED_OFFICIAL_SCREENSHOT','{"originalFilename": "WhatsApp Image 2026-08-10 at 23.12.54.jpeg"}'::jsonb),
+('kri-tawau','KRI Tawau','CONTACT_OR_SERVICE','/evidence/official-2026-08-10/WhatsApp Image 2026-08-10 at 23.12.55.jpeg','2026-08-10T00:00:00Z','SUPPLIED_OFFICIAL_SCREENSHOT','{"originalFilename": "WhatsApp Image 2026-08-10 at 23.12.55.jpeg"}'::jsonb),
+('kri-tawau','KRI Tawau','CONTACT_OR_SERVICE','/evidence/official-2026-08-10/WhatsApp Image 2026-08-10 at 23.12.56 (1).jpeg','2026-08-10T00:00:00Z','SUPPLIED_OFFICIAL_SCREENSHOT','{"originalFilename": "WhatsApp Image 2026-08-10 at 23.12.56 (1).jpeg"}'::jsonb),
+('kri-tawau','KRI Tawau','CONTACT_OR_SERVICE','/evidence/official-2026-08-10/WhatsApp Image 2026-08-10 at 23.12.56.jpeg','2026-08-10T00:00:00Z','SUPPLIED_OFFICIAL_SCREENSHOT','{"originalFilename": "WhatsApp Image 2026-08-10 at 23.12.56.jpeg"}'::jsonb) ON CONFLICT (file_path) DO UPDATE SET office_id=excluded.office_id,institution=excluded.institution,evidence_type=excluded.evidence_type,captured_at=excluded.captured_at,verification_status=excluded.verification_status,extracted_data=excluded.extracted_data,updated_at=now();
 
 COMMIT;

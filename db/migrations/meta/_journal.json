@@ -15,6 +15,20 @@
       "when": 1786886538438,
       "tag": "0001_glorious_scarlet_witch",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1786896992516,
+      "tag": "0002_reflective_magdalene",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1786898937733,
+      "tag": "0003_stiff_sunspot",
+      "breakpoints": true
     }
   ]
 }
