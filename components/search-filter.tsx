@@ -1,0 +1,1 @@
+'use client';import { Search,SlidersHorizontal } from 'lucide-react';export function SearchFilter({placeholder='Cari…'}:{placeholder?:string}){return <div className="search-filter"><label><Search size={18}/><input placeholder={placeholder}/></label><button><SlidersHorizontal size={18}/>Filter</button></div>}

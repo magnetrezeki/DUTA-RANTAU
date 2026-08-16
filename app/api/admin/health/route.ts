@@ -1,0 +1,1 @@
+import { NextResponse } from 'next/server';export async function GET(){return NextResponse.json({status:'ok',database:process.env.DATABASE_URL?'configured':'pending-connection-string',auth:process.env.NEXT_PUBLIC_SUPABASE_URL?'supabase-configured':'not-configured',aiProvider:process.env.AI_PROVIDER??'disabled',timestamp:new Date().toISOString()});}
