@@ -1,8 +1,11 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function POST() {
+export async function POST(req: NextRequest) {
+  const body = await req.json();
+
   return NextResponse.json({
     ok: true,
-    message: "Marketplace create placeholder"
+    action: "create",
+    data: body
   });
 }
