@@ -5,3 +5,4 @@ export interface DemoJob { id:string; title:string; employer:string; location:st
 export interface Community { id:string; name:string; category:string; location:string; members:number; visibility:'PUBLIC'|'COMMUNITY_ONLY'; demo:true; }
 export interface Product { id:string; name:string; seller:string; category:string; location:string; price:string; trust:string; demo:true; }
 export interface Organization { id:string; name:string; type:string; location:string; members:number; role?:string; demo:true; }
+

@@ -1,0 +1,199 @@
+﻿"Status","Name","Expected","Actual","Details"
+"PASS","/api/admin/health","200","200","HTTP/1.1 200 OK
+vary: rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch
+content-type: application/json
+Date: Sat, 29 Aug 2026 23:09:48 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+{""status"":""ok"",""database"":""configured"",""auth"":""supabase-configured"",""aiProvider"":""gemini"",""timestamp"":""2026-08-29T23:09:48.022Z""}"
+"PASS","/api/sources","200","200","HTTP/1.1 200 OK
+vary: rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch
+content-type: application/json
+Date: Sat, 29 Aug 2026 23:09:48 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+{""data"":[{""id"":""src-1"",""institution"":""KBRI Kuala Lumpur"",""channel"":""Situs resmi"",""url"":""https://kemlu.go.id/kualalumpur"",""category"":""kantor, konsuler, perlindungan, imigrasi"",""priority"":""P0"",""status"":""VERIFIED"",""lastChecked"":""2026-08-16""},{""id"":""src-2"",""institution"":""KBRI Kuala Lumpur"",""channel"":""Instagram"",""url"":""https://www.instagram.com/indonesi..."
+"PASS","/api/jobs","200","200","HTTP/1.1 200 OK
+vary: rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch
+content-type: application/json
+Date: Sat, 29 Aug 2026 23:09:48 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+{""data"":[{""id"":""job-1"",""title"":""Staf Operasional Restoran"",""employer"":""Kedai Nusantara (DEMO)"",""location"":""Shah Alam, Selangor"",""type"":""Penuh waktu"",""salary"":""Tidak dicantumkan"",""verification"":""UNVERIFIED"",""posted"":""Hari ini"",""demo"":true},{""id"":""job-2"",""title"":""Desainer Konten Lepas"",""employer"":""Studio Komunitas (DEMO)"",""location"":""Remote ┬À Malays..."
+"PASS","/api/organizations","200","200","HTTP/1.1 200 OK
+vary: rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch
+content-type: application/json
+Date: Sat, 29 Aug 2026 23:09:48 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+{""data"":[{""id"":""org-1"",""name"":""Paguyuban Rantau Bersama (DEMO)"",""type"":""Paguyuban"",""location"":""Kuala Lumpur"",""members"":46,""role"":""Sekretaris"",""demo"":true},{""id"":""org-2"",""name"":""Jejaring Wirausaha Indonesia (DEMO)"",""type"":""Komunitas bisnis"",""location"":""Selangor"",""members"":72,""role"":""Anggota"",""demo"":true}],""demo"":true}"
+"FAIL","/api/auth/me authenticated","200","401","HTTP/1.1 401 Unauthorized
+set-cookie: sb-uokljxqqvpujwmubildy-auth-token=; Path=/; Max-Age=0; SameSite=lax
+vary: rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch
+content-type: application/json
+Date: Sat, 29 Aug 2026 23:09:48 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+{""user"":null}"
+"FAIL","/api/users/me authenticated","200","403","HTTP/1.1 403 Forbidden
+set-cookie: sb-uokljxqqvpujwmubildy-auth-token=; Path=/; Max-Age=0; SameSite=lax
+vary: rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch
+content-type: application/json
+Date: Sat, 29 Aug 2026 23:09:49 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+{""error"":""Origin permintaan tidak valid.""}"
+"PASS","/api/auth/me without login","401","401","HTTP/1.1 401 Unauthorized
+vary: rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch
+content-type: application/json
+Date: Sat, 29 Aug 2026 23:09:49 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+{""user"":null}"
+"FAIL","/api/users/me without login","401","403","HTTP/1.1 403 Forbidden
+vary: rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch
+content-type: application/json
+Date: Sat, 29 Aug 2026 23:09:49 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+{""error"":""Origin permintaan tidak valid.""}"
+"FAIL","/api/safety/contacts without login","401","200","HTTP/1.1 200 OK
+vary: rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch
+cache-control: public, s-maxage=300, stale-while-revalidate=600
+content-type: application/json
+Date: Sat, 29 Aug 2026 23:09:50 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+{""data"":[{""id"":""kbri-kl"",""institution"":""KBRI Kuala Lumpur"",""city"":""Kuala Lumpur"",""region"":""Semenanjung Malaysia"",""lat"":3.139,""lng"":101.687,""officialUrl"":""https://kemlu.go.id/kualalumpur"",""sourceChannel"":""Halaman resmi KBRI Kuala Lumpur ├óÔé¼ÔÇØ Pelayanan Perlindungan WNI & BHI; lampir..."
+"PASS","/api/community","200","200","HTTP/1.1 200 OK
+set-cookie: sb-uokljxqqvpujwmubildy-auth-token=; Path=/; Max-Age=0; SameSite=lax
+vary: rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch
+content-type: application/json
+Date: Sat, 29 Aug 2026 23:09:50 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+{""data"":[{""id"":""com-1"",""name"":""Komunitas Pelajar Indonesia KL (DEMO)"",""category"":""Pelajar"",""location"":""Kuala Lumpur"",""members"":128,""visibility"":""PUBLIC"",""demo"":true},{""id"":""com-2"",""name"":""Rantau Kuliner Nusantara (DEMO)"",""category"":""Kuliner"",""location"":""Selangor"",""mem..."
+"PASS","/api/marketplace","200","200","HTTP/1.1 200 OK
+set-cookie: sb-uokljxqqvpujwmubildy-auth-token=; Path=/; Max-Age=0; SameSite=lax
+vary: rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch
+content-type: application/json
+Date: Sat, 29 Aug 2026 23:09:50 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+{""data"":[{""id"":""prd-1"",""name"":""Katering Nasi Kotak (DEMO)"",""seller"":""Dapur Rantau (DEMO)"",""category"":""Makanan"",""location"":""Kuala Lumpur"",""price"":""Harga hubungi penjual"",""trust"":""NEW_SELLER"",""demo"":true},{""id"":""prd-2"",""name"":""Jasa Desain Poster (DEMO)"",""seller"":""Kreasi..."
+"PASS","/api/safety/contacts authenticated","200/204","200","HTTP/1.1 200 OK
+set-cookie: sb-uokljxqqvpujwmubildy-auth-token=; Path=/; Max-Age=0; SameSite=lax
+vary: rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch
+cache-control: public, s-maxage=300, stale-while-revalidate=600
+content-type: application/json
+Date: Sat, 29 Aug 2026 23:09:51 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+{""data"":[{""id"":""kbri-kl"",""institution"":""KBRI Kuala Lumpur"",""city"":""Kuala Lumpur"",""region"":""Semenanjung Malaysia"",""lat"":3.139,""lng"":101.687,""officialUrl"":""https://kemlu.go.id/kualalumpur"",""sourceChannel"":..."
+"PASS","/api/auth/register invalid body","400/401/422","400","HTTP/1.1 400 Bad Request
+vary: rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch
+content-type: application/json
+Date: Sat, 29 Aug 2026 23:09:51 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+{""error"":""Data pendaftaran tidak valid.""}"
+"FAIL","/api/membership/checkout invalid plan","400/401/422","403","HTTP/1.1 403 Forbidden
+set-cookie: sb-uokljxqqvpujwmubildy-auth-token=; Path=/; Max-Age=0; SameSite=lax
+vary: rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch
+content-type: application/json
+Date: Sat, 29 Aug 2026 23:09:51 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+{""error"":""Origin permintaan tidak valid.""}"
+"PASS","/api/ai/chat empty message","400/401/422","400","HTTP/1.1 400 Bad Request
+set-cookie: sb-uokljxqqvpujwmubildy-auth-token=; Path=/; Max-Age=0; SameSite=lax
+vary: rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch
+content-type: application/json
+Date: Sat, 29 Aug 2026 23:09:52 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+{""error"":""Pertanyaan tidak valid.""}"
+"PASS","/api/organizations authenticated","200","200","HTTP/1.1 200 OK
+set-cookie: sb-uokljxqqvpujwmubildy-auth-token=; Path=/; Max-Age=0; SameSite=lax
+vary: rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch
+content-type: application/json
+Date: Sat, 29 Aug 2026 23:09:52 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+{""data"":[{""id"":""org-1"",""name"":""Paguyuban Rantau Bersama (DEMO)"",""type"":""Paguyuban"",""location"":""Kuala Lumpur"",""members"":46,""role"":""Sekretaris"",""demo"":true},{""id"":""org-2"",""name"":""Jejaring Wirausaha Indonesia (DEMO)"",""type"":""Komunitas bisnis"",""location"":""Selangor"",""membe..."
+"PASS","/api/organizations/me","200/401/403/404","404","HTTP/1.1 404 Not Found
+set-cookie: sb-uokljxqqvpujwmubildy-auth-token=; Path=/; Max-Age=0; SameSite=lax
+Cache-Control: private, no-cache, no-store, max-age=0, must-revalidate
+Vary: rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept-Encoding
+x-nextjs-cache: HIT
+x-nextjs-prerender: 1
+x-nextjs-prerender: 1
+x-nextjs-stale-time: 300
+X-Powered-By: Next.js
+ETag: ""foayr9df6mdsm""
+Content-Type: text/html; charset=utf-8
+Content-Length: 17882
+Date: Sat, 29 Aug 2026 23:09:52 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+<!DOCTYPE html><html lang=""id""..."
+"PASS","/api/organizations/secretary","200/401/403/404","404","HTTP/1.1 404 Not Found
+set-cookie: sb-uokljxqqvpujwmubildy-auth-token=; Path=/; Max-Age=0; SameSite=lax
+Cache-Control: private, no-cache, no-store, max-age=0, must-revalidate
+Vary: rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept-Encoding
+x-nextjs-cache: HIT
+x-nextjs-prerender: 1
+x-nextjs-prerender: 1
+x-nextjs-stale-time: 300
+X-Powered-By: Next.js
+ETag: ""foayr9df6mdsm""
+Content-Type: text/html; charset=utf-8
+Content-Length: 17882
+Date: Sat, 29 Aug 2026 23:09:53 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+<!DOCTYPE html><html lang=""id""..."
+"FAIL","Fake Origin /api/auth/me","403","401","HTTP/1.1 401 Unauthorized
+set-cookie: sb-uokljxqqvpujwmubildy-auth-token=; Path=/; Max-Age=0; SameSite=lax
+vary: rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch
+content-type: application/json
+Date: Sat, 29 Aug 2026 23:09:53 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+{""user"":null}"

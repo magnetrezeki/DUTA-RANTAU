@@ -29,3 +29,4 @@ export function answerQuestion(message:string, location='Malaysia') {
  };
  return {intent,confidence:intent==='GENERAL'?'rendah':'sedang',answer:responses[intent],steps:[],sources:[],disclaimer:intent==='SAFETY'?'Panduan ini bukan keputusan medis atau hukum.':undefined};
 }
+

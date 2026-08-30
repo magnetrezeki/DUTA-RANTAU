@@ -13,3 +13,4 @@ export const organizationPlans:OrganizationPlan[]=[
 ];
 export function getOrganizationPlan(id:OrganizationPlanId){return organizationPlans.find(p=>p.id===id)!}
 export function hasOrganizationEntitlement(plan:OrganizationPlanId,entitlement:OrganizationEntitlement){return getOrganizationPlan(plan).entitlements.includes(entitlement)}
+

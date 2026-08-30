@@ -50,3 +50,4 @@ export const demoOrganizations:Organization[]=[
 {id:'org-1',name:'Paguyuban Rantau Bersama (DEMO)',type:'Paguyuban',location:'Kuala Lumpur',members:46,role:'Sekretaris',demo:true},
 {id:'org-2',name:'Jejaring Wirausaha Indonesia (DEMO)',type:'Komunitas bisnis',location:'Selangor',members:72,role:'Anggota',demo:true},
 ];
+

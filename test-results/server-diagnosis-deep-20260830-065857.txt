@@ -1,0 +1,299 @@
+
+============================================================
+ 1. CURRENT PORT 3000
+============================================================
+
+
+LocalAddress  : 127.0.0.1
+LocalPort     : 3000
+RemoteAddress : 127.0.0.1
+RemotePort    : 59240
+State         : TimeWait
+OwningProcess : 0
+
+LocalAddress  : 127.0.0.1
+LocalPort     : 3000
+RemoteAddress : 127.0.0.1
+RemotePort    : 59229
+State         : TimeWait
+OwningProcess : 0
+
+LocalAddress  : 127.0.0.1
+LocalPort     : 3000
+RemoteAddress : 127.0.0.1
+RemotePort    : 59236
+State         : TimeWait
+OwningProcess : 0
+
+LocalAddress  : 127.0.0.1
+LocalPort     : 3000
+RemoteAddress : 127.0.0.1
+RemotePort    : 59233
+State         : TimeWait
+OwningProcess : 0
+
+LocalAddress  : 127.0.0.1
+LocalPort     : 3000
+RemoteAddress : 127.0.0.1
+RemotePort    : 59226
+State         : TimeWait
+OwningProcess : 0
+
+LocalAddress  : 127.0.0.1
+LocalPort     : 3000
+RemoteAddress : 0.0.0.0
+RemotePort    : 0
+State         : Listen
+OwningProcess : 24364
+
+
+
+
+
+============================================================
+ 2. PROCESS DETAILS FOR PORT 3000
+============================================================
+
+PID = 0
+
+
+Id          : 0
+ProcessName : Idle
+Path        : 
+StartTime   : 
+CPU         : 
+Responding  : True
+
+
+
+
+COMMAND LINE:
+
+ProcessId Name                ParentProcessId CommandLine
+--------- ----                --------------- -----------
+        0 System Idle Process               0            
+
+
+
+
+PID = 24364
+
+
+Id          : 24364
+ProcessName : EonVPNRoutingService
+Path        : 
+StartTime   : 
+CPU         : 
+Responding  : True
+
+
+
+
+COMMAND LINE:
+
+ProcessId Name                     ParentProcessId CommandLine
+--------- ----                     --------------- -----------
+    24364 EonVPNRoutingService.exe             528            
+
+
+
+
+============================================================
+ 3. ALL NODE PROCESSES
+============================================================
+
+ProcessId ParentProcessId Name     CommandLine                                                                                                   
+--------- --------------- ----     -----------                                                                                                   
+    22688           24296 node.exe "C:\Program Files\nodejs\node.exe" C:\Users\User\AppData\Roaming\npm/node_modules/npm/bin/npm-cli.js run start
+    10180           24536 node.exe "node"   "D:\DUTA-RANTAU\node_modules\.bin\\..\next\dist\bin\next" start --hostname 0.0.0.0                   
+
+
+
+
+============================================================
+ 4. NODE PARENT PROCESS TREE
+============================================================
+
+ProcessId ParentProcessId Name           CommandLine                                              
+--------- --------------- ----           -----------                                              
+    24296           15716 powershell.exe C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe
+
+
+
+
+ProcessId ParentProcessId Name    CommandLine                                                       
+--------- --------------- ----    -----------                                                       
+    24536           22688 cmd.exe C:\WINDOWS\system32\cmd.exe /d /s /c next start --hostname 0.0.0.0
+
+
+
+
+============================================================
+ 5. HTTP TEST USING 127.0.0.1
+============================================================
+curl.exe :   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+At D:\DUTA-RANTAU\scripts\diagnose-server-deep.ps1:165 char:5
++     & curl.exe -v --max-time 10 `
++     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (  % Total    % ...  Time  Current:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+                                 Dload  Upload   Total   Spent    Left  Speed
+
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0*   Trying 127.0.0.1:3000...
+* Connected to 127.0.0.1 (127.0.0.1) port 3000
+* using HTTP/1.x
+> GET / HTTP/1.1
+
+> Host: 127.0.0.1:3000
+
+> User-Agent: curl/8.13.0
+
+> Accept: */*
+
+> 
+
+* Request completely sent off
+* Empty reply from server
+
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+* shutting down connection #0
+curl: (52) Empty reply from server
+
+curl.exe :   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+At D:\DUTA-RANTAU\scripts\diagnose-server-deep.ps1:181 char:5
++     & curl.exe -v --max-time 10 `
++     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (  % Total    % ...  Time  Current:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+                                 Dload  Upload   Total   Spent    Left  Speed
+
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0*   Trying 127.0.0.1:3000...
+* Connected to 127.0.0.1 (127.0.0.1) port 3000
+* using HTTP/1.x
+> GET /api/admin/health HTTP/1.1
+
+> Host: 127.0.0.1:3000
+
+> User-Agent: curl/8.13.0
+
+> Accept: */*
+
+> 
+
+* Request completely sent off
+* Empty reply from server
+
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+* shutting down connection #0
+curl: (52) Empty reply from server
+
+
+============================================================
+ 6. HTTP HEAD TEST
+============================================================
+curl.exe :   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+At D:\DUTA-RANTAU\scripts\diagnose-server-deep.ps1:200 char:5
++     & curl.exe -I -v --max-time 10 `
++     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (  % Total    % ...  Time  Current:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+                                 Dload  Upload   Total   Spent    Left  Speed
+
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0*   Trying 127.0.0.1:3000...
+* Connected to 127.0.0.1 (127.0.0.1) port 3000
+* using HTTP/1.x
+> HEAD / HTTP/1.1
+
+> Host: 127.0.0.1:3000
+
+> User-Agent: curl/8.13.0
+
+> Accept: */*
+
+> 
+
+* Request completely sent off
+* Empty reply from server
+
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+* shutting down connection #0
+curl: (52) Empty reply from server
+
+
+============================================================
+ 7. POWERSHELL HTTP CLIENT
+============================================================
+Invoke-WebRequest : The underlying connection was closed: The connection was closed unexpectedly.
+At D:\DUTA-RANTAU\scripts\diagnose-server-deep.ps1:219 char:17
++     $Response = Invoke-WebRequest `
++                 ~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (System.Net.HttpWebRequest:HttpWebRequest) [Invoke-WebRequest], WebException
+    + FullyQualifiedErrorId : WebCmdletWebResponseException,Microsoft.PowerShell.Commands.InvokeWebRequestCommand
+ 
+
+
+============================================================
+ 8. NEXT BUILD INFORMATION
+============================================================
+
+Name                            Length LastWriteTime         PSIsContainer
+----                            ------ -------------         -------------
+cache                                  29/8/2026 11:32:51 PM          True
+diagnostics                            30/8/2026 5:54:25 AM           True
+node_modules                           30/8/2026 5:54:05 AM           True
+server                                 30/8/2026 5:54:25 AM           True
+static                                 30/8/2026 5:54:05 AM           True
+types                                  30/8/2026 5:54:03 AM           True
+app-path-routes-manifest.json   1603   30/8/2026 5:54:16 AM          False
+build-manifest.json             645    30/8/2026 5:54:07 AM          False
+BUILD_ID                        21     30/8/2026 5:54:22 AM          False
+export-marker.json              111    30/8/2026 5:54:25 AM          False
+fallback-build-manifest.json    366    30/8/2026 5:54:07 AM          False
+images-manifest.json            1213   30/8/2026 5:54:25 AM          False
+next-minimal-server.js.nft.json 7968   30/8/2026 5:54:06 AM          False
+next-server.js.nft.json         90687  30/8/2026 5:54:05 AM          False
+package.json                    20     30/8/2026 5:54:04 AM          False
+prerender-manifest.json         18071  30/8/2026 5:54:25 AM          False
+required-server-files.js        9876   30/8/2026 5:54:16 AM          False
+required-server-files.json      9847   30/8/2026 5:54:16 AM          False
+routes-manifest.json            7056   30/8/2026 5:54:25 AM          False
+trace                           17008  30/8/2026 5:54:26 AM          False
+trace-build                     1501   30/8/2026 5:54:26 AM          False
+turbopack                       0      30/8/2026 5:54:04 AM          False
+
+
+
+4Mk_0JNW8zHOicef6YbW0
+
+
+============================================================
+ 9. NEXT CONFIG
+============================================================
+import type { NextConfig } from 'next';
+const nextConfig: NextConfig = {
+  experimental: { optimizePackageImports: ['lucide-react'] },
+  images: { formats: ['image/avif', 'image/webp'] },
+};
+export default nextConfig;
+
+
+
+
+============================================================
+ 10. PACKAGE DEV COMMAND
+============================================================
+dev   : next dev --hostname 0.0.0.0
+build : next build
+start : next start --hostname 0.0.0.0
+
+============================================================
+ 11. ENVIRONMENT VARIABLE NAMES ONLY
+============================================================
+(no output)
+
+============================================================
+ DIAGNOSTIC COMPLETE
+============================================================

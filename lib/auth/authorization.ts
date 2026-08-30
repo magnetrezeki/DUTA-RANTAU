@@ -11,3 +11,4 @@ export const orgRolePermissions:Record<string,string[]>={
  MEMBER:base
 };
 export function canInOrganization(role:string|undefined,permission:string){return !!role&&(orgRolePermissions[role]?.includes(permission)??false)}
+

@@ -1,2 +1,3 @@
 export type CheckoutRequest={userId:string;plan:'DUTA_MEMBER_MONTHLY';amountMyr:'9.90';idempotencyKey:string};export type CheckoutResult={providerReference:string;checkoutUrl:string};export interface PaymentProvider{createCheckout(input:CheckoutRequest):Promise<CheckoutResult>;cancelSubscription(reference:string):Promise<void>;verifyWebhook(payload:string,signature:string):Promise<boolean>}
 export function getPaymentProvider():PaymentProvider|null{return null;}// Provider is selected by deployment configuration; business logic does not depend on a vendor.
+

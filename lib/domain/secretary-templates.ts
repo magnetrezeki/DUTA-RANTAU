@@ -4,3 +4,4 @@ export const secretaryDocuments=[['INVITATION_LETTER','Surat undangan'],['NOTICE
 export const publicationTypes=[['FLYER','Flyer'],['POSTER','Poster'],['GREETING_CARD','Kartu ucapan'],['DIGITAL_INVITATION','Undangan digital'],['BANNER','Banner'],['VISUAL_ANNOUNCEMENT','Pengumuman visual']] as const;
 export const greetingTemplates=['Turut berduka cita','Selamat Idulfitri','Selamat Iduladha','Selamat Tahun Baru','Selamat ulang tahun','Selamat atas kelahiran','Selamat atas pernikahan','Selamat atas kelulusan','Selamat datang','Terima kasih','Selamat atas pelantikan sebagai'];
 export function createSafeDraft(prompt:string,type:SecretaryDocumentType|PublicationType){const clean=prompt.trim();return {title:`Draft ${[...secretaryDocuments,...publicationTypes].find(x=>x[0]===type)?.[1]??'materi'}`,body:`${clean}\n\n[Periksa dan lengkapi nama, tanggal, waktu, lokasi, penanggung jawab, dan kontak sebelum disetujui.]`,status:'DRAFT' as const,requiresReview:true};}
+

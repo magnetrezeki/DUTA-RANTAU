@@ -1,1 +1,2 @@
 export type PublicationStatus='DRAFT'|'IN_REVIEW'|'APPROVED'|'PUBLISHED'|'ARCHIVED';export type PublicationPermission='secretary.use'|'document.create'|'document.approve'|'publication.create'|'publication.edit'|'publication.approve'|'publication.publish'|'template.manage'|'brand.manage';
+

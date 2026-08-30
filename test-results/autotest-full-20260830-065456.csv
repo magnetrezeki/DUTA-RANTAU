@@ -1,0 +1,115 @@
+﻿"Status","Name","Expected","Actual","Details"
+"FAIL","/api/admin/health","200","NO_HTTP_STATUS","curl.exe : curl: (52) Empty reply from server
+At D:\DUTA-RANTAU\scripts\autotest-full.ps1:138 char:17
++         $Raw = (& curl.exe @CurlArgs 2>&1 | Out-String).Trim()
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (curl: (52) Empty reply from server:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError"
+"FAIL","/api/sources","200","NO_HTTP_STATUS","curl.exe : curl: (52) Empty reply from server
+At D:\DUTA-RANTAU\scripts\autotest-full.ps1:138 char:17
++         $Raw = (& curl.exe @CurlArgs 2>&1 | Out-String).Trim()
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (curl: (52) Empty reply from server:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError"
+"FAIL","/api/jobs","200","NO_HTTP_STATUS","curl.exe : curl: (52) Empty reply from server
+At D:\DUTA-RANTAU\scripts\autotest-full.ps1:138 char:17
++         $Raw = (& curl.exe @CurlArgs 2>&1 | Out-String).Trim()
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (curl: (52) Empty reply from server:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError"
+"FAIL","/api/organizations","200","NO_HTTP_STATUS","curl.exe : curl: (52) Empty reply from server
+At D:\DUTA-RANTAU\scripts\autotest-full.ps1:138 char:17
++         $Raw = (& curl.exe @CurlArgs 2>&1 | Out-String).Trim()
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (curl: (52) Empty reply from server:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError"
+"FAIL","/api/auth/me authenticated","200","NO_HTTP_STATUS","curl.exe : curl: (52) Empty reply from server
+At D:\DUTA-RANTAU\scripts\autotest-full.ps1:138 char:17
++         $Raw = (& curl.exe @CurlArgs 2>&1 | Out-String).Trim()
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (curl: (52) Empty reply from server:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError"
+"FAIL","/api/profile authenticated","200","NO_HTTP_STATUS","curl.exe : curl: (52) Empty reply from server
+At D:\DUTA-RANTAU\scripts\autotest-full.ps1:138 char:17
++         $Raw = (& curl.exe @CurlArgs 2>&1 | Out-String).Trim()
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (curl: (52) Empty reply from server:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError"
+"FAIL","/api/auth/me without login","401","NO_HTTP_STATUS","curl.exe : curl: (52) Empty reply from server
+At D:\DUTA-RANTAU\scripts\autotest-full.ps1:138 char:17
++         $Raw = (& curl.exe @CurlArgs 2>&1 | Out-String).Trim()
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (curl: (52) Empty reply from server:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError"
+"FAIL","/api/profile without login","401","NO_HTTP_STATUS","curl.exe : curl: (52) Empty reply from server
+At D:\DUTA-RANTAU\scripts\autotest-full.ps1:138 char:17
++         $Raw = (& curl.exe @CurlArgs 2>&1 | Out-String).Trim()
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (curl: (52) Empty reply from server:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError"
+"FAIL","/api/safety/contacts without login","401","NO_HTTP_STATUS","curl.exe : curl: (52) Empty reply from server
+At D:\DUTA-RANTAU\scripts\autotest-full.ps1:138 char:17
++         $Raw = (& curl.exe @CurlArgs 2>&1 | Out-String).Trim()
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (curl: (52) Empty reply from server:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError"
+"FAIL","/api/community","200","NO_HTTP_STATUS","curl.exe : curl: (52) Empty reply from server
+At D:\DUTA-RANTAU\scripts\autotest-full.ps1:138 char:17
++         $Raw = (& curl.exe @CurlArgs 2>&1 | Out-String).Trim()
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (curl: (52) Empty reply from server:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError"
+"FAIL","/api/marketplace","200","NO_HTTP_STATUS","curl.exe : curl: (52) Empty reply from server
+At D:\DUTA-RANTAU\scripts\autotest-full.ps1:138 char:17
++         $Raw = (& curl.exe @CurlArgs 2>&1 | Out-String).Trim()
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (curl: (52) Empty reply from server:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError"
+"FAIL","/api/safety/contacts authenticated","200/204","NO_HTTP_STATUS","curl.exe : curl: (52) Empty reply from server
+At D:\DUTA-RANTAU\scripts\autotest-full.ps1:138 char:17
++         $Raw = (& curl.exe @CurlArgs 2>&1 | Out-String).Trim()
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (curl: (52) Empty reply from server:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError"
+"FAIL","/api/auth/register invalid body","400/401/422","NO_HTTP_STATUS","curl.exe : curl: (52) Empty reply from server
+At D:\DUTA-RANTAU\scripts\autotest-full.ps1:138 char:17
++         $Raw = (& curl.exe @CurlArgs 2>&1 | Out-String).Trim()
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (curl: (52) Empty reply from server:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError"
+"FAIL","/api/membership/checkout invalid plan","400/401/422","NO_HTTP_STATUS","curl.exe : curl: (52) Empty reply from server
+At D:\DUTA-RANTAU\scripts\autotest-full.ps1:138 char:17
++         $Raw = (& curl.exe @CurlArgs 2>&1 | Out-String).Trim()
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (curl: (52) Empty reply from server:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError"
+"FAIL","/api/ai/chat empty message","400/401/422","NO_HTTP_STATUS","curl.exe : curl: (52) Empty reply from server
+At D:\DUTA-RANTAU\scripts\autotest-full.ps1:138 char:17
++         $Raw = (& curl.exe @CurlArgs 2>&1 | Out-String).Trim()
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (curl: (52) Empty reply from server:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError"
+"FAIL","/api/organizations authenticated","200","NO_HTTP_STATUS","curl.exe : curl: (52) Empty reply from server
+At D:\DUTA-RANTAU\scripts\autotest-full.ps1:138 char:17
++         $Raw = (& curl.exe @CurlArgs 2>&1 | Out-String).Trim()
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (curl: (52) Empty reply from server:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError"
+"FAIL","/api/organizations/me","200/401/403/404","NO_HTTP_STATUS","curl.exe : curl: (52) Empty reply from server
+At D:\DUTA-RANTAU\scripts\autotest-full.ps1:138 char:17
++         $Raw = (& curl.exe @CurlArgs 2>&1 | Out-String).Trim()
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (curl: (52) Empty reply from server:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError"
+"FAIL","/api/organizations/secretary","200/401/403/404","NO_HTTP_STATUS","curl.exe : curl: (52) Empty reply from server
+At D:\DUTA-RANTAU\scripts\autotest-full.ps1:138 char:17
++         $Raw = (& curl.exe @CurlArgs 2>&1 | Out-String).Trim()
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (curl: (52) Empty reply from server:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError"
+"FAIL","Fake Origin /api/auth/me","403","NO_HTTP_STATUS","curl.exe : curl: (52) Empty reply from server
+At D:\DUTA-RANTAU\scripts\autotest-full.ps1:138 char:17
++         $Raw = (& curl.exe @CurlArgs 2>&1 | Out-String).Trim()
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (curl: (52) Empty reply from server:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError"

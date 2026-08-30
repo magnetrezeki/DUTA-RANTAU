@@ -9,3 +9,4 @@ export async function POST(req:NextRequest){
  try{const body=input.parse(await req.json());return NextResponse.json(answerQuestion(body.message,body.location));}
  catch{return NextResponse.json({error:'Pertanyaan tidak valid.'},{status:400});}
 }
+

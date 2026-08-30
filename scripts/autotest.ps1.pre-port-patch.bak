@@ -1,0 +1,167 @@
+﻿$ErrorActionPreference = "Stop"
+
+$BASE = "http://127.0.0.1:3001"
+$ORIGIN = "$BASE"
+$COOKIE = ".\autotest-cookies.txt"
+
+function Test-Step {
+    param(
+        [string]$Name,
+        [scriptblock]$Action
+    )
+
+    Write-Host ""
+    Write-Host "[$Name]" -ForegroundColor Cyan
+
+    try {
+        $result = & $Action
+        Write-Host "PASS" -ForegroundColor Green
+        return $result
+    }
+    catch {
+        Write-Host "FAIL: $($_.Exception.Message)" -ForegroundColor Red
+        throw
+    }
+}
+
+Write-Host "============================================" -ForegroundColor Green
+Write-Host " DUTA-RANTAU AUTOTEST" -ForegroundColor Green
+Write-Host "============================================" -ForegroundColor Green
+
+# Bersihkan cookie test lama
+Remove-Item $COOKIE -Force -ErrorAction SilentlyContinue
+
+# 1. Health
+Test-Step "ADMIN HEALTH" {
+    $r = curl.exe -sS -f "$BASE/api/admin/health"
+    $r
+}
+
+# 2. Sources
+Test-Step "OFFICIAL SOURCES" {
+    $r = curl.exe -sS -f "$BASE/api/sources"
+    $r
+}
+
+# 3. Jobs
+Test-Step "JOBS API" {
+    $r = curl.exe -sS -f "$BASE/api/jobs"
+    $r
+}
+
+# 4. Organizations
+Test-Step "ORGANIZATIONS API" {
+    $r = curl.exe -sS -f "$BASE/api/organizations"
+    $r
+}
+
+# 5. Login
+Test-Step "LOGIN" {
+    if (!(Test-Path ".\login-test.json")) {
+        throw "login-test.json tidak ditemukan."
+    }
+
+    curl.exe -sS -f `
+        -c $COOKIE `
+        -X POST `
+        -H "Origin: $ORIGIN" `
+        -H "Content-Type: application/json" `
+        --data-binary "@login-test.json" `
+        "$BASE/api/auth/login"
+}
+
+# 6. Authenticated profile
+Test-Step "PROFILE GET AUTHENTICATED" {
+    curl.exe -sS -f `
+        -b $COOKIE `
+        -H "Origin: $ORIGIN" `
+        "$BASE/api/users/me"
+}
+
+# 7. Profile PATCH
+$profileBody = @{
+    name = "Seraiwangi Emas"
+    city = "Johor Bahru"
+    state = "Johor"
+    hometown = "Indonesia"
+    profession = "Pengusaha"
+    interests = @("bisnis", "komunitas", "perantauan")
+    profileVisibility = "COMMUNITY_ONLY"
+    locationVisibility = "CITY"
+} | ConvertTo-Json -Compress
+
+$profileBody | Set-Content ".\autotest-profile.json" -Encoding utf8
+
+Test-Step "PROFILE PATCH" {
+    curl.exe -sS -f `
+        -X PATCH `
+        -b $COOKIE `
+        -H "Origin: $ORIGIN" `
+        -H "Content-Type: application/json" `
+        --data-binary "@autotest-profile.json" `
+        "$BASE/api/users/me"
+}
+
+# 8. Profile read-back
+Test-Step "PROFILE DATABASE READ-BACK" {
+    $r = curl.exe -sS -f `
+        -b $COOKIE `
+        -H "Origin: $ORIGIN" `
+        "$BASE/api/users/me"
+
+    $obj = $r | ConvertFrom-Json
+
+    if ($obj.user.name -ne "Seraiwangi Emas") {
+        throw "Nama profile tidak tersimpan."
+    }
+
+    if ($obj.user.city -ne "Johor Bahru") {
+        throw "City profile tidak tersimpan."
+    }
+
+    if ($obj.user.state -ne "Johor") {
+        throw "State profile tidak tersimpan."
+    }
+
+    if ($obj.user.profileVisibility -ne "COMMUNITY_ONLY") {
+        throw "Profile visibility tidak tersimpan."
+    }
+
+    $r
+}
+
+# 9. Logout
+Test-Step "LOGOUT" {
+    curl.exe -sS -f `
+        -X POST `
+        -b $COOKIE `
+        -H "Origin: $ORIGIN" `
+        "$BASE/api/auth/logout"
+}
+
+# 10. Confirm session invalidated
+Write-Host ""
+Write-Host "[SESSION INVALIDATION]" -ForegroundColor Cyan
+
+$logoutCheck = curl.exe -sS `
+    -o "$env:TEMP\duta-rantau-auth-check.txt" `
+    -w "%{http_code}" `
+    -b $COOKIE `
+    -H "Origin: $ORIGIN" `
+    "$BASE/api/users/me"
+
+if ($logoutCheck -eq "401") {
+    Write-Host "PASS - Session sudah invalid." -ForegroundColor Green
+}
+else {
+    Write-Host "FAIL - Expected 401, got HTTP $logoutCheck" -ForegroundColor Red
+    throw "Session invalidation gagal."
+}
+
+# Cleanup
+Remove-Item ".\autotest-profile.json" -Force -ErrorAction SilentlyContinue
+
+Write-Host ""
+Write-Host "============================================" -ForegroundColor Green
+Write-Host " AUTOTEST SELESAI - SEMUA PASS" -ForegroundColor Green
+Write-Host "============================================" -ForegroundColor Green

@@ -5,3 +5,4 @@ export function TrustBadge({level='official'}:{level?:'official'|'community'|'un
 export function SourceMeta({name,date,url}:{name:string,date:string,url:string}){return <div className="source-meta"><div><span>Sumber</span><b>{name}</b></div><div><span>Terakhir diperiksa</span><b>{new Date(date+'T00:00:00').toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'})}</b></div><a href={url} target="_blank" rel="noreferrer">Buka sumber <ExternalLink size={14}/></a></div>}
 export function EmptyState({title='Data belum tersedia.',description='Belum ada data yang dapat ditampilkan.'}:{title?:string,description?:string}){return <div className="empty"><AlertCircle/><b>{title}</b><p>{description}</p></div>}
 export function LoadingState(){return <div className="loading"><LoaderCircle className="spin"/>Memuat data…</div>}
+
