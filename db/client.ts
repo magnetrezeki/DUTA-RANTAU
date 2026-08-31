@@ -4,7 +4,14 @@ import * as schema from './schema';
 
 const url = process.env.DATABASE_URL;
 
-export const db = url
+const validDatabaseUrl =
+  typeof url === 'string' &&
+  url.length > 0 &&
+  url !== '[SENSITIVE]' &&
+  !url.includes('[SENSITIVE]') &&
+  url.startsWith('postgres');
+
+export const db = validDatabaseUrl
   ? drizzle(
       postgres(url, {
         max: 10,
