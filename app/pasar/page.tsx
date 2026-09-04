@@ -1,21 +1,19 @@
 import { DemoBadge,PageHeader,TrustBadge } from '@/components/ui';
 import { SearchFilter } from '@/components/search-filter';
 import { MapPin,Plus,Utensils,Palette,Package } from 'lucide-react';
+import { products } from '@/db/schema';
+import { withPublicTransaction } from '@/lib/db/identity-bridge';
 
 const icons=[Utensils,Palette,Package];
+
+export const dynamic='force-dynamic';
 
 export const metadata={title:'Pasar Rantau'};
 
 async function getProducts() {
-    const res = await fetch(
-        `/api/marketplace`,
-        { cache: 'no-store' }
-    );
-
-    if (!res.ok) return [];
-
-    const json = await res.json();
-    return json.data ?? [];
+    return await withPublicTransaction(async (tx) => {
+        return await tx.select().from(products);
+    });
 }
 
 export default async function Page() {
@@ -64,5 +62,4 @@ export default async function Page() {
         </div>
     </div>
 }
-
 

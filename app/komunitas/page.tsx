@@ -1,19 +1,17 @@
 import { DemoBadge,PageHeader } from '@/components/ui';
 import { SearchFilter } from '@/components/search-filter';
 import { ArrowRight,Lock,MapPin,Plus,Users } from 'lucide-react';
+import { communities } from '@/db/schema';
+import { withPublicTransaction } from '@/lib/db/identity-bridge';
+
+export const dynamic='force-dynamic';
 
 export const metadata={title:'Kawan Rantau'};
 
 async function getCommunities() {
-    const res = await fetch(
-        `/api/community`,
-        { cache: 'no-store' }
-    );
-
-    if (!res.ok) return [];
-
-    const json = await res.json();
-    return json.data ?? [];
+    return await withPublicTransaction(async (tx) => {
+        return await tx.select().from(communities);
+    });
 }
 
 export default async function Page() {
@@ -68,5 +66,4 @@ export default async function Page() {
         </p>
     </div>
 }
-
 

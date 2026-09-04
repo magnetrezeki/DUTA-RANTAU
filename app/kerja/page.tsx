@@ -1,17 +1,17 @@
 import { DemoBadge,PageHeader,TrustBadge } from '@/components/ui';
 import { SearchFilter } from '@/components/search-filter';
 import { Bookmark,Briefcase,Clock,MapPin,Plus } from 'lucide-react';
+import { jobs } from '@/db/schema';
+import { withPublicTransaction } from '@/lib/db/identity-bridge';
+
+export const dynamic='force-dynamic';
 
 export const metadata={title:'Kerja'};
 
 async function getJobs() {
-    const res = await fetch(
-        `/api/jobs`,
-        { cache: 'no-store' }
-    );
-
-    const json = await res.json();
-    return json.data ?? [];
+    return await withPublicTransaction(async (tx) => {
+        return await tx.select().from(jobs);
+    });
 }
 
 export default async function Page() {
@@ -61,5 +61,4 @@ export default async function Page() {
         </div>
     );
 }
-
 
