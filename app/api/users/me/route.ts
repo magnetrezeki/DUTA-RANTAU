@@ -43,7 +43,25 @@ export async function GET(req: NextRequest) {
 
   const user = await withUserTransaction(auth.user!, async (tx) => {
     const [row] = await tx
-      .select()
+      .select({
+        id: users.id,
+        email: users.email,
+        name: users.name,
+        phone: users.phone,
+        avatarUrl: users.avatarUrl,
+        city: users.city,
+        state: users.state,
+        hometown: users.hometown,
+        profession: users.profession,
+        interests: users.interests,
+        role: users.role,
+        emailVerifiedAt: users.emailVerifiedAt,
+        profileVisibility: users.profileVisibility,
+        locationVisibility: users.locationVisibility,
+        suspendedAt: users.suspendedAt,
+        createdAt: users.createdAt,
+        updatedAt: users.updatedAt,
+      })
       .from(users)
       .where(eq(users.id, auth.user!.id))
       .limit(1);
