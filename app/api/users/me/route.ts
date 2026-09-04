@@ -154,7 +154,7 @@ export async function DELETE(req: NextRequest) {
     await withUserTransaction(auth.user!, async (tx) => {
       await tx.insert(auditLogs).values({
         actorId: auth.user!.id,
-        action: 'account.delete',
+        action: 'account_deletion',
         entityType: 'user',
         entityId: auth.user!.id,
       });
