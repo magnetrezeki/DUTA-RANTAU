@@ -116,7 +116,7 @@ export async function PATCH(req: NextRequest) {
 
       await tx.insert(auditLogs).values({
         actorId: auth.user!.id,
-        action: 'profile.update',
+        action: 'profile_update',
         entityType: 'user',
         entityId: auth.user!.id,
         metadata: {
