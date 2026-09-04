@@ -1,7 +1,28 @@
-import { NextRequest,NextResponse } from 'next/server';import { z } from 'zod';import { appDb } from '@/db/client';import { auditLogs,officialSources as sourceTable } from '@/db/schema';import { officialSources } from '@/lib/demo-data';import { authorizeApi } from '@/lib/auth/api-guard';
-const input=z.object({institution:z.string().trim().min(2).max(160),channel:z.string().trim().min(2).max(80),url:z.string().url().max(1000).refine(v=>v.startsWith('https://'),'URL wajib HTTPS'),category:z.string().trim().min(2).max(500),priority:z.enum(['P0','P1']),lastChecked:z.coerce.date()});
-export async function GET(){return NextResponse.json({data:officialSources,meta:{count:officialSources.length,source:'Dokumen data KBRI KJRI yang diberikan',lastChecked:'2026-08-16'}});}
-export async function POST(req:NextRequest){if(!appDb)return NextResponse.json({error:'Database belum dikonfigurasi.'},{status:503});const auth=await authorizeApi(req,'EDITOR');if(auth.response)return auth.response;try{const data=input.parse(await req.json());const [row]=await appDb.insert(sourceTable).values({...data,trustLevel:'OFFICIAL_VERIFIED',active:true}).returning();await appDb.insert(auditLogs).values({actorId:auth.user!.id,action:'source.create',entityType:'official_source',entityId:row.id,metadata:{url:row.url}});return NextResponse.json({data:row},{status:201});}catch{return NextResponse.json({error:'Data sumber tidak valid.'},{status:400});}}
+﻿import { NextResponse } from "next/server";
+import { eq } from "drizzle-orm";
+import { officialSources } from "@/db/schema";
+import { withPublicTransaction } from "@/lib/db/identity-bridge";
 
+export async function GET() {
+  try {
+    const data = await withPublicTransaction(async (tx) =>
+      tx
+        .select()
+        .from(officialSources)
+        .where(eq(officialSources.active, true))
+        .orderBy(officialSources.lastChecked),
+    );
 
-
+    return NextResponse.json({
+      data,
+      meta: {
+        count: data.length,
+      },
+    });
+  } catch {
+    return NextResponse.json(
+      { error: "Data sumber belum tersedia" },
+      { status: 503 },
+    );
+  }
+}

@@ -1,4 +1,73 @@
-import { NextRequest,NextResponse } from 'next/server';import { getCurrentUser } from './session';import type { UserRole } from '@/types';import { hasRole } from './authorization';
-export function verifySameOrigin(req:NextRequest){const origin=req.headers.get('origin');const host=req.headers.get('x-forwarded-host')??req.headers.get('host');if(!origin||!host)return process.env.NODE_ENV!=='production';try{return new URL(origin).host===host}catch{return false}}
-export async function authorizeApi(req:NextRequest,minimum:UserRole='USER'){if(!verifySameOrigin(req))return {user:null,response:NextResponse.json({error:'Origin permintaan tidak valid.'},{status:403})};const user=await getCurrentUser();if(!user)return {user:null,response:NextResponse.json({error:'Silakan masuk untuk melanjutkan.'},{status:401})};if(!hasRole(user.role as UserRole,minimum))return {user:null,response:NextResponse.json({error:'Anda tidak memiliki izin.'},{status:403})};return {user,response:null};}
+﻿import { NextRequest, NextResponse } from "next/server";
+import { getCurrentUser } from "./session";
+import type { UserRole } from "@/types";
+import { hasRole } from "./authorization";
+import { createVerifiedAppUser } from "./verified-user";
 
+export function verifySameOrigin(req: NextRequest) {
+  const origin = req.headers.get("origin");
+  const host =
+    req.headers.get("x-forwarded-host") ??
+    req.headers.get("host");
+
+  if (!origin || !host) {
+    return process.env.NODE_ENV !== "production";
+  }
+
+  try {
+    return new URL(origin).host === host;
+  } catch {
+    return false;
+  }
+}
+
+export async function authorizeApi(
+  req: NextRequest,
+  minimum: UserRole = "USER",
+) {
+  if (!verifySameOrigin(req)) {
+    return {
+      user: null,
+      response: NextResponse.json(
+        { error: "Origin permintaan tidak valid." },
+        { status: 403 },
+      ),
+    };
+  }
+
+  const user = await getCurrentUser();
+
+  if (!user) {
+    return {
+      user: null,
+      response: NextResponse.json(
+        { error: "Silakan masuk untuk melanjutkan." },
+        { status: 401 },
+      ),
+    };
+  }
+
+  if (!hasRole(user.role as UserRole, minimum)) {
+    return {
+      user: null,
+      response: NextResponse.json(
+        { error: "Anda tidak memiliki izin." },
+        { status: 403 },
+      ),
+    };
+  }
+
+  const verifiedUser = createVerifiedAppUser({
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    city: user.city,
+    state: user.state,
+  });
+
+  return {
+    user: verifiedUser,
+    response: null,
+  };
+}

@@ -1,7 +1,18 @@
-import { NextRequest,NextResponse } from 'next/server';import { z } from 'zod';import { appDb } from '@/db/client';import { jobs,auditLogs } from '@/db/schema';import { demoJobs } from '@/lib/demo-data';import { authorizeApi } from '@/lib/auth/api-guard';
-const input=z.object({title:z.string().trim().min(3).max(140),employer:z.string().trim().min(2).max(140),description:z.string().trim().min(20).max(5000),city:z.string().max(100).optional(),state:z.string().max(100).optional(),employmentType:z.enum(['FULL_TIME','PART_TIME','FREELANCE','INTERNSHIP','PROFESSIONAL','BUSINESS_OPPORTUNITY']),salaryText:z.string().max(100).optional(),requirements:z.string().max(3000).optional(),language:z.string().max(200).optional(),applicationMethod:z.string().max(500).optional()});
-export async function GET(){return NextResponse.json({data:demoJobs,demo:true});}
-export async function POST(req:NextRequest){if(!appDb)return NextResponse.json({error:'Database belum dikonfigurasi.'},{status:503});const auth=await authorizeApi(req);if(auth.response)return auth.response;try{const data=input.parse(await req.json());const [job]=await appDb.transaction(async tx=>{const rows=await tx.insert(jobs).values({...data,ownerId:auth.user!.id,recordStatus:'PENDING',trustLevel:'USER_GENERATED'}).returning();await tx.insert(auditLogs).values({actorId:auth.user!.id,action:'job.create',entityType:'job',entityId:rows[0].id});return rows});return NextResponse.json({data:job},{status:201});}catch{return NextResponse.json({error:'Data lowongan tidak valid.'},{status:400});}}
+import { NextResponse } from "next/server";
+import { jobs } from "@/db/schema";
+import { withPublicTransaction } from "@/lib/db/identity-bridge";
 
+export async function GET() {
+  try {
+    const data = await withPublicTransaction(async (tx) => {
+      return await tx.select().from(jobs);
+    });
 
-
+    return NextResponse.json({ data });
+  } catch {
+    return NextResponse.json(
+      { error: "Data lowongan belum tersedia" },
+      { status: 503 }
+    );
+  }
+}

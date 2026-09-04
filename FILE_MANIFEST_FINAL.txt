@@ -1,0 +1,34 @@
+DUTA-RANTAU FINAL PHASE 4 HARDENING PATCH MANIFEST
+BASE_COMMIT: c41f365
+FINAL_COMMIT: 803b255
+
+STATUS | SHA256 | PATH
+------ | ------ | ----
+M | ca18e184d1e71f677b250527d8bc0448abb3bbac74df7a7546e91ffa643bf090 | PHASE3_FILE_MANIFEST.txt
+M | dd691ccdb9479d18a86118a5d5c858e709c4a9ab61b0f9db388e06164739f2ec | PHASE3_RUNBOOK.md
+M | eb52df01a0fe0c7a2ed8e44498e61cf22dbbf0901b0bfc642ba4f2210f73eaf3 | PHASE3_SECURITY_REVIEW.md
+M | e7cc58348dbda68b439c2776f3d0856ee4ccdfabb2b98457e13593a61ca36090 | PHASE4_DEMO_AUDIT.md
+A | 3a64915b30a41d7936c8c5aae3a282e176e5dd92c0023099cc00ad63ff1a91c6 | PHASE4_RLS_ATTACK_TEST_REPORT.md
+A | 3c1926d8e43e9294a24b430975baa826cfa5103f7f9bf542d8faac95f9fefe53 | PHASE4_WINDOWS_RUNBOOK.md
+M | 7e8a156cb4b1c91de1c673ca2970faa67a7406eeab9575b03e3b84c105fced91 | PHASE_3A_ARTIFACT_REPORT.md
+M | 778e89b5b73a6d5554b5b590ea39ee7f623f84b56d4d48b5fbf7ae3bdac04edc | app/admin/content/page.tsx
+M | c03c0effdb8a0c3944340eda1ef67e0194d26fe645ceb3bf4730612b48aa1b02 | app/api/admin/organizations/route.ts
+M | debcdd0059c76d0bd933155027352596176ce41186f5af8086be04ed4feccc7e | components/admin-content-manager.tsx
+M | 1f6a626cc228ce47dbdb0738e67d40361c943c252306e9fe56214cb4c10e406a | db/migrations/0008_phase4_real_content_rls.sql
+A | 1abfc72becffd148082facc414cbfe4a4952d95724242da2f9c9408a270abe8d | db/migrations/0009_organization_archival_workflow.sql
+M | 1fdb1a101d4fa24339c5ff52a0cac706945e6ae0872469b8c890e18ca00c6e12 | db/migrations/meta/_journal.json
+A | 42ff4456c423cab4048a6c4acbfc5b3d4585963cf6166c92aac6a18a971e06a3 | db/supabase-phase4-organization-archival.sql
+M | 6caf04cccdc322170f616e01b8b27c5c4c900eb1b7dcf3428aafd097fc2e9981 | phase3_apply_local.ps1
+M | 987d708b34372ac84a8f83be5ffe775fc9bd8cc80b9895ef64ed298a6bfbf6e4 | phase3_rollback.sql
+M | 447c62b7640d8569fd7fa6dbe2e88b8c11de8d445a08f1ddf4e7a9045dda5804 | phase3_verification.sql
+M | e282763bad11acfab9190278c0902b5596883de9221ca2b1bec6c490986dd0cb | scripts/security/phase3_attack_matrix.sql
+M | 447c62b7640d8569fd7fa6dbe2e88b8c11de8d445a08f1ddf4e7a9045dda5804 | scripts/security/phase3_verify_local.sql
+M | 88974ab6860cd1d3c3c4d4d2181a68ff208abdd54dfbf14801fbf08a1dc7677a | tests/phase4-production.test.ts
+A | ffd22bc728989c384b18dbd3360dda3663a58ede5a20cfb50880b734ed1dd97f | CHANGELOG_FINAL.md
+A | 754aa74775e5b52930f8ab047299a5ce75a91e65452169354f404230b1e35f75 | FINAL_HARDENING.patch
+
+SELF | NOT_SELF_HASHED | FILE_MANIFEST_FINAL.txt (self-referential hash intentionally omitted)
+
+ARCHIVE SCOPE: every modified/created path in c41f365..803b255, plus this changelog, this manifest, and FINAL_HARDENING.patch.
+DATABASE_EXECUTED: NO
+PRODUCTION_TOUCHED: NO

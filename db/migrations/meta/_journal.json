@@ -29,6 +29,48 @@
       "when": 1786898937733,
       "tag": "0003_stiff_sunspot",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1787036103000,
+      "tag": "0004_phase1a_identity_bridge_rls",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1787968300537,
+      "tag": "0005_membership_organization_registration",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1787968301000,
+      "tag": "0006_membership_organization_registration_rls",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1788189382794,
+      "tag": "0007_member_face_verification",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1788190000000,
+      "tag": "0008_phase4_real_content_rls",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1788191000000,
+      "tag": "0009_organization_archival_workflow",
+      "breakpoints": true
     }
   ]
 }

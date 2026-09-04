@@ -1,2 +1,63 @@
-import { demoJobs } from '@/lib/demo-data';import { DemoBadge,PageHeader,TrustBadge } from '@/components/ui';import { SearchFilter } from '@/components/search-filter';import { Bookmark,Briefcase,Clock,MapPin,Plus } from 'lucide-react';export const metadata={title:'Kerja'};export default function Page(){return <div className="page"><PageHeader eyebrow="PELUANG UNTUK PERANTAU" title="Temukan pekerjaan" description="Jelajahi lowongan komunitas. Status verifikasi selalu ditampilkan dengan jelas." action={<button className="primary"><Plus/>Pasang lowongan</button>}/><SearchFilter placeholder="Posisi, perusahaan, atau lokasi…"/><div className="content-layout"><div className="cards-list jobs">{demoJobs.map(x=><article className="job-card" key={x.id}><div className="job-logo"><Briefcase/></div><div className="job-main"><div className="badge-row"><DemoBadge/><TrustBadge level={x.verification==='UNVERIFIED'?'unverified':'community'}/></div><h2>{x.title}</h2><b>{x.employer}</b><div className="meta"><span><MapPin/>{x.location}</span><span><Clock/>{x.type}</span></div>{x.salary&&<p className="salary">{x.salary}</p>}</div><button className="icon-btn" aria-label="Simpan"><Bookmark/></button></article>)}</div><aside className="safe-panel"><h3>Tips aman mencari kerja</h3><ul><li>Periksa identitas pemberi kerja.</li><li>Jangan membayar biaya tanpa dasar yang jelas.</li><li>Pastikan syarat kerja dari pihak berwenang.</li></ul><p>DUTA RANTAU bukan agen pekerjaan.</p></aside></div></div>}
+import { DemoBadge,PageHeader,TrustBadge } from '@/components/ui';
+import { SearchFilter } from '@/components/search-filter';
+import { Bookmark,Briefcase,Clock,MapPin,Plus } from 'lucide-react';
 
+export const metadata={title:'Kerja'};
+
+async function getJobs() {
+    const res = await fetch(
+        `${process.env.NEXT_PUBLIC_APP_URL}/api/jobs`,
+        { cache: 'no-store' }
+    );
+
+    const json = await res.json();
+    return json.data ?? [];
+}
+
+export default async function Page() {
+
+    const jobs = await getJobs();
+
+    return (
+        <div className="page">
+            <PageHeader
+                eyebrow="PELUANG UNTUK PERANTAU"
+                title="Temukan pekerjaan"
+                description="Jelajahi lowongan komunitas."
+                action={<button className="primary"><Plus/>Pasang lowongan</button>}
+            />
+
+            <SearchFilter placeholder="Posisi, perusahaan, atau lokasi…" />
+
+            <div className="content-layout">
+                <div className="cards-list jobs">
+                    {jobs.map((x:any)=>
+                        <article className="job-card" key={x.id}>
+                            <div className="job-logo"><Briefcase/></div>
+
+                            <div className="job-main">
+                                <div className="badge-row">
+                                    <DemoBadge/>
+                                    <TrustBadge/>
+                                </div>
+
+                                <h2>{x.title}</h2>
+
+                                <b>{x.employer}</b>
+
+                                <div className="meta">
+                                    <span><MapPin/>{x.city}</span>
+                                    <span><Clock/>{x.employmentType}</span>
+                                </div>
+                            </div>
+
+                            <button className="icon-btn">
+                                <Bookmark/>
+                            </button>
+                        </article>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+}

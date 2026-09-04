@@ -1,19 +1,29 @@
-import postgres from 'postgres';
+﻿import postgres from 'postgres';
 import { drizzle } from 'drizzle-orm/postgres-js';
 import * as schema from './schema';
 
-const url = process.env.DATABASE_URL;
+function requireDatabaseUrl(name: 'APP_DATABASE_URL' | 'SYSTEM_DATABASE_URL') {
+  const value = process.env[name];
 
-const validDatabaseUrl =
-  typeof url === 'string' &&
-  url.length > 0 &&
-  url !== '[SENSITIVE]' &&
-  !url.includes('[SENSITIVE]') &&
-  url.startsWith('postgres');
+  if (
+    typeof value !== 'string' ||
+    value.length === 0 ||
+    value === '[SENSITIVE]' ||
+    value.includes('[SENSITIVE]') ||
+    !value.startsWith('postgres')
+  ) {
+    return null;
+  }
 
-export const db = validDatabaseUrl
+  return value;
+}
+
+const appUrl = requireDatabaseUrl('APP_DATABASE_URL');
+const systemUrl = requireDatabaseUrl('SYSTEM_DATABASE_URL');
+
+export const appDb = appUrl
   ? drizzle(
-      postgres(url, {
+      postgres(appUrl, {
         max: 10,
         prepare: false,
       }),
@@ -21,8 +31,18 @@ export const db = validDatabaseUrl
     )
   : null;
 
-// Compatibility exports
-export const appDb = db;
-export const systemDb = db;
+export const systemDb = systemUrl
+  ? drizzle(
+      postgres(systemUrl, {
+        max: 5,
+        prepare: false,
+      }),
+      { schema }
+    )
+  : null;
+
+// Compatibility export.
+// Deliberately does NOT fall back to DATABASE_URL.
+export const db = appDb;
 
 export type AppTransaction = any;

@@ -1,48 +1,51 @@
+import { officialSources as officialSourcesTable } from "../db/schema";
+import { appDb } from "../db/client";
+import { eq } from "drizzle-orm";
 
+type SeedSource = {
+  institution: string;
+  channel: string;
+  url: string;
+  category: string;
+  priority: string;
+  trustLevel: "OFFICIAL_VERIFIED";
+  lastChecked: Date;
+  checksum?: string;
+  active: boolean;
+};
 
-
-import { appDb } from '../db/client';
-import { officialSources as table } from '../db/schema';
-import { officialSources } from '../lib/demo-data';
+const officialSources: SeedSource[] = [];
 
 async function main() {
-if (!appDb) {
-throw new Error('DATABASE_URL is required');
+  if (!appDb) {
+    throw new Error("APP_DATABASE_URL is not configured");
+  }
+
+  if (officialSources.length === 0) {
+    console.log(
+      "No static official-source dataset is configured. Database seed skipped safely.",
+    );
+    return;
+  }
+
+  for (const source of officialSources) {
+    const existing = await appDb
+      .select({ id: officialSourcesTable.id })
+      .from(officialSourcesTable)
+      .where(eq(officialSourcesTable.url, source.url))
+      .limit(1);
+
+    if (existing.length > 0) {
+      continue;
+    }
+
+    await appDb.insert(officialSourcesTable).values(source);
+  }
+
+  console.log(`Seeded ${officialSources.length} official sources.`);
 }
 
-for (const source of officialSources) {
-await appDb
-.insert(table)
-.values({
-institution: source.institution,
-channel: source.channel,
-url: source.url,
-category: source.category,
-priority: source.priority,
-trustLevel: 'OFFICIAL_VERIFIED',
-lastChecked: new Date(source.lastChecked + 'T00:00:00Z'),
-active: true,
-})
-.onConflictDoUpdate({
-target: table.url,
-set: {
-institution: source.institution,
-channel: source.channel,
-category: source.category,
-priority: source.priority,
-lastChecked: new Date(source.lastChecked + 'T00:00:00Z'),
-active: true,
-updatedAt: new Date(),
-},
-});
-}
-
-console.log(`Imported ${officialSources.length} verified official channels.`);
-}
-
-main()
-.then(() => process.exit(0))
-.catch((error) => {
-console.error(error);
-process.exit(1);
+main().catch((error) => {
+  console.error(error);
+  process.exit(1);
 });

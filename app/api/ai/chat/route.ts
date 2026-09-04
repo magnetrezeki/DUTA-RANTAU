@@ -6,7 +6,6 @@ const input=z.object({message:z.string().trim().min(2).max(1000),location:z.stri
 export async function POST(req:NextRequest){
  const ip=req.headers.get('x-forwarded-for')?.split(',')[0]??'local';
  if(!rateLimit(`ai:${ip}`,15).ok)return NextResponse.json({error:'Terlalu banyak permintaan. Coba lagi sebentar.'},{status:429});
- try{const body=input.parse(await req.json());return NextResponse.json(answerQuestion(body.message,body.location));}
+ try{const body=input.parse(await req.json());return NextResponse.json(await answerQuestion(body.message,body.location));}
  catch{return NextResponse.json({error:'Pertanyaan tidak valid.'},{status:400});}
 }
-

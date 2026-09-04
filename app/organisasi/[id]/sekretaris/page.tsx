@@ -1,1 +1,58 @@
-import Link from 'next/link';import { notFound } from 'next/navigation';import { ArrowLeft,Sparkles } from 'lucide-react';import { demoOrganizations } from '@/lib/demo-data';import { DemoBadge } from '@/components/ui';import { SecretaryWorkspace } from '@/components/secretary-workspace';export async function generateStaticParams(){return demoOrganizations.map(x=>({id:x.id}))}export async function generateMetadata(){return {title:'Sekretaris Digital & Publikasi'}}export default async function Page({params}:{params:Promise<{id:string}>}){const {id}=await params;const org=demoOrganizations.find(x=>x.id===id);if(!org)notFound();return <div className="page secretary-page"><Link href={`/organisasi/${id}`} className="back"><ArrowLeft/>Kembali ke Kantor Digital</Link><header className="secretary-head"><div><DemoBadge/><span className="eyebrow">STAF KOMUNIKASI VIRTUAL</span><h1>Sekretaris Digital & Publikasi</h1><p>{org.name} · Dokumen, materi komunikasi, dan ringkasan rapat dalam satu ruang kerja.</p></div><span className="plan-pill"><Sparkles/>ORGANISASI PRO · DEMO</span></header><SecretaryWorkspace organizationName={org.name.replace(' (DEMO)','')} plan="PRO"/></div>}
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { ArrowLeft, Sparkles } from "lucide-react";
+import { SecretaryWorkspace } from "@/components/secretary-workspace";
+import { getOrganization } from "@/lib/services/organizations";
+
+export const dynamic = "force-dynamic";
+
+export async function generateMetadata() {
+  return {
+    title: "Sekretaris Digital & Publikasi",
+  };
+}
+
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  const org = await getOrganization(id);
+
+  if (!org || org.recordStatus !== "ACTIVE") {
+    notFound();
+  }
+
+  return (
+    <div className="page secretary-page">
+      <Link href={`/organisasi/${id}`} className="back">
+        <ArrowLeft />
+        Kembali ke Kantor Digital
+      </Link>
+
+      <header className="secretary-head">
+        <div>
+          <span className="eyebrow">STAF KOMUNIKASI VIRTUAL</span>
+
+          <h1>Sekretaris Digital & Publikasi</h1>
+
+          <p>
+            {org.name} · Dokumen, materi komunikasi, dan ringkasan rapat
+            dalam satu ruang kerja.
+          </p>
+        </div>
+
+        <span className="plan-pill">
+          <Sparkles />
+          ORGANISASI PRO
+        </span>
+      </header>
+
+      <SecretaryWorkspace
+        organizationName={org.name}
+        plan="PRO"
+      />
+    </div>
+  );
+}
