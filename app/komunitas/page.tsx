@@ -6,7 +6,7 @@ export const metadata={title:'Kawan Rantau'};
 
 async function getCommunities() {
     const res = await fetch(
-        `${process.env.NEXT_PUBLIC_APP_URL}/api/community`,
+        `/api/community`,
         { cache: 'no-store' }
     );
 
@@ -68,3 +68,4 @@ export default async function Page() {
         </p>
     </div>
 }
+

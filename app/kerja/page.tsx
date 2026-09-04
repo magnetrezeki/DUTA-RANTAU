@@ -6,7 +6,7 @@ export const metadata={title:'Kerja'};
 
 async function getJobs() {
     const res = await fetch(
-        `${process.env.NEXT_PUBLIC_APP_URL}/api/jobs`,
+        `/api/jobs`,
         { cache: 'no-store' }
     );
 
@@ -61,3 +61,4 @@ export default async function Page() {
         </div>
     );
 }
+

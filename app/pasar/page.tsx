@@ -8,7 +8,7 @@ export const metadata={title:'Pasar Rantau'};
 
 async function getProducts() {
     const res = await fetch(
-        `${process.env.NEXT_PUBLIC_APP_URL}/api/marketplace`,
+        `/api/marketplace`,
         { cache: 'no-store' }
     );
 
@@ -64,3 +64,4 @@ export default async function Page() {
         </div>
     </div>
 }
+
