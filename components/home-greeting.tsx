@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useState } from 'react'
 
@@ -62,7 +62,7 @@ export function HomeGreeting() {
     return (
       <>
         <span className="eyebrow">-</span>
-        <h1>Selamat datang, <em>Kawan Rantau</em> ??</h1>
+        <h1>Selamat datang, <em>Kawan Rantau</em> <img src="/arti_ikon-duta.png" alt="DUTA" width="36" height="36" style={{ width: "36px", height: "36px", display: "inline-block", verticalAlign: "middle" }} /></h1>
       </>
     )
   }
@@ -70,7 +70,9 @@ export function HomeGreeting() {
   return (
     <>
       <span className="eyebrow">{now.date}</span>
-      <h1>{now.greeting}, <em>Kawan Rantau</em> ??</h1>
+      <h1>{now.greeting}, <em>Kawan Rantau</em> <img src="/arti_ikon-duta.png" alt="DUTA" width="36" height="36" style={{ width: "36px", height: "36px", display: "inline-block", verticalAlign: "middle" }} /></h1>
     </>
   )
 }
+
+
