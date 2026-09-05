@@ -1,11 +1,12 @@
-import { NextRequest, NextResponse } from 'next/server';
+﻿import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { appDb } from '@/db/client';
 import { auditLogs, users } from '@/db/schema';
 import { authorizeApi } from '@/lib/auth/api-guard';
 import { destroySession } from '@/lib/auth/session';
 import { withUserTransaction } from '@/lib/db/identity-bridge';
+import { createSupabaseAdminClient } from '@/lib/supabase/admin';
 
 const patch = z.object({
   name: z.string().trim().min(2).max(100).optional(),
@@ -150,19 +151,47 @@ export async function DELETE(req: NextRequest) {
     return auth.response;
   }
 
+  const admin = createSupabaseAdminClient();
+
+  if (!admin) {
+    return NextResponse.json(
+      { error: 'Konfigurasi penghapusan akun belum tersedia.' },
+      { status: 503 },
+    );
+  }
+
+  const userId = auth.user!.id;
+
   try {
     await withUserTransaction(auth.user!, async (tx) => {
       await tx.insert(auditLogs).values({
-        actorId: auth.user!.id,
+        actorId: userId,
         action: 'account_deletion',
         entityType: 'user',
-        entityId: auth.user!.id,
+        entityId: userId,
       });
 
-      await tx
-        .delete(users)
-        .where(eq(users.id, auth.user!.id));
+      const result = await tx.execute(
+        sql`select public.delete_current_app_user() as deleted`
+      );
+
+      if (!result[0]?.deleted) {
+        throw new Error('ACCOUNT_DELETE_FAILED');
+      }
     });
+
+    const { error: authDeleteError } =
+      await admin.auth.admin.deleteUser(userId);
+
+    if (authDeleteError) {
+      return NextResponse.json(
+        {
+          error:
+            'Data aplikasi sudah dihapus, tetapi akun autentikasi belum berhasil dihapus. Silakan hubungi administrator.',
+        },
+        { status: 502 },
+      );
+    }
 
     await destroySession();
 
