@@ -11,3 +11,6 @@ coverage
 .env*
 
 supabase/.temp/
+
+/cookies.txt
+/autotest-cookies.txt

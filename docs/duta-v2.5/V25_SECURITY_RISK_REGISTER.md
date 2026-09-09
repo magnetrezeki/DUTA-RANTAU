@@ -1,0 +1,23 @@
+# DUTA RANTAU v2.5 Security Risk Register
+
+| ID | Risk | Severity | Evidence | Required action |
+| --- | --- | --- | --- | --- |
+| RLS-01 | Broad content and organisation policies rely on identity-bridge role helpers. | Critical | `0008_phase4_real_content_rls.sql`, `0009_organization_archival_workflow.sql` | Verify with normal synthetic hosted accounts. |
+| RLS-02 | Organisation membership and owner/admin assignment coverage is incomplete in repository-visible current policies. | Critical | Schema has `organization_members`; complete deployed RLS chain is not established. | Verify direct-client self-escalation and cross-organisation denial in a later authorized phase. |
+| RLS-03 | Policy history contains superseded definitions and the migration chain is inconsistent. | High | Day 0.6D-2 migration reconciliation; migrations `0019` and `0021`. | Prove hosted project identity and deployed policy inventory before testing. |
+| RLS-04 | Audit-log insertion paths depend on actor identity and role propagation. | High | `0008`, `0009`, `0019`, `0021`; `security-audit.ts`. | Verify actor spoofing is denied with a test account. |
+| RLS-05 | Profile own-row policy needs hosted direct-client confirmation. | High | `0015_runtime_users_rls.sql`, `0018_runtime_users_self_update.sql`. | Verify own allow and cross-user denial. |
+| RLS-06 | Organisation-scoped documents, meetings, and transcripts rely partly on application helper checks. | High | organisation route handlers and `organization-access.ts`. | Verify RLS against direct authenticated requests. |
+| PUB-01 | Public-content predicates may expose rows if deployed state differs from intended migration. | Medium | `0013`, `0016`, `0017`. | Verify public allow and unpublished/inactive deny. |
+| AUTH-01 | Server admin capability must remain isolated from browser configuration. | Medium | `lib/supabase/admin.ts`, server and browser clients. | Confirm only server-side deployment configuration carries admin capability. |
+| AUTH-02 | Account deletion deployment state is uncertain. | Medium | `0022_account_deletion_function.sql`; incomplete migration chronology. | Review separately with synthetic account only. |
+| CRED-01 | Credential rotation and session revocation are unresolved. | Medium | Day 0.6A-5 readiness record. | Complete hosted ownership verification and rotation plan. |
+| HIST-01 | Historical Git secret exposure remains. | Low | Day 0.6A containment records. | Defer history cleanup until rotation and baseline stabilization. |
+| TEST-01 | Local bootstrap validates only a narrow source-query RLS model. | Low | Day 0.6D-3/4 records. | Do not treat local result as hosted authorization proof. |
+| ENV-01 | Repository configuration identifies a Supabase project but does not classify it as production, staging, preview, or test. | High | Day 0.6E-1.5 local configuration review; `vercel.json` has no environment mapping. | Require owner confirmation and abort on identity mismatch before hosted tests. |
+| ENV-02 | No repository fixture safely identifies owned synthetic hosted test accounts or separated data. | High | Day 0.6E-1.5 fixture review. | Create or identify owner-controlled synthetic accounts only in a later authorized phase. |
+| ENV-03 | A Vercel Preview scope could be misconfigured with the V1 production Supabase URL or key. | Critical | Day 0.6E-1.6 target mapping; no repository-enforced Vercel environment mapping. | Require exact staging-hostname validation for every Preview-scoped value. |
+| ENV-04 | Empty staging has no reviewed schema for database-backed authorization verification. | High | Day 0.6E-1.6 staging-state analysis and inconsistent migration chronology. | Design a minimal staging-only security-test schema before setting database connection variables. |
+| RLS-06 | Organisation membership write paths can permit privilege escalation unless ordinary users have no membership-write policy. | Critical | Day 0.6E-1.7 minimal schema design and prior organisation authorization finding. | Test default denial of self-admin, self-owner, and peer membership changes in staging. |
+| RLS-STG-01 | Isolated staging authorization, escalation, and audit-boundary model. | Resolved for staging fixture | DAY0_6E_FINAL_SECURITY_SIGNOFF.md; 17/17 authenticated API subchecks and Gate B restoration PASS. | Keep this evidence scoped to the isolated staging fixture; it does not resolve production policy risks. |
+| RLS-07 | Direct hosted requests need `auth.uid()`-based policies; local identity-bridge helpers do not prove hosted enforcement. | High | Day 0.6E-1.7 identity-model analysis. | Use a staging-only direct-client verification schema with ordinary synthetic users. |
