@@ -1,4 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
+import console from 'node:console';
+import process from 'node:process';
 import { pathToFileURL } from 'node:url';
 
 export function classify(e) {
@@ -85,10 +87,11 @@ export async function main(){
      const r=await request(c.from(t).select('*').match(f));
      const after=await snapshot(owner,t,f);
      add(n,'User A',expected,rows(expected,r,f,{},JSON.stringify(before)===JSON.stringify(after)));
-   };
-   const write=async(n,actor,c,owner,t,f,values,expected)=>{
-     const before=await snapshot(owner,t,f);baseline.push({owner,t,f,before});
-     try{
+  };
+  const write=async(n,actor,c,owner,t,f,values,expected)=>{
+    const before=await snapshot(owner,t,f);baseline.push({owner,t,f,before});
+    let restorationError;
+    try{
        const r=await request(c.from(t).update(values).match(f).select('*'));
        const after=await snapshot(owner,t,f),same=JSON.stringify(before)===JSON.stringify(after);
        let actual=rows(expected,r,f,values,same);
@@ -101,11 +104,12 @@ export async function main(){
          if(JSON.stringify(before)!==JSON.stringify(after)){
            const restore=Object.fromEntries(Object.keys(values).map(k=>[k,before[k]]));
            const r=await request(owner.from(t).update(restore).match(f).select('*'));
-           if(rows('ALLOW',r,f,restore)!=='ALLOW'||JSON.stringify(await snapshot(owner,t,f))!==JSON.stringify(before))throw new Error('Restore failed');
+            if(rows('ALLOW',r,f,restore)!=='ALLOW'||JSON.stringify(await snapshot(owner,t,f))!==JSON.stringify(before)){cleanup='FAIL';restorationError=new Error('Manual restoration required');}
          }
-       }catch{cleanup='FAIL';throw new Error('Manual restoration required')}
-     }
-   };
+        }catch{cleanup='FAIL';restorationError=new Error('Manual restoration required')}
+      }
+      if(restorationError)throw restorationError;
+    };
    await read('T01',a,a,'profiles',{id:ids.a},'ALLOW');
    await read('T02',a,b,'profiles',{id:ids.b},'RLS_DENY');
    cleanup='PASS_FOR_REVERSIBLE_WRITES';
@@ -131,13 +135,15 @@ export async function main(){
        // remains pending the exact SQL Editor inspection because SELECT is denied.
        add(n,'User A',expected,r.error?classify(r.error):expected==='ALLOW'?'ALLOW':'UNEXPECTED_ALLOW');
    }
-   const before=await snapshot(b,'jobs',{id:ids.jobB});
+    const before=await snapshot(b,'jobs',{id:ids.jobB});
+    void before;
    const deletion=await request(a.from('jobs').delete().eq('id',ids.jobB).select('*'));
    if(!deletion.error&&Array.isArray(deletion.data)&&deletion.data.length){
    add('T12_DELETE_JOB','User A','GRANT_DENY','UNEXPECTED_ALLOW');cleanup='FAIL';
      throw new Error('Manual restoration required');
    }
-   const after=await snapshot(b,'jobs',{id:ids.jobB});
+    const after=await snapshot(b,'jobs',{id:ids.jobB});
+    void after;
    add('T12_DELETE_JOB','User A','GRANT_DENY',deletion.error?classify(deletion.error):'API_FAILURE');
    for(const s of baseline)if(JSON.stringify(await snapshot(s.owner,s.t,s.f))!==JSON.stringify(s.before))throw new Error('Baseline mismatch');
    postcheck='VISIBLE_ROWS_UNCHANGED_AUDIT_PENDING_MANUAL';
