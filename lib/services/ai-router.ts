@@ -3,6 +3,27 @@ import { getAIProvider } from "@/lib/services/ai-provider";
 import { runDutaTool } from "@/lib/services/duta-tools";
 import { officialEmergencyOffices } from "@/lib/official-emergency-data";
 
+function hasPurpose(contact: { label: string; purpose: string }, pattern: RegExp) {
+  return pattern.test(`${contact.label} ${contact.purpose}`);
+}
+
+export function formatOfficialAnswer(
+  office: (typeof officialEmergencyOffices)[number],
+  message: string,
+) {
+  const protection = office.contacts.find((contact) => hasPurpose(contact, /perlindungan|pengaduan|wni|ksatria/i));
+  const main = office.contacts.find((contact) => contact !== protection && hasPurpose(contact, /kantor|umum|informasi|pertanyaan/i));
+  const location = `${office.institution} berada di ${office.city}, ${office.region}. Alamat lengkap belum tersedia dalam data DUTA yang telah diverifikasi.`;
+  const mainContact = main ? ` Kontak utama: ${main.label}: ${main.number}.` : ' Kontak utama belum tersedia dalam data DUTA yang telah diverifikasi.';
+  const protectionContact = protection ? ` Perlindungan WNI: ${protection.label}: ${protection.number}.` : ' Kontak perlindungan WNI belum tersedia dalam data DUTA yang telah diverifikasi.';
+
+  if (/biaya|tarif|fee/.test(message.toLowerCase())) {
+    return `Biaya layanan yang terkini belum tersedia dalam data DUTA yang telah diverifikasi. ${location}${mainContact}${protectionContact}`;
+  }
+
+  return `${location}${mainContact}${protectionContact}`;
+}
+
 export type Intent =
   | "OFFICIAL_SERVICE"
   | "JOB_SEARCH"
@@ -67,8 +88,7 @@ export async function answerQuestion(
 
     const sources = await getOfficialSourcesForInstitution(institution).catch(() => []);
     const office = officialEmergencyOffices.find((item) => item.institution === institution);
-    const contact = office?.contacts[0];
-    const knownFacts = office ? office.institution + " berada di " + office.city + ", " + office.region + "." + (contact ? " Kontak " + contact.label + ": " + contact.number + "." : "") : "";
+    const knownFacts = office ? formatOfficialAnswer(office, message) : "";
 
     return {
       intent,

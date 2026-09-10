@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { answerQuestion, detectIntent } from "../lib/services/ai-router";
+import { answerQuestion, detectIntent, formatOfficialAnswer } from "../lib/services/ai-router";
+import { officialEmergencyOffices } from "../lib/official-emergency-data";
 
 describe("AI router", () => {
   it("routes official questions", () =>
@@ -11,6 +12,23 @@ describe("AI router", () => {
     const response = await answerQuestion("Di mana KBRI Indonesia di Malaysia?");
     expect(response.answer).toContain("KBRI Kuala Lumpur berada di Kuala Lumpur");
     expect(response.steps.join(" ")).toContain("belum tervalidasi");
+  });
+
+  it("distinguishes a verified WNI protection contact from an unavailable main contact", () => {
+    const office = officialEmergencyOffices.find((item) => item.id === "kbri-kl");
+
+    expect(office).toBeDefined();
+    const answer = formatOfficialAnswer(office!, "Di mana KBRI Indonesia di Malaysia?");
+    expect(answer).toContain("Kontak utama belum tersedia");
+    expect(answer).toContain("Perlindungan WNI: WhatsApp Perlindungan WNI");
+  });
+
+  it("answers a service-fee question as unverified when no fee amount exists", () => {
+    const office = officialEmergencyOffices.find((item) => item.id === "kbri-kl");
+
+    expect(formatOfficialAnswer(office!, "Berapa biaya paspor?")).toContain(
+      "Biaya layanan yang terkini belum tersedia dalam data DUTA yang telah diverifikasi.",
+    );
   });
 
   it("routes safety before broad categories", () =>
