@@ -7,6 +7,12 @@ describe("AI router", () => {
       "OFFICIAL_SERVICE",
     ));
 
+  it("answers known consulate facts directly without inventing procedures", async () => {
+    const response = await answerQuestion("Di mana KBRI Indonesia di Malaysia?");
+    expect(response.answer).toContain("KBRI Kuala Lumpur berada di Kuala Lumpur");
+    expect(response.steps.join(" ")).toContain("belum tervalidasi");
+  });
+
   it("routes safety before broad categories", () =>
     expect(
       detectIntent("Dokumen hilang dan butuh bantuan sekarang"),

@@ -1,6 +1,7 @@
 import { getOfficialSourcesForInstitution } from "@/lib/services/sources";
 import { getAIProvider } from "@/lib/services/ai-provider";
 import { runDutaTool } from "@/lib/services/duta-tools";
+import { officialEmergencyOffices } from "@/lib/official-emergency-data";
 
 export type Intent =
   | "OFFICIAL_SERVICE"
@@ -65,16 +66,15 @@ export async function answerQuestion(
     }
 
     const sources = await getOfficialSourcesForInstitution(institution).catch(() => []);
+    const office = officialEmergencyOffices.find((item) => item.institution === institution);
+    const contact = office?.contacts[0];
+    const knownFacts = office ? office.institution + " berada di " + office.city + ", " + office.region + "." + (contact ? " Kontak " + contact.label + ": " + contact.number + "." : "") : "";
 
     return {
       intent,
       confidence: "sedang",
-      answer: `Untuk informasi resmi terkait pertanyaan Anda, silakan periksa kanal resmi ${institution}. Basis sumber yang tersedia belum memuat persyaratan, biaya, jam layanan, atau prosedur rinci yang telah divalidasi, jadi DUTA tidak akan menebaknya.`,
-      steps: [
-        "Buka sumber resmi di bawah.",
-        "Cari pengumuman atau halaman layanan yang sesuai.",
-        "Pastikan tanggal, wilayah layanan, dan persyaratan langsung pada sumber resmi.",
-      ],
+      answer: knownFacts || "Saya belum menemukan informasi resmi terverifikasi untuk pertanyaan ini.",
+      steps: [...(office ? ["Detail biaya, jam layanan, dan prosedur belum tervalidasi dalam data DUTA."] : []), ...(office ? ["Jika Anda memerlukan paspor, SPLP, legalisasi, atau perlindungan WNI, sebutkan layanan yang diperlukan."] : []), ...(office ? ["Sumber resmi: " + office.officialUrl] : [])],
       sources,
       disclaimer:
         "DUTA RANTAU bukan institusi pemerintah dan tidak menggantikan keterangan resmi.",
