@@ -1,4 +1,5 @@
 import { getOfficialSourcesForInstitution } from "@/lib/services/sources";
+import { getAIProvider } from "@/lib/services/ai-provider";
 
 export type Intent =
   | "OFFICIAL_SERVICE"
@@ -96,12 +97,19 @@ export async function answerQuestion(
       "Saya belum menemukan informasi yang cukup terpercaya untuk menjawab pertanyaan ini. Coba sebutkan topik dan lokasi dengan lebih spesifik.",
   };
 
+  const fallbackAnswer = responses[intent];
+  const generated = intent === "GENERAL" ? await getAIProvider().generate({ message, channel: "text" }) : undefined;
+
   return {
     intent,
     confidence: intent === "GENERAL" ? "rendah" : "sedang",
-    answer: responses[intent],
+    answer: generated?.success && generated.text ? generated.text : fallbackAnswer,
     steps: [],
     sources: [],
+    provider: generated?.provider,
+    model: generated?.model,
+    latencyMs: generated?.latencyMs,
+    fallback: generated ? !generated.success : undefined,
     disclaimer:
       intent === "SAFETY"
         ? "Panduan ini bukan keputusan medis atau hukum."
