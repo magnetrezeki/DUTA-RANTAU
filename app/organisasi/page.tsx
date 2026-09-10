@@ -19,7 +19,7 @@ export const metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function Page() {
-  const organizations = await getOrganizations();
+  const organizations = await getOrganizations().catch(() => []);
 
   return (
     <div className="page">

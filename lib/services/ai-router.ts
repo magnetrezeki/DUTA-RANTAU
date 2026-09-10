@@ -64,7 +64,7 @@ export async function answerQuestion(
       institution = "KRI Tawau";
     }
 
-    const sources = await getOfficialSourcesForInstitution(institution);
+    const sources = await getOfficialSourcesForInstitution(institution).catch(() => []);
 
     return {
       intent,

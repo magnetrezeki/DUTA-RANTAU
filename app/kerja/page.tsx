@@ -16,7 +16,7 @@ async function getJobs() {
 
 export default async function Page() {
 
-    const jobs = await getJobs();
+    const jobs = await getJobs().catch(() => []);
 
     return (
         <div className="page">

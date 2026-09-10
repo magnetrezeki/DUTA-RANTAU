@@ -30,7 +30,7 @@ const cats = [
 ] as const;
 
 export default async function Page() {
-  const sources = await getSources();
+  const sources = await getSources().catch(() => []);
 
   const institutions: string[] = [
     ...new Set(

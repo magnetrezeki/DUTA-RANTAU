@@ -15,7 +15,7 @@ async function getCommunities() {
 }
 
 export default async function Page() {
-    const demoCommunities = await getCommunities();
+    const demoCommunities = await getCommunities().catch(() => []);
 
     return <div className="page">
         <PageHeader

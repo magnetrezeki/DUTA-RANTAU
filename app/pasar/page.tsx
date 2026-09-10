@@ -17,7 +17,7 @@ async function getProducts() {
 }
 
 export default async function Page() {
-    const demoProducts = await getProducts();
+    const demoProducts = await getProducts().catch(() => []);
 
     return <div className="page">
         <PageHeader

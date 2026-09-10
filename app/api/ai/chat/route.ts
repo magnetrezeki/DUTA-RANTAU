@@ -7,5 +7,5 @@ export async function POST(req:NextRequest){
  const ip=req.headers.get('x-forwarded-for')?.split(',')[0]??'local';
  if(!rateLimit(`ai:${ip}`,15).ok)return NextResponse.json({error:'Terlalu banyak permintaan. Coba lagi sebentar.'},{status:429});
  try{const body=input.parse(await req.json());if(body.channel==='voice')return NextResponse.json({error:'Input suara belum tersedia.'},{status:422});return NextResponse.json(await answerQuestion(body.message,body.location));}
- catch{return NextResponse.json({error:'Pertanyaan tidak valid.'},{status:400});}
+ catch(error){return NextResponse.json({error:error instanceof z.ZodError?'Pertanyaan tidak valid.':'DUTA belum dapat memeriksa sumber saat ini. Silakan coba lagi atau gunakan pertanyaan lain.'},{status:error instanceof z.ZodError?400:503});}
 }

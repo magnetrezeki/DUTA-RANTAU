@@ -9,7 +9,8 @@ export async function POST(request: NextRequest) {
   try {
     const form = await request.formData(); const audio = form.get("audio"); const language = form.get("language");
     if (!(audio instanceof File) || audio.size === 0) return NextResponse.json({ error: "Rekaman audio kosong atau tidak valid." }, { status: 400 });
-    if (!acceptedTypes.has(audio.type)) return NextResponse.json({ error: "Format audio belum didukung." }, { status: 415 });
+    const mimeType = audio.type.toLowerCase().split(";", 1)[0];
+    if (!acceptedTypes.has(mimeType)) return NextResponse.json({ error: "Format audio belum didukung." }, { status: 415 });
     if (audio.size > maxBytes) return NextResponse.json({ error: "Ukuran audio melebihi 10 MB." }, { status: 413 });
     const result = await getASRProvider().transcribe({ audio, language: language === "ms" ? "ms" : "id" });
     if (!result.success) return NextResponse.json({ error: "Transkripsi belum tersedia. Silakan ketik pertanyaan Anda.", errorCategory: result.errorCategory }, { status: 503 });
