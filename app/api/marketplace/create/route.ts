@@ -1,11 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-export async function POST(req: NextRequest) {
-  const body = await req.json();
-
-  return NextResponse.json({
-    ok: true,
-    action: "create",
-    data: body
-  });
+// Listing creation is intentionally unavailable here. The authenticated server
+// boundary is /api/admin/marketplace, which performs entity and eligibility checks.
+export async function POST() {
+  return NextResponse.json(
+    { error: "Gunakan alur penjual yang sah untuk membuat listing." },
+    { status: 410 },
+  );
 }
