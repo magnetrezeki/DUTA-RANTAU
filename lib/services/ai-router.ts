@@ -1,6 +1,7 @@
 import { getOfficialSourcesForInstitution } from "@/lib/services/sources";
 import { getAIProvider } from "@/lib/services/ai-provider";
 import { runDutaTool } from "@/lib/services/duta-tools";
+import type { DutaToolItem } from "@/lib/services/duta-tools";
 import { officialEmergencyOffices } from "@/lib/official-emergency-data";
 
 function hasPurpose(contact: { label: string; purpose: string }, pattern: RegExp) {
@@ -22,6 +23,21 @@ export function formatOfficialAnswer(
   }
 
   return `${location}${mainContact}${protectionContact}`;
+}
+
+export function formatJobAnswer(items: DutaToolItem[]) {
+  return items.map((item) => {
+    const details = item.details;
+    const fields = [
+      details?.location ? `Lokasi: ${details.location}.` : undefined,
+      details?.salary ? `Gaji: ${details.salary}.` : undefined,
+      details?.employmentType ? `Jenis kerja: ${details.employmentType}.` : undefined,
+      details?.requirements ? `Syarat: ${details.requirements}.` : undefined,
+      details?.applicationMethod ? `Cara melamar: ${details.applicationMethod}.` : undefined,
+      `Status sumber: ${item.sourceType} (kepercayaan ${item.trustLevel}).`,
+    ].filter(Boolean).join(" ");
+    return `${item.title}. ${fields}`;
+  }).join(" ");
 }
 
 export type Intent =
@@ -94,7 +110,7 @@ export async function answerQuestion(
       intent,
       confidence: "sedang",
       answer: knownFacts || "Saya belum menemukan informasi resmi terverifikasi untuk pertanyaan ini.",
-      steps: [...(office ? ["Detail biaya, jam layanan, dan prosedur belum tervalidasi dalam data DUTA."] : []), ...(office ? ["Jika Anda memerlukan paspor, SPLP, legalisasi, atau perlindungan WNI, sebutkan layanan yang diperlukan."] : []), ...(office ? ["Sumber resmi: " + office.officialUrl] : [])],
+      steps: [...(office ? ["Jam layanan dan prosedur belum tervalidasi dalam data DUTA."] : []), ...(office ? ["Terakhir diverifikasi: " + office.lastChecked + "."] : []), ...(office ? ["Sumber resmi: " + office.officialUrl] : [])],
       sources,
       disclaimer:
         "DUTA RANTAU bukan institusi pemerintah dan tidak menggantikan keterangan resmi.",
@@ -125,7 +141,7 @@ export async function answerQuestion(
   return {
     intent,
     confidence: intent === "GENERAL" ? "rendah" : "sedang",
-    answer: toolResult.status === "SUCCESS" ? `Saya menemukan ${toolResult.resultCount} hasil ${toolResult.tool.replaceAll("_", " ")}. ${toolResult.items.map(item => item.title).join("; ")}` : generated?.success && generated.text ? generated.text : fallbackAnswer,
+    answer: toolResult.status === "SUCCESS" ? intent === "JOB_SEARCH" ? `Saya menemukan ${toolResult.resultCount} lowongan yang sesuai. ${formatJobAnswer(toolResult.items)}` : `Saya menemukan ${toolResult.resultCount} hasil ${toolResult.tool.replaceAll("_", " ")}. ${toolResult.items.map(item => item.title).join("; ")}` : generated?.success && generated.text ? generated.text : fallbackAnswer,
     steps: [],
     sources: [],
     provider: generated?.provider,
