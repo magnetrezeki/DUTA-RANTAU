@@ -5,7 +5,7 @@ export type AIChannel = "text" | "voice";
 export type AIErrorCategory = "UNAVAILABLE" | "TIMEOUT" | "INVALID_RESPONSE";
 export type AIProviderResult = {
   success: boolean;
-  provider: "fallback" | "nvidia";
+  provider: "fallback" | "nvidia" | "gemini" | "groq" | "openai";
   model?: string;
   text?: string;
   latencyMs: number;
