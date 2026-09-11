@@ -10,6 +10,7 @@ export type AIProviderResult = {
   text?: string;
   latencyMs: number;
   errorCategory?: AIErrorCategory;
+  _diagnosticCategory?: "NETWORK_FAILURE" | "TIMEOUT_FAILURE" | "REQUEST_CONTRACT_FAILURE" | "AUTHENTICATION_FAILURE" | "PERMISSION_OR_ENTITLEMENT_FAILURE" | "MODEL_OR_ENDPOINT_NOT_FOUND" | "RATE_LIMIT_OR_QUOTA_FAILURE" | "PROVIDER_SERVER_FAILURE" | "RESPONSE_PARSE_FAILURE" | "RESPONSE_SCHEMA_FAILURE" | "UNKNOWN_FAILURE";
 };
 export type AIProviderInput = { message: string; channel: AIChannel; maxOutputTokens?: number };
 export interface AIProvider { generate(input: AIProviderInput): Promise<AIProviderResult>; healthCheck(): Promise<boolean>; }
