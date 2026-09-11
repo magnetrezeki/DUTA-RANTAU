@@ -7,6 +7,7 @@ type ProviderName = 'gemini' | 'groq' | 'openai';
 const MAX_OUTPUT_TOKENS = 300;
 const TRANSPORT_TIMEOUT_MS = 15_000;
 const OPENAI_LUNA_MODEL = 'gpt-5.6-luna';
+export const AUTHORIZED_GROQ_MODEL = 'openai/gpt-oss-20b';
 
 function unavailable(): AIProviderResult { return { success: false, provider: 'fallback', latencyMs: 0, errorCategory: 'UNAVAILABLE' }; }
 function textResult(provider: 'gemini' | 'groq' | 'openai', model: string, text: unknown, startedAt: number): AIProviderResult {
@@ -50,7 +51,8 @@ function transport(name: ProviderName, key: string, model: string): AIProvider {
 export function getConfiguredProvider(name: ProviderName): AIProvider {
   const key = process.env[`${name.toUpperCase()}_API_KEY`];
   const configuredModel = process.env[`${name.toUpperCase()}_MODEL`];
-  const model = name === 'openai' ? OPENAI_LUNA_MODEL : configuredModel;
-  if (!key?.trim() || !model?.trim() || (name === 'openai' && !isAllowedOpenAIModel(configuredModel ?? OPENAI_LUNA_MODEL))) return { generate: async () => unavailable(), healthCheck: async () => false };
+  const model = name === 'openai' ? OPENAI_LUNA_MODEL : name === 'groq' ? AUTHORIZED_GROQ_MODEL : configuredModel;
+  const validModel = name === 'groq' ? (!configuredModel?.trim() || configuredModel === AUTHORIZED_GROQ_MODEL) : name === 'openai' ? isAllowedOpenAIModel(configuredModel ?? OPENAI_LUNA_MODEL) : Boolean(model?.trim());
+  if (!key?.trim() || !model?.trim() || !validModel) return { generate: async () => unavailable(), healthCheck: async () => false };
   return transport(name, key, model);
 }
