@@ -3,6 +3,7 @@ import { getCurrentUser } from "./session";
 import type { UserRole } from "@/types";
 import { hasRole } from "./authorization";
 import { createVerifiedAppUser } from "./verified-user";
+import { canUsePlatformCapability, legacyPlatformRoles, type PlatformCapability } from "@/lib/domain/rbac";
 
 export function verifySameOrigin(req: NextRequest) {
   const origin = req.headers.get("origin");
@@ -70,4 +71,18 @@ export async function authorizeApi(
     user: verifiedUser,
     response: null,
   };
+}
+
+// Platform routes declare a specific capability. Legacy global roles are only a
+// transitional input and never stand in for an entity role or an eligibility.
+export async function authorizePlatformApi(req: NextRequest, capability: PlatformCapability) {
+  const auth = await authorizeApi(req);
+  if (auth.response || !auth.user) return auth;
+  if (!canUsePlatformCapability(legacyPlatformRoles(auth.user.role), capability)) {
+    return {
+      user: null,
+      response: NextResponse.json({ error: "Anda tidak memiliki izin platform." }, { status: 403 }),
+    };
+  }
+  return auth;
 }

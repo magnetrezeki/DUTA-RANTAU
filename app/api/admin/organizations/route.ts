@@ -3,7 +3,7 @@ import { desc, eq } from "drizzle-orm";
 import { z } from "zod";
 
 import { auditLogs, organizations } from "@/db/schema";
-import { authorizeApi } from "@/lib/auth/api-guard";
+import { authorizePlatformApi } from "@/lib/auth/api-guard";
 import { withUserTransaction } from "@/lib/db/identity-bridge";
 
 const createInput = z.object({
@@ -35,7 +35,7 @@ const updateInput = createInput.partial().extend({
 });
 
 export async function GET(req: NextRequest) {
-  const auth = await authorizeApi(req, "SUPER_ADMIN");
+  const auth = await authorizePlatformApi(req, "platform.config.manage");
   if (auth.response) return auth.response;
 
   return withUserTransaction(auth.user!, async (tx) => {
@@ -49,7 +49,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const auth = await authorizeApi(req, "SUPER_ADMIN");
+  const auth = await authorizePlatformApi(req, "platform.config.manage");
   if (auth.response) return auth.response;
 
   const body = createInput.parse(await req.json());
@@ -81,7 +81,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function PATCH(req: NextRequest) {
-  const auth = await authorizeApi(req, "SUPER_ADMIN");
+  const auth = await authorizePlatformApi(req, "platform.config.manage");
   if (auth.response) return auth.response;
 
   const body = updateInput.parse(await req.json());
@@ -135,7 +135,7 @@ export async function PATCH(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
-  const auth = await authorizeApi(req, "SUPER_ADMIN");
+  const auth = await authorizePlatformApi(req, "platform.config.manage");
   if (auth.response) return auth.response;
 
   const organizationId = new URL(req.url).searchParams.get("organizationId");

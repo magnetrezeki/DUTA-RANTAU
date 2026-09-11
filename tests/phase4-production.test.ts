@@ -21,7 +21,7 @@ describe('Phase 4 production data boundaries', () => {
 
   it('ships admin mutation boundaries for all requested content modules', () => {
     for (const path of ['app/api/admin/jobs/route.ts', 'app/api/admin/marketplace/route.ts', 'app/api/admin/community/route.ts', 'app/api/admin/organizations/route.ts', 'app/api/sources/[id]/route.ts']) {
-      expect(read(path)).toContain('authorizeApi');
+      expect(read(path)).toMatch(/authorize(?:Platform)?Api/);
       expect(read(path)).toContain('withUserTransaction');
     }
     const rls = read('db/migrations/0008_phase4_real_content_rls.sql');
