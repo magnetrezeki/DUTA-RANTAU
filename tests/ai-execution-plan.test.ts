@@ -1,0 +1,2 @@
+import{describe,it,expect}from'vitest';import{planAiExecution}from'../lib/services/ai-execution-plan';
+describe('AI execution plan',()=>{it('plans L0 before provider work',()=>expect(planAiExecution('hotline KBRI')).toMatchObject({modelClass:'L0_DETERMINISTIC',weight:0,provider:'duta'}));it('never plans Gemini for restricted input',()=>expect(planAiExecution('passport private')).not.toMatchObject({provider:'gemini'}))})

@@ -1,5 +1,5 @@
 import { getOfficialSourcesForInstitution } from "@/lib/services/sources";
-import { getAIProvider } from "@/lib/services/ai-provider";
+
 import { runDutaTool } from "@/lib/services/duta-tools";
 import type { DutaToolItem } from "@/lib/services/duta-tools";
 import { officialEmergencyOffices } from "@/lib/official-emergency-data";
@@ -140,18 +140,15 @@ export async function answerQuestion(
 
   const fallbackAnswer = responses[intent];
   const toolResult = await runDutaTool(message);
-  const generated = intent === "GENERAL" && toolResult.status !== "SUCCESS" ? await getAIProvider().generate({ message, channel: "text" }) : undefined;
+
 
   return {
     intent,
     confidence: intent === "GENERAL" ? "rendah" : "sedang",
-    answer: toolResult.status === "SUCCESS" ? intent === "JOB_SEARCH" ? `Saya menemukan ${toolResult.resultCount} lowongan yang sesuai. ${formatJobAnswer(toolResult.items)}` : `Saya menemukan ${toolResult.resultCount} hasil ${toolResult.tool.replaceAll("_", " ")}. ${toolResult.items.map(item => item.title).join("; ")}` : generated?.success && generated.text ? generated.text : fallbackAnswer,
+    answer: toolResult.status === "SUCCESS" ? intent === "JOB_SEARCH" ? `Saya menemukan ${toolResult.resultCount} lowongan yang sesuai. ${formatJobAnswer(toolResult.items)}` : `Saya menemukan ${toolResult.resultCount} hasil ${toolResult.tool.replaceAll("_", " ")}. ${toolResult.items.map(item => item.title).join("; ")}` : fallbackAnswer,
     steps: [],
     sources: [],
-    provider: generated?.provider,
-    model: generated?.model,
-    latencyMs: generated?.latencyMs,
-    fallback: generated ? !generated.success : undefined,
+
     tool: toolResult.status === "SUCCESS" ? toolResult : undefined,
     disclaimer:
       intent === "SAFETY"

@@ -1,0 +1,2 @@
+import 'server-only';import{sql}from'drizzle-orm';import{withUserTransaction}from'@/lib/db/identity-bridge';import type{VerifiedAppUser}from'@/lib/auth/verified-user';
+export async function consumePersistentAiQuota(user:VerifiedAppUser,units:number){try{return await withUserTransaction(user,async tx=>{const r=await tx.execute(sql`select public.consume_ai_usage(${user.id}::uuid,${units},60) as allowed`);return r[0]?.allowed?{status:'allowed' as const}:{status:'denied' as const}})}catch{return{status:'error' as const}}}

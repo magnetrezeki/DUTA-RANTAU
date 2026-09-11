@@ -1,0 +1,2 @@
+import{describe,it,expect}from'vitest';import{getConfiguredProvider}from'../lib/services/ai-provider-adapters';
+describe('provider adapters',()=>{it('fail closed without credentials and Luna-only OpenAI',async()=>{delete process.env.OPENAI_API_KEY;expect(await getConfiguredProvider('openai').generate({message:'x',channel:'text'})).toMatchObject({success:false});process.env.OPENAI_API_KEY='test';process.env.OPENAI_MODEL='terra';expect(await getConfiguredProvider('openai').generate({message:'x',channel:'text'})).toMatchObject({success:false})})});

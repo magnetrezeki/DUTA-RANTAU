@@ -1,0 +1,2 @@
+import{getConfiguredProvider}from'./ai-provider-adapters';import type{ModelClass}from'@/lib/domain/ai-routing';
+export async function executePlannedProvider(modelClass:ModelClass,message:string){const name=modelClass==='L1_SIMPLE'?'gemini':modelClass==='L2_ECONOMY'?'groq':modelClass==='L3_ESCALATION'?'openai':undefined;if(!name)return undefined;return getConfiguredProvider(name).generate({message,channel:'text'})}

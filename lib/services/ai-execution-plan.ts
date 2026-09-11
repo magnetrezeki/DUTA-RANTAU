@@ -1,0 +1,2 @@
+import{routeDutaAiIntent}from'@/lib/domain/duta-ai-policy';import{classifySensitivity,routeModel,usageWeight}from'@/lib/domain/ai-routing';
+export function planAiExecution(message:string){const i=routeDutaAiIntent(message);const sensitivity=classifySensitivity(message);const r=routeModel({sensitivity,highRisk:i.risk==='high',hasAuthoritativeSource:/kbri|kjri|paspor|siskop2mi/i.test(message)});return{intent:i.intent,risk:i.risk,sensitivity,modelClass:r.modelClass,provider:r.provider,weight:usageWeight[r.modelClass]}}
