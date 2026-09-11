@@ -1,4 +1,5 @@
 import "server-only";
+import { DUTA_AI_SYSTEM_POLICY } from '@/lib/domain/duta-ai-policy';
 
 export type AIChannel = "text" | "voice";
 export type AIErrorCategory = "UNAVAILABLE" | "TIMEOUT" | "INVALID_RESPONSE";
@@ -40,7 +41,7 @@ function nvidiaProvider(apiKey: string, baseUrl: string, model: string): AIProvi
           method: "POST",
           headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
           body: JSON.stringify({ model, stream: false, temperature: 0.2, max_tokens: 300, messages: [
-            { role: "system", content: languageInstruction(input.message) },
+            { role: "system", content: `${DUTA_AI_SYSTEM_POLICY}\n${languageInstruction(input.message)}` },
             { role: "user", content: input.message },
           ] }),
           signal: controller.signal,

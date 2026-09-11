@@ -3,6 +3,7 @@ import { getAIProvider } from "@/lib/services/ai-provider";
 import { runDutaTool } from "@/lib/services/duta-tools";
 import type { DutaToolItem } from "@/lib/services/duta-tools";
 import { officialEmergencyOffices } from "@/lib/official-emergency-data";
+import { blockedDutaAiAnswer, routeDutaAiIntent } from '@/lib/domain/duta-ai-policy';
 
 function hasPurpose(contact: { label: string; purpose: string }, pattern: RegExp) {
   return pattern.test(`${contact.label} ${contact.purpose}`);
@@ -83,6 +84,9 @@ export async function answerQuestion(
   message: string,
   location = "Malaysia",
 ) {
+  const policy = routeDutaAiIntent(message);
+  const blocked = blockedDutaAiAnswer(policy.risk);
+  if (blocked) return { intent: policy.intent, confidence: 'tinggi', answer: blocked, steps: [], sources: [], disclaimer: 'DUTA AI tidak memberikan nasihat pelaburan.' };
   const intent = detectIntent(message);
 
   if (intent === "OFFICIAL_SERVICE") {
