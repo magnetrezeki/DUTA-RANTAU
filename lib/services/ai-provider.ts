@@ -11,7 +11,7 @@ export type AIProviderResult = {
   latencyMs: number;
   errorCategory?: AIErrorCategory;
 };
-export type AIProviderInput = { message: string; channel: AIChannel };
+export type AIProviderInput = { message: string; channel: AIChannel; maxOutputTokens?: number };
 export interface AIProvider { generate(input: AIProviderInput): Promise<AIProviderResult>; healthCheck(): Promise<boolean>; }
 
 const DEFAULT_BASE_URL = "https://integrate.api.nvidia.com/v1";
