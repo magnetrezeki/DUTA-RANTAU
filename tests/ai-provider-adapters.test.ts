@@ -9,8 +9,42 @@ function responseFor(name: string) { return new Response(JSON.stringify(name ===
 describe('provider adapters', () => {
   it('fails closed without credentials and denies non-Luna OpenAI', async () => { delete process.env.OPENAI_API_KEY; expect(await getConfiguredProvider('openai').generate({ message: 'x', channel: 'text' })).toMatchObject({ success: false, errorCategory: 'UNAVAILABLE' }); process.env.OPENAI_API_KEY = 'test'; process.env.OPENAI_MODEL = 'terra'; expect(await getConfiguredProvider('openai').generate({ message: 'x', channel: 'text' })).toMatchObject({ success: false, errorCategory: 'UNAVAILABLE' }); });
   it.each(['gemini', 'groq', 'openai'] as const)('uses one minimized server-owned %s request with a 300-token ceiling', async name => {
-    configured(name); const fetchMock = vi.fn(async (url: string, init: RequestInit) => { expect(init.method).toBe('POST'); expect(init.headers).toHaveProperty(name === 'gemini' ? 'Content-Type' : 'Authorization'); expect(init.signal).toBeInstanceOf(AbortSignal); const payload = JSON.parse(String(init.body)); expect(JSON.stringify(payload)).not.toContain('PRIVATE_PROVIDER_ERROR_MARKER_98765'); expect(name === 'gemini' ? payload.generationConfig.maxOutputTokens : payload.max_tokens).toBeLessThanOrEqual(300); if (name === 'openai') expect(payload.model).toBe('gpt-5.6-luna'); if (name === 'groq') expect(payload.model).toBe(AUTHORIZED_GROQ_MODEL); if (name === 'gemini') expect(url).toContain('generativelanguage.googleapis.com'); if (name === 'groq') expect(url).toContain('api.groq.com'); if (name === 'openai') expect(url).toContain('api.openai.com'); return responseFor(name); }); vi.stubGlobal('fetch', fetchMock);
+    configured(name); const fetchMock = vi.fn(async (url: string, init: RequestInit) => { expect(init.method).toBe('POST'); expect(init.headers).toHaveProperty(name === 'gemini' ? 'Content-Type' : 'Authorization'); expect(init.signal).toBeInstanceOf(AbortSignal); const payload = JSON.parse(String(init.body)); expect(JSON.stringify(payload)).not.toContain('PRIVATE_PROVIDER_ERROR_MARKER_98765'); expect(name === 'gemini' ? payload.generationConfig.maxOutputTokens : name === 'openai' ? payload.max_completion_tokens : payload.max_tokens).toBeLessThanOrEqual(300); if (name === 'openai') expect(payload.model).toBe('gpt-5.6-luna'); if (name === 'groq') expect(payload.model).toBe(AUTHORIZED_GROQ_MODEL); if (name === 'gemini') expect(url).toContain('generativelanguage.googleapis.com'); if (name === 'groq') expect(url).toContain('api.groq.com'); if (name === 'openai') expect(url).toContain('api.openai.com'); return responseFor(name); }); vi.stubGlobal('fetch', fetchMock);
     const result = await getConfiguredProvider(name).generate({ message: 'hello', channel: 'text', maxOutputTokens: 10_000 }); expect(result).toMatchObject({ success: true, provider: name, text: 'ok' }); expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+  it('sends the exact OpenAI Chat Completions contract: max_completion_tokens, developer instruction, no max_tokens, no retry', async () => {
+    configured('openai'); let captured: { url: string; init: RequestInit } | undefined; const fetchMock = vi.fn(async (url: string, init: RequestInit) => { captured = { url, init }; return responseFor('openai'); }); vi.stubGlobal('fetch', fetchMock);
+    const result = await getConfiguredProvider('openai').generate({ message: 'hello', channel: 'text', maxOutputTokens: 10_000 });
+    expect(result).toMatchObject({ success: true, provider: 'openai', model: 'gpt-5.6-luna', text: 'ok' });
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(captured?.url).toBe('https://api.openai.com/v1/chat/completions');
+    expect(captured?.init.method).toBe('POST');
+    expect(captured?.init.headers).toMatchObject({ Authorization: 'Bearer test-key', 'Content-Type': 'application/json' });
+    const payload = JSON.parse(String(captured?.init.body));
+    expect(payload.model).toBe('gpt-5.6-luna');
+    expect('max_completion_tokens' in payload).toBe(true);
+    expect(payload.max_completion_tokens).toBeLessThanOrEqual(300);
+    expect('max_tokens' in payload).toBe(false);
+    expect(payload.messages[0]).toMatchObject({ role: 'developer' });
+    expect(payload.messages[1]).toMatchObject({ role: 'user', content: 'hello' });
+    expect(payload.messages).toHaveLength(2);
+  });
+  it('keeps the Groq Chat Completions contract unchanged: max_tokens, system instruction, authorized model', async () => {
+    configured('groq'); let captured: { url: string; init: RequestInit } | undefined; const fetchMock = vi.fn(async (url: string, init: RequestInit) => { captured = { url, init }; return responseFor('groq'); }); vi.stubGlobal('fetch', fetchMock);
+    const result = await getConfiguredProvider('groq').generate({ message: 'hello', channel: 'text', maxOutputTokens: 10_000 });
+    expect(result).toMatchObject({ success: true, provider: 'groq', model: AUTHORIZED_GROQ_MODEL, text: 'ok' });
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(captured?.url).toBe('https://api.groq.com/openai/v1/chat/completions');
+    expect(captured?.init.method).toBe('POST');
+    expect(captured?.init.headers).toMatchObject({ Authorization: 'Bearer test-key', 'Content-Type': 'application/json' });
+    const payload = JSON.parse(String(captured?.init.body));
+    expect(payload.model).toBe(AUTHORIZED_GROQ_MODEL);
+    expect('max_tokens' in payload).toBe(true);
+    expect(payload.max_tokens).toBeLessThanOrEqual(300);
+    expect('max_completion_tokens' in payload).toBe(false);
+    expect(payload.messages[0]).toMatchObject({ role: 'system' });
+    expect(payload.messages[1]).toMatchObject({ role: 'user', content: 'hello' });
+    expect(payload.messages).toHaveLength(2);
   });
   it('locks Groq to its server allowlist and rejects arbitrary environment models before network use', async () => { process.env.GROQ_API_KEY = 'test'; delete process.env.GROQ_MODEL; const fetchMock = vi.fn(async () => responseFor('groq')); vi.stubGlobal('fetch', fetchMock); await expect(getConfiguredProvider('groq').generate({ message: 'hello', channel: 'text' })).resolves.toMatchObject({ success: true, model: AUTHORIZED_GROQ_MODEL }); expect(fetchMock).toHaveBeenCalledTimes(1); process.env.GROQ_MODEL = 'openai/gpt-oss-120b'; fetchMock.mockClear(); await expect(getConfiguredProvider('groq').generate({ message: 'hello', channel: 'text' })).resolves.toMatchObject({ success: false, errorCategory: 'UNAVAILABLE' }); expect(fetchMock).not.toHaveBeenCalled(); });
   it.each(['gemini', 'groq', 'openai'] as const)('normalizes %s raw failures without retry or error-body leakage', async name => { configured(name); const marker = 'PRIVATE_PROVIDER_ERROR_MARKER_98765'; const fetchMock = vi.fn(async () => new Response(marker, { status: 500 })); vi.stubGlobal('fetch', fetchMock); const result = await getConfiguredProvider(name).generate({ message: 'hello', channel: 'text' }); expect(result).toMatchObject({ success: false, errorCategory: 'UNAVAILABLE' }); expect(JSON.stringify(result)).not.toContain(marker); expect(fetchMock).toHaveBeenCalledTimes(1); });

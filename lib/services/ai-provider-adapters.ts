@@ -55,7 +55,9 @@ function transport(name: ProviderName, key: string, model: string): AIProvider {
         } else {
           url = name === 'groq' ? 'https://api.groq.com/openai/v1/chat/completions' : 'https://api.openai.com/v1/chat/completions';
           headers = { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' };
-          body = { model, max_tokens: maxOutputTokens, messages: [{ role: 'system', content: systemMessage() }, { role: 'user', content: input.message }] };
+          body = name === 'openai'
+            ? { model, max_completion_tokens: maxOutputTokens, messages: [{ role: 'developer', content: systemMessage() }, { role: 'user', content: input.message }] }
+            : { model, max_tokens: maxOutputTokens, messages: [{ role: 'system', content: systemMessage() }, { role: 'user', content: input.message }] };
         }
         const response = await fetch(url, { method: 'POST', headers, body: JSON.stringify(body), signal: controller.signal });
         if (!response.ok) {
