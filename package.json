@@ -8,6 +8,7 @@
     "start": "next start --hostname 0.0.0.0 --port 3000",
     "lint": "eslint .",
     "test": "vitest run",
+    "test:db": "node scripts/run-local-db-tests.mjs",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:seed:sources": "tsx scripts/seed-official-sources.ts",
