@@ -1,5 +1,9 @@
 -- Day 8G: additive community access and organisation membership application foundation.
 -- This migration creates no memberships and does not change eligibility, verification, legal status, or consumer subscriptions.
+-- POST-8L-H2B (fresh-bootstrap correctness repair, recorded per authorization):
+-- the communities_update_own_policy WITH CHECK selected the record_status column
+-- through the c. alias, but public.communities exposes the column "status".
+-- Corrected to c.status='ACTIVE'; no other statement in this file was changed.
 
 DO $$ BEGIN
   CREATE TYPE public.community_access_scope AS ENUM ('malaysia_present_only','pre_arrival_allowed','global');
@@ -83,7 +87,7 @@ WITH CHECK (
   user_id=auth.uid() AND EXISTS (
     SELECT 1 FROM public.communities c
     WHERE c.id=community_id
-      AND c.record_status='ACTIVE'
+      AND c.status='ACTIVE'
       AND (
         c.community_access_scope IS NULL
         OR c.community_access_scope IN ('pre_arrival_allowed','global')

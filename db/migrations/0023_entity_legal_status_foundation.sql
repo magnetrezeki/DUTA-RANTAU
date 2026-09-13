@@ -1,4 +1,10 @@
 -- Additive Day 8B entity foundation. Legal claims are deliberately separate from verified facts.
+-- POST-8L-H2B (fresh-bootstrap correctness repair, recorded per authorization):
+-- the two entity-backfill SELECTs selected the record_status column through the
+-- o./c. table aliases, but public.organizations and public.communities expose
+-- the column "status" (record_status is a valid value source here, not a column
+-- of those tables). Corrected to o.status / c.status; no other statement in
+-- this file was changed.
 DO $$ BEGIN CREATE TYPE public.entity_type AS ENUM ('business','community','organisation'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 --> statement-breakpoint
 DO $$ BEGIN CREATE TYPE public.legal_status AS ENUM ('registered','registered_under_other_law','foreign_registered','registration_pending','registration_not_verified','informal_group','unknown'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
@@ -24,12 +30,12 @@ CREATE UNIQUE INDEX IF NOT EXISTS organizations_entity_uq ON public.organization
 CREATE UNIQUE INDEX IF NOT EXISTS communities_entity_uq ON public.communities(entity_id) WHERE entity_id IS NOT NULL;
 --> statement-breakpoint
 INSERT INTO public.entities (entity_type,display_name,slug,owner_user_id,record_status,legal_status)
-SELECT 'organisation',o.name,'organisation-' || o.id::text,(SELECT m.user_id FROM public.organization_members m WHERE m.organization_id=o.id AND m.role='OWNER' ORDER BY m.joined_at LIMIT 1),o.record_status,'registration_not_verified'
+SELECT 'organisation',o.name,'organisation-' || o.id::text,(SELECT m.user_id FROM public.organization_members m WHERE m.organization_id=o.id AND m.role='OWNER' ORDER BY m.joined_at LIMIT 1),o.status,'registration_not_verified'
 FROM public.organizations o WHERE o.entity_id IS NULL
 ON CONFLICT (slug) DO NOTHING;
 UPDATE public.organizations o SET entity_id=e.id FROM public.entities e WHERE o.entity_id IS NULL AND e.slug='organisation-' || o.id::text;
 INSERT INTO public.entities (entity_type,display_name,slug,owner_user_id,record_status,legal_status)
-SELECT 'community',c.name,'community-' || c.id::text,c.owner_id,c.record_status,'informal_group'
+SELECT 'community',c.name,'community-' || c.id::text,c.owner_id,c.status,'informal_group'
 FROM public.communities c WHERE c.entity_id IS NULL
 ON CONFLICT (slug) DO NOTHING;
 UPDATE public.communities c SET entity_id=e.id FROM public.entities e WHERE c.entity_id IS NULL AND e.slug='community-' || c.id::text;
