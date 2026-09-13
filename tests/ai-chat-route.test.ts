@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const s = vi.hoisted(() => ({
-  calls: [] as string[], kind: 'L1_SIMPLE', requirement: 'NONE', quota: 'allowed',
+  calls: [] as string[], quotaRequestIds: [] as string[], kind: 'L1_SIMPLE', requirement: 'NONE', quota: 'allowed',
   sources: [{ id: 's' }] as unknown[], events: [] as unknown[], enabled: true,
   authenticated: true, providerFailure: false, telemetrySucceeds: true,
 }));
@@ -18,7 +18,7 @@ vi.mock('@/lib/services/ai-execution-plan', () => ({ planAiExecution: () => ({
   weight: s.kind === 'L0_DETERMINISTIC' ? 0 : 1, sourceRequirement: s.requirement,
 }) }));
 vi.mock('@/lib/services/ai-router', () => ({ answerQuestion: async () => ({ answer: 'official', sources: s.sources }) }));
-vi.mock('@/lib/services/ai-quota-repository', () => ({ consumePersistentAiQuota: async () => { s.calls.push('quota'); return { status: s.quota }; } }));
+vi.mock('@/lib/services/ai-quota-repository', () => ({ consumePersistentAiQuota: async (_user: unknown, _units: number, requestId: string) => { s.calls.push('quota'); s.quotaRequestIds.push(requestId); return { status: s.quota }; } }));
 vi.mock('@/lib/services/ai-provider-execution', () => ({ executePlannedProvider: async (modelClass: string) => {
   s.calls.push(`provider:${modelClass}`);
   return s.providerFailure ? { success: false, provider: 'fallback', latencyMs: 15_000, errorCategory: 'TIMEOUT' } : { success: true, text: 'generated', provider: 'gemini', latencyMs: 1 };
@@ -29,7 +29,7 @@ const { POST } = await import('../app/api/ai/chat/route');
 const req = (message = 'hello', extra = {}) => new Request('http://localhost/api/ai/chat', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ message, ...extra }) }) as never;
 
 describe('production AI chat boundary', () => {
-  beforeEach(() => { Object.assign(s, { calls: [], events: [], kind: 'L1_SIMPLE', requirement: 'NONE', quota: 'allowed', sources: [{ id: 's' }], enabled: true, authenticated: true, providerFailure: false, telemetrySucceeds: true }); });
+  beforeEach(() => { Object.assign(s, { calls: [], quotaRequestIds: [], events: [], kind: 'L1_SIMPLE', requirement: 'NONE', quota: 'allowed', sources: [{ id: 's' }], enabled: true, authenticated: true, providerFailure: false, telemetrySucceeds: true }); });
 
   it('keeps L0 quota/provider free and emits safe telemetry', async () => {
     s.kind = 'L0_DETERMINISTIC'; expect((await POST(req())).status).toBe(200); expect(s.calls).toEqual([]); expect(s.events).toHaveLength(1); expect(JSON.stringify(s.events[0])).toContain('L0_DETERMINISTIC');
@@ -55,6 +55,7 @@ describe('production AI chat boundary', () => {
   it('uses a server-generated correlation ID that reaches telemetry', async () => {
     expect((await POST(req('hello', { correlationId: 'CLIENT_CONTROLLED', requestId: 'CLIENT_CONTROLLED' }))).status).toBe(200);
     const first = (s.events[0] as { correlationId?: string }).correlationId; expect(first).toBeTruthy(); expect(first).not.toBe('CLIENT_CONTROLLED');
+    expect(s.quotaRequestIds).toEqual([first]);
     s.events = []; expect((await POST(req())).status).toBe(200); const second = (s.events[0] as { correlationId?: string }).correlationId; expect(second).toBeTruthy(); expect(second).not.toBe(first);
   });
   it('records measured total request latency rather than a hard-coded zero', async () => {

@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
     const execution = await runAuthorizedGeneration({
       modelClass: plan.modelClass,
       deterministic: async () => sourceAnswer ?? await answerQuestion(body.message, body.location),
-      consume: async () => (await consumePersistentAiQuota(auth.user!, plan.weight)).status,
+      consume: async () => (await consumePersistentAiQuota(auth.user!, plan.weight, correlationId)).status,
       generate: () => executePlannedProvider(plan.modelClass, body.message),
     });
     if (execution.status === 'quota_denied') {
