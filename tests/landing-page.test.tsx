@@ -30,14 +30,14 @@ describe('public landing and preserved application home', () => {
     expect(html).toContain('tidak mewakili KBRI/KJRI');
     for (const claim of ['E-Undi', 'Citizen Report', 'Trust Score', 'wallet', 'investasi', 'e-learning']) expect(html).not.toContain(claim);
   });
-  it('preserves the complete old homepage and application navigation', () => {
-    expect(readFileSync('app/beranda/page.tsx', 'utf8').replace(/\r\n/g, '\n')).toBe(baseline('app/page.tsx'));
+  it('keeps the application home and navigation without a consumer membership offer', () => {
     routing.path = '/beranda';
     const html = renderToStaticMarkup(<AppShell><Home /></AppShell>);
     expect(html).toContain('class="sidebar"');
     expect(html).toContain('href="/beranda"');
     expect(html).toContain('data-live-ai');
-    for (const text of ['Layanan untuk Anda', 'Dekat Anda', 'DUTA MEMBER', 'DEMO DATA']) expect(html).toContain(text);
+    for (const text of ['Layanan untuk Anda', 'Dekat Anda', 'DEMO DATA']) expect(html).toContain(text);
+    for (const text of ['DUTA MEMBER', 'RM9.90', '/membership']) expect(html).not.toContain(text);
   });
   it('retains the application shell on existing URLs', () => {
     for (const path of ['/masuk', '/daftar', '/tanya', '/profil']) {
