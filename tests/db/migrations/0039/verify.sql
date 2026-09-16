@@ -18,6 +18,7 @@ BEGIN
   JOIN pg_attribute target_attribute ON target_attribute.attrelid=c.confrelid AND target_attribute.attnum=c.confkey[1]
   WHERE c.contype='f' AND c.conrelid=source_table AND source_attribute.attname=source_column
     AND c.confrelid=target_table AND target_attribute.attname=target_column
+    AND cardinality(c.conkey)=1 AND cardinality(c.confkey)=1
     AND c.confdeltype='r' AND c.confupdtype='a';
   IF NOT FOUND THEN RAISE EXCEPTION 'foreign key mismatch: %', label; END IF;
 END
@@ -50,7 +51,7 @@ BEGIN
   IF (expected_default='NONE' AND default_expression IS NOT NULL)
     OR (expected_default='FALSE' AND normalized_default !~ '^false(::boolean)?$')
     OR (expected_default='UNKNOWN' AND normalized_default !~ '^''unknown''::(public[.])?official_source_currentness$')
-    OR (expected_default='NOW' AND normalized_default !~ '^(now|current_timestamp.*)$')
+    OR (expected_default='NOW' AND normalized_default !~ '^(now|current_timestamp)$')
     OR (expected_default='GEN_RANDOM_UUID' AND normalized_default !~ '^gen_random_uuid$') THEN
     RAISE EXCEPTION 'column default mismatch: %', label;
   END IF;
