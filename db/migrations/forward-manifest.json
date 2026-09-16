@@ -1,0 +1,202 @@
+{
+  "authorityVersion": 1,
+  "manifestSchemaVersion": 1,
+  "authorityModel": "FORWARD_ONLY_DIRECT_SQL",
+  "repositoryBaseline": {
+    "file": "db/migrations/forward-authority-baseline.json",
+    "head": "3602a09a3b85161eae45101eb8339c68591612ea",
+    "tree": "6676178a4a8c7131c2f95679303e33c8ed7a2305"
+  },
+  "historicalCeiling": "0038",
+  "firstForwardMigration": "0039",
+  "historicalIntegrity": {
+    "purpose": "MUTATION_DETECTION_ONLY",
+    "algorithm": "SHA-256",
+    "baselineHead": "3602a09a3b85161eae45101eb8339c68591612ea",
+    "baselineTree": "6676178a4a8c7131c2f95679303e33c8ed7a2305",
+    "missingNumbers": [
+      "0004",
+      "0005",
+      "0006",
+      "0007"
+    ],
+    "files": [
+      {
+        "number": "0000",
+        "filename": "0000_next_marrow.sql",
+        "sha256": "8eddd1ec7f90381be4e08f763cc0db08040c20dcd793e42b3b8505793ac7ba1d"
+      },
+      {
+        "number": "0001",
+        "filename": "0001_glorious_scarlet_witch.sql",
+        "sha256": "0c2e5e99cc441dfbfc96e9b064d865495365a7b239bfe3218461d56a9ce9df95"
+      },
+      {
+        "number": "0002",
+        "filename": "0002_reflective_magdalene.sql",
+        "sha256": "997cdc38ae18972e5631fe426987b40bc72c9638b94e7c5c12762829edd8c621"
+      },
+      {
+        "number": "0003",
+        "filename": "0003_stiff_sunspot.sql",
+        "sha256": "cfd3566aa9d9103afd8c7870684d0637a6ea67af39d54bd87f4a8ccf4230ba76"
+      },
+      {
+        "number": "0008",
+        "filename": "0008_phase4_real_content_rls.sql",
+        "sha256": "a21f1105d458502f10929a87399742559070100b2ec70796eed91b1fc065298a"
+      },
+      {
+        "number": "0009",
+        "filename": "0009_organization_archival_workflow.sql",
+        "sha256": "c7958ef37664f14fa10c707dcbaef581fcf49122c183014d7c28bd3b8dab96de"
+      },
+      {
+        "number": "0010",
+        "filename": "0010_runtime_database_roles.sql",
+        "sha256": "5cd6e95fea83195b6c4180195f0b0db3831547c4451286f09df8508ab79d1b11"
+      },
+      {
+        "number": "0011",
+        "filename": "0011_runtime_identity_bridge.sql",
+        "sha256": "fb145a5e75ef8ef3f6ae2f4fabb36463f305e230019f25fb52192448c8d59560"
+      },
+      {
+        "number": "0012",
+        "filename": "0012_runtime_role_grants.sql",
+        "sha256": "f97306021959cc9c3b44cd53dc7b781b37a041b41d4bddf9139014021f4f73c8"
+      },
+      {
+        "number": "0013",
+        "filename": "0013_runtime_official_sources_rls.sql",
+        "sha256": "f0add334d1d477608a751d44b15e0506924b4c7d52affc06930a34ab2c2f379a"
+      },
+      {
+        "number": "0014",
+        "filename": "0014_runtime_users_select.sql",
+        "sha256": "d5cf126fc1a5fa552910e2023b698ef9d2892eb6cf89fe88a493b51dfc075d0c"
+      },
+      {
+        "number": "0015",
+        "filename": "0015_runtime_users_rls.sql",
+        "sha256": "14d3af2421cb736593f669d622f2ddce20c03333c22e5fd323993ed433065e0d"
+      },
+      {
+        "number": "0016",
+        "filename": "0016_runtime_content_select.sql",
+        "sha256": "69151c85695146561e156cb45aaf5f2dbc1e037da69f62e37ed5f87ca2ceacd0"
+      },
+      {
+        "number": "0017",
+        "filename": "0017_runtime_sellers_select.sql",
+        "sha256": "c79b1c2552089a4e1f2dc0cbd773aa9fca27ba9a79a1026d9b9fdd0048d5bb58"
+      },
+      {
+        "number": "0018",
+        "filename": "0018_runtime_users_self_update.sql",
+        "sha256": "2167d9dafaac3b1158e8f5e7fe3e87c697bcbdb43e0ac2c059b77b1169a3d787"
+      },
+      {
+        "number": "0019",
+        "filename": "0019_runtime_audit_self_insert.sql",
+        "sha256": "ed8b0c2f0cfeaa46af9cac29927254a485ff8a8a6164ed64eff6dc88ff6074f1"
+      },
+      {
+        "number": "0020",
+        "filename": "0020_account_deletion_audit_hardening.sql",
+        "sha256": "5b40df02b3825f8001e489df7ff0cb078d2f55af7047981189d265e912bd4043"
+      },
+      {
+        "number": "0021",
+        "filename": "0021_remove_broad_audit_self_insert.sql",
+        "sha256": "4babcf72a83dbf9f04a7ce86420ef57f033d47e16f5277409c2a68dd5df1ccbd"
+      },
+      {
+        "number": "0022",
+        "filename": "0022_account_deletion_function.sql",
+        "sha256": "ed6c00409cc9a55100152f885df9c6bdc0b8fb9294b0c5ddb6e17fd82c4f90b5"
+      },
+      {
+        "number": "0023",
+        "filename": "0023_entity_legal_status_foundation.sql",
+        "sha256": "899383f05bfccd20966e7ca2ebf106cb5141b4ce8a84ac96fc5194c85e84b961"
+      },
+      {
+        "number": "0024",
+        "filename": "0024_presence_responsible_person_foundation.sql",
+        "sha256": "0b03c1c69f33a662d8206738f07971c0821141c76a04e3db5a7a3c82573d7a8b"
+      },
+      {
+        "number": "0025",
+        "filename": "0025_verification_foundation.sql",
+        "sha256": "e24bd0e369fb8eda319b1625edb8d29c2570691b050c9c8975617add99f4fa05"
+      },
+      {
+        "number": "0026",
+        "filename": "0026_eligibility_permission_foundation.sql",
+        "sha256": "113e1033ebd0b70c7d5a94c9a65d225341fc84e8137cea49b4853febb4c6e6ab"
+      },
+      {
+        "number": "0027",
+        "filename": "0027_community_membership_growth_foundation.sql",
+        "sha256": "3b1e525a66941c99dc20f0d1b4e4d7e17ba266ac8aa34ec3850335f18510df7c"
+      },
+      {
+        "number": "0028",
+        "filename": "0028_marketplace_compliance_foundation.sql",
+        "sha256": "dd75ec8f5fab65a4c75a0726e754982e7387658b31e3b8a44b459af3f0606ce3"
+      },
+      {
+        "number": "0029",
+        "filename": "0029_admin_rbac_foundation.sql",
+        "sha256": "3f01950752e301d7ae455a2e02bf6b06abbaf0a9f2d929792f0aefed2e532a98"
+      },
+      {
+        "number": "0030",
+        "filename": "0030_event_safety_paid_event_foundation.sql",
+        "sha256": "f18ecdc59fac5fe04c14f95b6a57438c1797358347ef8a83887991281e8461ba"
+      },
+      {
+        "number": "0031",
+        "filename": "0031_job_posting_employer_eligibility_foundation.sql",
+        "sha256": "b23ecceaf109c91582623351607b81ecd5124c09720227a77fe9d0bdf5c15c78"
+      },
+      {
+        "number": "0032",
+        "filename": "0032_siskop2mi_official_job_source_foundation.sql",
+        "sha256": "0b8d43b109e1881af062c80c5b1c405b91773fde24b1a6ece56da2c96b78c693"
+      },
+      {
+        "number": "0033",
+        "filename": "0033_moderation_trust_foundation.sql",
+        "sha256": "6500789fd1146c0078675e0d22eb5fd66089bae908c14da9a7b2de87e9ed7bba"
+      },
+      {
+        "number": "0034",
+        "filename": "0034_ai_fair_use_foundation.sql",
+        "sha256": "50e045e6b5f1bd42f9b93d9280e2408833e4ffc90db7f844ea0841331d44cddc"
+      },
+      {
+        "number": "0035",
+        "filename": "0035_ai_telemetry_foundation.sql",
+        "sha256": "ed765e37b4354eaef84d33fb64882a73bbd1fcf250b9009b0c7a3e2def693df3"
+      },
+      {
+        "number": "0036",
+        "filename": "0036_ai_telemetry_correlation.sql",
+        "sha256": "332fd38674eb872ac11c318756c6378b9502c0d339b15c8b8aabe215c49be3a3"
+      },
+      {
+        "number": "0037",
+        "filename": "0037_runtime_identity_helpers.sql",
+        "sha256": "c7b6842eddcca24bc782e7835ac8ff3cc141cafdb5600db1615fe98e6099da64"
+      },
+      {
+        "number": "0038",
+        "filename": "0038_core_runtime_rls_enforcement.sql",
+        "sha256": "f10294dc62ca3f4312a71cb38ab62a973b4d6209f89232785f5edb75de89f11b"
+      }
+    ]
+  },
+  "migrations": []
+}
