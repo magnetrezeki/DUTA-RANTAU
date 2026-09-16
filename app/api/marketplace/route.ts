@@ -1,24 +1,10 @@
-import { NextResponse } from "next/server";
-import { products } from "@/db/schema";
-import { withPublicTransaction } from "@/lib/db/identity-bridge";
+import { NextResponse } from 'next/server';
 
-const publicListingFields = {
-  id: products.id,
-  name: products.name,
-  description: products.description,
-  category: products.category,
-  priceMyr: products.priceMyr,
-  images: products.images,
-  state: products.state,
-  city: products.city,
-  publishedAt: products.publishedAt,
-};
-
+// Public marketplace discovery is withheld until P0 marketplace controls
+// have been implemented and validated.
 export async function GET() {
-  try {
-    const data = await withPublicTransaction(async (tx) => tx.select(publicListingFields).from(products));
-    return NextResponse.json({ data });
-  } catch {
-    return NextResponse.json({ error: "Data marketplace belum tersedia" }, { status: 503 });
-  }
+  return NextResponse.json(
+    { error: 'Data marketplace belum tersedia. Pasar Rantau sedang dipersiapkan.' },
+    { status: 503 },
+  );
 }

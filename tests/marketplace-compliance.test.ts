@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
+import { readFileSync } from 'node:fs';
 import { evaluateMarketplaceListingPermission } from '../lib/domain/marketplace-compliance';
+import { POST as createAdminListing } from '../app/api/admin/marketplace/route';
+import { POST as createListing } from '../app/api/marketplace/create/route';
+import { GET as getMarketplace } from '../app/api/marketplace/route';
 
 const approved = { type: 'commercial' as const, status: 'approved' as const, expiresAt: null };
 const allowedBusiness = { entityType: 'business' as const, entityActive: true, actorAuthorized: true, commercialEligibility: approved, category: 'ordinary_goods' };
@@ -46,5 +50,21 @@ describe('marketplace compliance', () => {
 
   it('does not use plans or consumer subscriptions as marketplace inputs', () => {
     expect(evaluateMarketplaceListingPermission({ ...allowedBusiness, commercialEligibility: undefined })).toMatchObject({ allowed: false, reason: 'ELIGIBILITY_REQUIRED' });
+  });
+
+  it('denies every known seller creation path before a database write', async () => {
+    const [adminResponse, publicResponse] = await Promise.all([createAdminListing(), createListing()]);
+    expect(adminResponse.status).toBe(410);
+    expect(publicResponse.status).toBe(410);
+    await expect(adminResponse.json()).resolves.toEqual({ error: 'Pembuatan listing penjual saat ini belum tersedia.' });
+  });
+
+  it('withholds public marketplace discovery and preserves the absence of checkout', async () => {
+    const response = await getMarketplace();
+    expect(response.status).toBe(503);
+    await expect(response.json()).resolves.toEqual({ error: 'Data marketplace belum tersedia. Pasar Rantau sedang dipersiapkan.' });
+    expect(readFileSync('app/pasar/page.tsx', 'utf8')).toContain('Sedang dipersiapkan');
+    expect(() => readFileSync('app/api/marketplace/checkout/route.ts', 'utf8')).toThrow();
+    expect(() => readFileSync('app/api/membership/checkout/route.ts', 'utf8')).toThrow();
   });
 });

@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { existsSync, readFileSync } from 'node:fs';
+import { POST as submitEmployerJob } from '../app/api/admin/jobs/route';
+import { POST as createSellerListing } from '../app/api/admin/marketplace/route';
+import { GET as getMarketplace } from '../app/api/marketplace/route';
 
 const read = (path: string) => readFileSync(path, 'utf8');
 
@@ -13,19 +16,39 @@ describe('Phase 4 production data boundaries', () => {
   });
 
   it('uses database reads for the discovery APIs', () => {
-    for (const path of ['app/api/jobs/route.ts', 'app/api/marketplace/route.ts', 'app/api/community/route.ts', 'app/api/organizations/route.ts', 'app/api/sources/route.ts']) {
+    for (const path of ['app/api/jobs/route.ts', 'app/api/community/route.ts', 'app/api/organizations/route.ts', 'app/api/sources/route.ts']) {
       expect(read(path)).toMatch(/withPublicTransaction|withUserTransaction/);
       expect(read(path)).not.toContain('demo-data');
     }
   });
 
+  it('withholds marketplace discovery before a database read', async () => {
+    const response = await getMarketplace();
+
+    expect(response.status).toBe(503);
+    await expect(response.json()).resolves.toEqual({ error: 'Data marketplace belum tersedia. Pasar Rantau sedang dipersiapkan.' });
+    expect(read('app/api/marketplace/route.ts')).not.toMatch(/withPublicTransaction|withUserTransaction/);
+  });
+
   it('ships admin mutation boundaries for all requested content modules', () => {
-    for (const path of ['app/api/admin/jobs/route.ts', 'app/api/admin/marketplace/route.ts', 'app/api/admin/community/route.ts', 'app/api/admin/organizations/route.ts', 'app/api/sources/[id]/route.ts']) {
+    for (const path of ['app/api/admin/community/route.ts', 'app/api/admin/organizations/route.ts', 'app/api/sources/[id]/route.ts']) {
       expect(read(path)).toMatch(/authorize(?:Platform)?Api/);
       expect(read(path)).toContain('withUserTransaction');
     }
     const rls = read('db/migrations/0008_phase4_real_content_rls.sql');
     for (const policy of ['jobs_admin_all', 'products_admin_all', 'communities_admin_all', 'organizations_admin_insert', 'official_sources_admin_all']) expect(rls).toContain(policy);
+  });
+
+  it('withholds employer and seller submission before authorization or database mutation', async () => {
+    const [jobResponse, listingResponse] = await Promise.all([
+      submitEmployerJob(),
+      createSellerListing(),
+    ]);
+
+    expect(jobResponse.status).toBe(410);
+    expect(listingResponse.status).toBe(410);
+    expect(read('app/api/admin/jobs/route.ts')).not.toContain('withUserTransaction');
+    expect(read('app/api/admin/marketplace/route.ts')).not.toContain('withUserTransaction');
   });
 
   it('hardens organization deletion into archival-only workflow', () => {

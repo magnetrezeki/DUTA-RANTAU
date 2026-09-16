@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { evaluateEntityPermission } from '../lib/domain/eligibility';
 import { evaluateJobPostingPermission } from '../lib/domain/job-posting-safety';
+import { POST as submitEmployerJob } from '../app/api/admin/jobs/route';
 
 const approved = { type: 'employer' as const, status: 'approved' as const, expiresAt: null };
 const employer = { entityType: 'business' as const, entityActive: true, actorAuthorized: true, employerEligibility: approved, postingKind: 'direct_employer' as const };
@@ -43,5 +44,18 @@ describe('job posting safety', () => {
     expect(migration).toContain('candidate placement and agency posting are not supported');
     expect(migration).toContain('DROP POLICY IF EXISTS jobs_admin_all');
     expect(migration).not.toContain('candidate_profiles');
+  });
+
+  it('withholds direct-employer submission before validation or database access', async () => {
+    const response = await submitEmployerJob();
+    expect(response.status).toBe(410);
+    await expect(response.json()).resolves.toEqual({ error: 'Pengajuan lowongan langsung saat ini belum tersedia.' });
+  });
+
+  it('keeps discovery routes while candidate application and matching routes remain absent', () => {
+    expect(readFileSync('app/api/jobs/route.ts', 'utf8')).toContain('export async function GET');
+    expect(readFileSync('app/api/jobs/official/route.ts', 'utf8')).toContain('export async function GET');
+    expect(() => readFileSync('app/api/jobs/applications/route.ts', 'utf8')).toThrow();
+    expect(() => readFileSync('app/api/jobs/matching/route.ts', 'utf8')).toThrow();
   });
 });
