@@ -17,13 +17,19 @@ const requirePatterns = (text: string, patterns: RegExp[]) => {
 };
 
 describe('MA-03 migration validation contract', () => {
-  it('provides the contract and template without a governed migration artifact', () => {
+  it('provides the contract and template with the governed 0039 proposed scaffold only', () => {
     expect(existsSync(contractPath)).toBe(true);
     expect(existsSync(templatePath)).toBe(true);
-    expect(readdirSync(migrationDirectory).some((name) => /^0039.*\.sql$/.test(name))).toBe(false);
-    expect(existsSync(resolve(repositoryRoot, 'tests/db/migrations/0039'))).toBe(false);
-    expect(existsSync(resolve(repositoryRoot, 'docs/duta-v2.5/migrations/0039_VALIDATION.md'))).toBe(false);
-    expect(JSON.parse(readText(manifestPath)).migrations).toEqual([]);
+    expect(readdirSync(migrationDirectory)).toContain('0039_source_registry_governance_foundation.sql');
+    expect(existsSync(resolve(repositoryRoot, 'tests/db/migrations/0039/prestate.sql'))).toBe(true);
+    expect(existsSync(resolve(repositoryRoot, 'tests/db/migrations/0039/verify.sql'))).toBe(true);
+    expect(existsSync(resolve(repositoryRoot, 'tests/db/migrations/0039/security-verify.sql'))).toBe(true);
+    expect(existsSync(resolve(repositoryRoot, 'docs/duta-v2.5/migrations/0039_VALIDATION.md'))).toBe(true);
+    expect(JSON.parse(readText(manifestPath)).migrations).toEqual([expect.objectContaining({
+      number: '0039', filename: '0039_source_registry_governance_foundation.sql', status: 'PROPOSED',
+      checksum: null, introducedCommit: null,
+      validationContract: { status: 'PENDING_MA03', reference: null },
+    })]);
   });
 
   it('preserves locked authority language, boundaries, and lifecycle', () => {

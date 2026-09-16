@@ -198,5 +198,35 @@
       }
     ]
   },
-  "migrations": []
+  "migrations": [
+    {
+      "number": "0039",
+      "filename": "0039_source_registry_governance_foundation.sql",
+      "purpose": "Add additive governance for existing official sources: purpose classification, restricted verification and approval metadata, currentness, and source-specific evidence without ingestion, publication, booking, AI execution, runtime reviewer workflow, or mission-data insertion.",
+      "dependsOn": {
+        "migrations": ["0000", "0008", "0010", "0011", "0012", "0013", "0038"],
+        "tables": ["public.official_sources", "public.users"],
+        "columns": ["public.official_sources.id", "public.official_sources.active", "public.official_sources.last_checked", "public.users.id"],
+        "functions": [],
+        "roles": ["duta_app", "duta_system"],
+        "extensions": ["pgcrypto"],
+        "security": ["RLS:public.official_sources", "POLICY:public.official_sources:official_sources_public", "POLICY:public.official_sources:official_sources_admin_all", "GRANT:duta_app:public.official_sources:SELECT,INSERT,UPDATE,DELETE"]
+      },
+      "checksum": null,
+      "introducedCommit": null,
+      "schemaEffect": "ADDITIVE",
+      "securityEffects": ["RLS", "AUTHORIZATION"],
+      "requiresRlsValidation": true,
+      "requiresDataBackfill": false,
+      "dataEffect": "NONE",
+      "rollback": {
+        "classification": "REVERSIBLE"
+      },
+      "validationContract": {
+        "status": "PENDING_MA03",
+        "reference": null
+      },
+      "status": "PROPOSED"
+    }
+  ]
 }

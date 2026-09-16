@@ -223,11 +223,30 @@ describe('forward migration manifest', () => {
     });
   });
 
-  it('keeps the initial MA-02 baseline free of governed migrations', () => {
-    // INITIAL MA-02 BASELINE ASSERTION: MA-03/MA-05 must deliberately evolve
-    // this assertion before a real 0039 migration can be introduced.
-    expect(manifest.migrations).toEqual([]);
-    expect(readdirSync(migrationDirectory).some((filename) => /^0039.*\.sql$/.test(filename))).toBe(false);
+  it('recognizes the current first governed migration as proposed without applied-state authority', () => {
+    const migrations = manifest.migrations as Array<Record<string, unknown>>;
+    expect(migrations).toHaveLength(1);
+
+    const [migration] = migrations;
+    expect(migration).toMatchObject({
+      number: '0039',
+      filename: '0039_source_registry_governance_foundation.sql',
+      status: 'PROPOSED',
+      checksum: null,
+      introducedCommit: null,
+      schemaEffect: 'ADDITIVE',
+      securityEffects: ['RLS', 'AUTHORIZATION'],
+      requiresRlsValidation: true,
+      requiresDataBackfill: false,
+      dataEffect: 'NONE',
+      validationContract: {
+        status: 'PENDING_MA03',
+        reference: null,
+      },
+    });
+
+    expect(readdirSync(migrationDirectory)).toContain(migration.filename);
+    expect(() => assertNoAppliedStateKeys(migration)).not.toThrow();
   });
 
   it('rejects malformed or added files in the frozen historical namespace', () => {

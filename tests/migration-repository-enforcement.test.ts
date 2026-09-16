@@ -32,6 +32,10 @@ function commit(root: string, message: string) {
 }
 function initializeFixture(root: string) {
   cpSync(join(repositoryRoot, 'db/migrations'), join(root, 'db/migrations'), { recursive: true });
+  rmSync(join(root, 'db/migrations/0039_source_registry_governance_foundation.sql'));
+  const manifest = readManifest(root);
+  manifest.migrations = [];
+  writeManifest(root, manifest);
   write(root, 'package.json', JSON.stringify({ scripts: { build: 'next build', start: 'next start' } }, null, 2));
   runGit(root, ['init']);
   runGit(root, ['config', 'user.email', 'ma05@example.test']);
@@ -97,8 +101,11 @@ afterEach(() => {
 afterAll(() => rmSync(fixtureTemplate, { recursive: true, force: true }));
 
 describe('MA-05 repository migration enforcement', { timeout: 30_000 }, () => {
-  it('accepts the locked zero-forward baseline and exposes the package guard command', () => {
-    expect(checkMigrationAuthority(repositoryRoot)).toEqual({ historicalCount: 35, forwardCount: 0 });
+  it('accepts the current proposed 0039 baseline and exposes the package guard command', () => {
+    expect(checkMigrationAuthority(repositoryRoot)).toEqual({ historicalCount: 35, forwardCount: 1 });
+    expect(readManifest(repositoryRoot).migrations).toEqual([expect.objectContaining({
+      number: '0039', status: 'PROPOSED', checksum: null, introducedCommit: null,
+    })]);
     expect(JSON.parse(readFileSync(join(repositoryRoot, 'package.json'), 'utf8')).scripts['migration:check'])
       .toBe('node scripts/check-migration-authority.mjs');
   });
