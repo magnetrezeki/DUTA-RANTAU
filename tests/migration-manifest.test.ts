@@ -54,16 +54,36 @@ function sha256(filePath: string): string {
   return createHash('sha256').update(readFileSync(filePath)).digest('hex');
 }
 
-function getHistoricalFiles() {
-  return readdirSync(migrationDirectory)
+function historicalEntriesFromFilenames(filenames: string[]) {
+  const entries = filenames
+    .filter((filename) => filename.endsWith('.sql'))
     .map((filename) => {
-      const match = filename.match(historicalFilePattern);
-      return match ? { filename, number: match[1] } : null;
+      const numericPrefix = filename.match(/^(\d{4})/);
+      if (numericPrefix === null || Number(numericPrefix[1]) > 38) return null;
+      if (!historicalFilePattern.test(filename)) {
+        throw new Error(`Malformed historical migration filename: ${filename}`);
+      }
+      return { filename, number: numericPrefix[1] };
     })
-    .filter((entry): entry is { filename: string; number: string } =>
-      entry !== null && Number(entry.number) <= 38,
-    )
+    .filter((entry): entry is { filename: string; number: string } => entry !== null)
     .sort((left, right) => left.filename.localeCompare(right.filename));
+
+  expect(new Set(entries.map((entry) => entry.number)).size, 'historical migration numbers must be unique').toBe(entries.length);
+  return entries;
+}
+
+function getHistoricalFiles() {
+  return historicalEntriesFromFilenames(readdirSync(migrationDirectory));
+}
+
+function assertHistoricalSetMatchesManifest(
+  actualFiles: Array<{ filename: string; number: string }>,
+  integrityFiles: Record<string, unknown>[],
+): void {
+  expect(actualFiles).toHaveLength(35);
+  expect(integrityFiles).toHaveLength(35);
+  expect(integrityFiles.map((entry) => entry.filename)).toEqual(actualFiles.map((entry) => entry.filename));
+  expect(new Set(integrityFiles.map((entry) => entry.number)).size).toBe(35);
 }
 
 function expectPlainObject(value: unknown, label: string): asserts value is Record<string, unknown> {
@@ -80,7 +100,8 @@ function assertNoAppliedStateKeys(value: unknown): void {
   if (value === null || typeof value !== 'object') return;
 
   for (const [key, nestedValue] of Object.entries(value)) {
-    expect(forbiddenAppliedStateKeys.has(key.toLowerCase()), `forbidden applied-state key: ${key}`).toBe(false);
+    const canonicalKey = key.toLowerCase().replace(/[^a-z0-9]/g, '');
+    expect(forbiddenAppliedStateKeys.has(canonicalKey), `forbidden applied-state key: ${key}`).toBe(false);
     assertNoAppliedStateKeys(nestedValue);
   }
 }
@@ -89,7 +110,13 @@ function assertDependencyShape(value: unknown): void {
   expectPlainObject(value, 'dependsOn');
   const expectedKeys = ['migrations', 'tables', 'columns', 'functions', 'roles', 'extensions', 'security'];
   expect(Object.keys(value).sort()).toEqual(expectedKeys.sort());
-  expectedKeys.forEach((key) => expect(value[key], `dependsOn.${key}`).toEqual(expect.any(Array)));
+  expectedKeys.forEach((key) => {
+    expect(value[key], `dependsOn.${key}`).toEqual(expect.any(Array));
+    (value[key] as unknown[]).forEach((identifier) => {
+      expect(typeof identifier, `dependsOn.${key} values must be strings`).toBe('string');
+      expect((identifier as string).trim().length, `dependsOn.${key} values must not be blank`).toBeGreaterThan(0);
+    });
+  });
 }
 
 function assertAcceptedMigration(entry: ForwardMigration): void {
@@ -176,7 +203,6 @@ describe('forward migration manifest', () => {
     expect(integrity.missingNumbers).toEqual(['0004', '0005', '0006', '0007']);
 
     const actualFiles = getHistoricalFiles();
-    expect(actualFiles).toHaveLength(35);
     const actualNumbers = actualFiles.map((entry) => Number(entry.number));
     const actualGaps = Array.from({ length: 39 }, (_, number) => number)
       .filter((number) => !actualNumbers.includes(number))
@@ -185,9 +211,7 @@ describe('forward migration manifest', () => {
 
     expect(integrity.files).toEqual(expect.any(Array));
     const integrityFiles = integrity.files as Record<string, unknown>[];
-    expect(integrityFiles).toHaveLength(35);
-    expect(integrityFiles.map((entry) => entry.filename)).toEqual(actualFiles.map((entry) => entry.filename));
-    expect(new Set(integrityFiles.map((entry) => entry.number)).size).toBe(35);
+    assertHistoricalSetMatchesManifest(actualFiles, integrityFiles);
 
     integrityFiles.forEach((entry) => {
       expect(typeof entry.number).toBe('string');
@@ -204,6 +228,40 @@ describe('forward migration manifest', () => {
     // this assertion before a real 0039 migration can be introduced.
     expect(manifest.migrations).toEqual([]);
     expect(readdirSync(migrationDirectory).some((filename) => /^0039.*\.sql$/.test(filename))).toBe(false);
+  });
+
+  it('rejects malformed or added files in the frozen historical namespace', () => {
+    const actualFiles = getHistoricalFiles();
+    const integrityFiles = (manifest.historicalIntegrity as Record<string, unknown>).files as Record<string, unknown>[];
+    expect(() => historicalEntriesFromFilenames(['0004.sql'])).toThrow('Malformed historical migration filename');
+    expect(() => historicalEntriesFromFilenames(['0038.sql'])).toThrow('Malformed historical migration filename');
+    expect(() => historicalEntriesFromFilenames(['0038_extra.sql', '0038_runtime.sql'])).toThrow('historical migration numbers must be unique');
+    expect(() => assertHistoricalSetMatchesManifest(
+      [...actualFiles, { filename: '0004_new.sql', number: '0004' }],
+      integrityFiles,
+    )).toThrow();
+  });
+
+  it('rejects separator and nesting variants of applied-state keys', () => {
+    const blockedKeys = [
+      'appliedAt', 'applied_at', 'applied-at', 'Applied At',
+      'executedAt', 'executed_at', 'executed-at',
+      'deploymentStatus', 'deployment_status', 'deployment-status',
+      'stagingApplied', 'staging_applied', 'staging-applied',
+      'productionApplied', 'production_applied', 'production-applied',
+      'databaseState', 'database_state', 'database-state',
+    ];
+    blockedKeys.forEach((key) => expect(() => assertNoAppliedStateKeys({ [key]: true })).toThrow());
+    expect(() => assertNoAppliedStateKeys({ metadata: { applied_at: true } })).toThrow();
+    expect(() => assertNoAppliedStateKeys({ metadata: [{ database_state: true }] })).toThrow();
+  });
+
+  it('rejects non-string and blank dependency identifiers', () => {
+    const dependencyKeys = ['migrations', 'tables', 'columns', 'functions', 'roles', 'extensions', 'security'];
+    const validDependencies = Object.fromEntries(dependencyKeys.map((key) => [key, ['valid.identifier']]));
+    [[{}], [39], [null], [['nested']], [''] , ['   '], [true]].forEach((invalidValues) => {
+      expect(() => assertDependencyShape({ ...validDependencies, tables: invalidValues })).toThrow();
+    });
   });
 
   it('validates future governed migration metadata without environment state', () => {
