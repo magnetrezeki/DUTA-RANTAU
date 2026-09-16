@@ -1,0 +1,21 @@
+{
+  "authorityVersion": 1,
+  "authorityModel": "FORWARD_ONLY_DIRECT_SQL",
+  "repositoryBaseline": {
+    "branch": "duta-v2.5",
+    "head": "3602a09a3b85161eae45101eb8339c68591612ea",
+    "tree": "6676178a4a8c7131c2f95679303e33c8ed7a2305"
+  },
+  "historicalMigrationCeiling": "0038",
+  "firstForwardMigration": "0039",
+  "historicalPolicy": "FROZEN_HISTORICAL_EVIDENCE",
+  "legacyJournalPolicy": "LEGACY_FROZEN_METADATA",
+  "historicalReplayAuthority": false,
+  "numericReplayAuthority": false,
+  "legacyJournalReplayAuthority": false,
+  "environmentAppliedStateAsserted": false,
+  "freshDatabaseAuthorityEstablished": false,
+  "forwardManifestImplemented": false,
+  "appliedStateLedgerImplemented": false,
+  "status": "ACTIVE_FORWARD_AUTHORITY_BASELINE"
+}
