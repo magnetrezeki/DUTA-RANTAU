@@ -9,6 +9,7 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:ai-db": "node scripts/test-ai-quota-db.mjs",
+    "migration:check": "node scripts/check-migration-authority.mjs",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:seed:sources": "tsx scripts/seed-official-sources.ts",

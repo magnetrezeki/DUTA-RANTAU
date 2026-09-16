@@ -24,7 +24,6 @@ describe('MA-03 migration validation contract', () => {
     expect(existsSync(resolve(repositoryRoot, 'tests/db/migrations/0039'))).toBe(false);
     expect(existsSync(resolve(repositoryRoot, 'docs/duta-v2.5/migrations/0039_VALIDATION.md'))).toBe(false);
     expect(JSON.parse(readText(manifestPath)).migrations).toEqual([]);
-    expect(existsSync(resolve(repositoryRoot, 'scripts/check-migration-authority.mjs'))).toBe(false);
   });
 
   it('preserves locked authority language, boundaries, and lifecycle', () => {
