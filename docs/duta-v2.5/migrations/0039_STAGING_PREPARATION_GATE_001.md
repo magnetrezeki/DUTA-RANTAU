@@ -111,3 +111,17 @@ Required external decision: provide a provider-supported backup capability for
 this staging project, or approve and establish a separate deterministic backup
 and restore mechanism with a named recovery owner. Billing or plan changes are
 outside this gate and were not performed.
+
+## Provider-access checkpoint 3
+
+The owner authorized deterministic logical backup and local restore proof. That
+work completed successfully and is recorded in
+`0039_STAGING_LOGICAL_RECOVERY_001.md`. Logical recovery is now `READY`, the
+read-only staging precheck is `PASS`, migration 0039 is `KNOWN_NOT_APPLIED`, and
+the declared staging prestate is `PASS`.
+
+The staging migration-owner identity and restricted `duta_app` role are ready.
+A staging-only `APP_DATABASE_URL` secret is configured for Vercel Preview branch
+`duta-v2.5`. It is not active in the existing deployment until a separately
+authorized redeployment occurs. Migration 0039 remains unexecuted and requires
+explicit `STAGING_EXECUTION_AUTHORIZED` evidence.
