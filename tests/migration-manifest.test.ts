@@ -128,7 +128,7 @@ function assertAcceptedMigration(entry: ForwardMigration): void {
   expect(entry.checksum).toBe(`sha256:${sha256(filePath)}`);
   expect(typeof entry.introducedCommit).toBe('string');
   expect(String(entry.introducedCommit)).toMatch(gitShaPattern);
-  expect(() => execFileSync('git', ['cat-file', '-e', `${entry.introducedCommit}:${entry.filename}`], {
+  expect(() => execFileSync('git', ['cat-file', '-e', `${entry.introducedCommit}:db/migrations/${entry.filename}`], {
     cwd: repositoryRoot,
     stdio: 'ignore',
   })).not.toThrow();
@@ -231,17 +231,17 @@ describe('forward migration manifest', () => {
     expect(migration).toMatchObject({
       number: '0039',
       filename: '0039_source_registry_governance_foundation.sql',
-      status: 'PROPOSED',
-      checksum: null,
-      introducedCommit: null,
+      status: 'AUTHORITY_ACCEPTED',
+      checksum: 'sha256:5d7d68730f12dce3a2c8d87ff589cfa1e3bd90d9fe6df28932703ccf82da0a30',
+      introducedCommit: '9865917b6c8a6da4d5cf90df5a82d90dc6c07cd5',
       schemaEffect: 'ADDITIVE',
       securityEffects: ['RLS', 'AUTHORIZATION'],
       requiresRlsValidation: true,
       requiresDataBackfill: false,
       dataEffect: 'NONE',
       validationContract: {
-        status: 'PENDING_MA03',
-        reference: null,
+        status: 'COMPLETE_MA03',
+        reference: 'docs/duta-v2.5/migrations/0039_VALIDATION.md',
       },
     });
 

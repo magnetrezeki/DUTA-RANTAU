@@ -212,8 +212,8 @@
         "extensions": ["pgcrypto"],
         "security": ["RLS:public.official_sources", "POLICY:public.official_sources:official_sources_public", "POLICY:public.official_sources:official_sources_admin_all", "GRANT:duta_app:public.official_sources:SELECT,INSERT,UPDATE,DELETE"]
       },
-      "checksum": null,
-      "introducedCommit": null,
+      "checksum": "sha256:5d7d68730f12dce3a2c8d87ff589cfa1e3bd90d9fe6df28932703ccf82da0a30",
+      "introducedCommit": "9865917b6c8a6da4d5cf90df5a82d90dc6c07cd5",
       "schemaEffect": "ADDITIVE",
       "securityEffects": ["RLS", "AUTHORIZATION"],
       "requiresRlsValidation": true,
@@ -223,10 +223,10 @@
         "classification": "REVERSIBLE"
       },
       "validationContract": {
-        "status": "PENDING_MA03",
-        "reference": null
+        "status": "COMPLETE_MA03",
+        "reference": "docs/duta-v2.5/migrations/0039_VALIDATION.md"
       },
-      "status": "PROPOSED"
+      "status": "AUTHORITY_ACCEPTED"
     }
   ]
 }

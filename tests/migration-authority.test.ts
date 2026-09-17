@@ -17,7 +17,7 @@ const requirePatterns = (text: string, patterns: RegExp[]) => {
 };
 
 describe('MA-03 migration validation contract', () => {
-  it('provides the contract and template with the governed 0039 proposed scaffold only', () => {
+  it('provides the contract and template with accepted 0039 validation evidence', () => {
     expect(existsSync(contractPath)).toBe(true);
     expect(existsSync(templatePath)).toBe(true);
     expect(readdirSync(migrationDirectory)).toContain('0039_source_registry_governance_foundation.sql');
@@ -26,9 +26,10 @@ describe('MA-03 migration validation contract', () => {
     expect(existsSync(resolve(repositoryRoot, 'tests/db/migrations/0039/security-verify.sql'))).toBe(true);
     expect(existsSync(resolve(repositoryRoot, 'docs/duta-v2.5/migrations/0039_VALIDATION.md'))).toBe(true);
     expect(JSON.parse(readText(manifestPath)).migrations).toEqual([expect.objectContaining({
-      number: '0039', filename: '0039_source_registry_governance_foundation.sql', status: 'PROPOSED',
-      checksum: null, introducedCommit: null,
-      validationContract: { status: 'PENDING_MA03', reference: null },
+      number: '0039', filename: '0039_source_registry_governance_foundation.sql', status: 'AUTHORITY_ACCEPTED',
+      checksum: 'sha256:5d7d68730f12dce3a2c8d87ff589cfa1e3bd90d9fe6df28932703ccf82da0a30',
+      introducedCommit: '9865917b6c8a6da4d5cf90df5a82d90dc6c07cd5',
+      validationContract: { status: 'COMPLETE_MA03', reference: 'docs/duta-v2.5/migrations/0039_VALIDATION.md' },
     })]);
   });
 
