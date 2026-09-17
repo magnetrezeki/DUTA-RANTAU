@@ -10,6 +10,7 @@
     "test": "vitest run",
     "test:ai-db": "node scripts/test-ai-quota-db.mjs",
     "migration:check": "node scripts/check-migration-authority.mjs",
+    "test:migration:enforcement": "vitest run tests/migration-repository-enforcement.test.ts --pool threads",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:seed:sources": "tsx scripts/seed-official-sources.ts",
