@@ -223,7 +223,7 @@ describe('forward migration manifest', () => {
     });
   });
 
-  it('recognizes the current first governed migration as proposed without applied-state authority', () => {
+  it('recognizes the current first governed migration as authority-accepted without applied-state authority', () => {
     const migrations = manifest.migrations as Array<Record<string, unknown>>;
     expect(migrations).toHaveLength(1);
 
