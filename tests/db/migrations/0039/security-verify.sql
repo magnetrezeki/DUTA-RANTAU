@@ -40,35 +40,35 @@ SELECT set_config('app.user_id','00000000-0000-4000-8000-000000000001',true);
 SELECT pg_temp.assert_true(EXISTS (SELECT 1 FROM public.official_sources WHERE id='00000000-0000-4000-8000-000000000101' AND active), 'duta_app reads active source');
 UPDATE public.official_sources SET priority='P1' WHERE id='00000000-0000-4000-8000-000000000101';
 SELECT pg_temp.assert_true((SELECT priority='P1' FROM public.official_sources WHERE id='00000000-0000-4000-8000-000000000101'), 'duta_app updates priority');
-INSERT INTO public.official_sources (id,institution,channel,url,category,priority,trust_level,last_checked,active)
-VALUES ('00000000-0000-4000-8000-000000000103','Synthetic legacy insert','website','https://source.example.invalid/legacy-insert','general','P0','OFFICIAL_VERIFIED',now(),true);
-SELECT pg_temp.assert_true((SELECT source_purpose IS NULL FROM public.official_sources WHERE id='00000000-0000-4000-8000-000000000103'), 'legacy insert remains unclassified');
+INSERT INTO public.official_sources (institution,channel,url,category,priority,trust_level,last_checked,active)
+VALUES ('Synthetic legacy insert','website','https://source.example.invalid/legacy-insert','general','P0','OFFICIAL_VERIFIED',now(),true);
+SELECT pg_temp.assert_true((SELECT source_purpose IS NULL FROM public.official_sources WHERE url='https://source.example.invalid/legacy-insert'), 'legacy insert remains unclassified');
 SELECT pg_temp.assert_denied($$INSERT INTO public.official_sources (institution,channel,url,category,priority,trust_level,last_checked,active,source_purpose) VALUES ('Synthetic','website','https://source.example.invalid/denied-insert','general','P0','OFFICIAL_VERIFIED',now(),true,'NEWS')$$, 'duta_app purpose insert');
-SELECT pg_temp.assert_denied($$UPDATE public.official_sources SET source_purpose='CONTACT' WHERE id='00000000-0000-4000-8000-000000000103'$$, 'duta_app purpose update');
+SELECT pg_temp.assert_denied($$UPDATE public.official_sources SET source_purpose='CONTACT' WHERE url='https://source.example.invalid/legacy-insert'$$, 'duta_app purpose update');
 SELECT pg_temp.assert_denied($$UPDATE public.official_sources SET source_purpose='CONTACT' WHERE id='00000000-0000-4000-8000-000000000101'$$, 'duta_app purpose change');
 SELECT pg_temp.assert_denied($$UPDATE public.official_sources SET source_purpose=NULL WHERE id='00000000-0000-4000-8000-000000000101'$$, 'duta_app purpose clear');
 
 SELECT pg_temp.assert_denied('SELECT * FROM public.official_source_governance','duta_app governance select');
-SELECT pg_temp.assert_denied($$INSERT INTO public.official_source_governance (source_id) VALUES ('00000000-0000-4000-8000-000000000103')$$,'duta_app governance insert');
+SELECT pg_temp.assert_denied($$INSERT INTO public.official_source_governance (source_id) VALUES ('00000000-0000-4000-8000-000000000101')$$,'duta_app governance insert');
 SELECT pg_temp.assert_denied($$UPDATE public.official_source_governance SET currentness='STALE' WHERE source_id='00000000-0000-4000-8000-000000000102'$$,'duta_app governance update');
 SELECT pg_temp.assert_denied($$DELETE FROM public.official_source_governance WHERE source_id='00000000-0000-4000-8000-000000000102'$$,'duta_app governance delete');
 SELECT pg_temp.assert_denied('SELECT * FROM public.official_source_evidence','duta_app evidence select');
-SELECT pg_temp.assert_denied($$INSERT INTO public.official_source_evidence (source_id,evidence_url,evidence_type,checked_at) VALUES ('00000000-0000-4000-8000-000000000103','https://evidence.example.invalid/denied','PRIMARY_OFFICIAL_SOURCE',now())$$,'duta_app evidence insert');
+SELECT pg_temp.assert_denied($$INSERT INTO public.official_source_evidence (source_id,evidence_url,evidence_type,checked_at) VALUES ('00000000-0000-4000-8000-000000000101','https://evidence.example.invalid/denied','PRIMARY_OFFICIAL_SOURCE',now())$$,'duta_app evidence insert');
 SELECT pg_temp.assert_denied($$UPDATE public.official_source_evidence SET evidence_type='OTHER' WHERE source_id='00000000-0000-4000-8000-000000000102'$$,'duta_app evidence update');
 SELECT pg_temp.assert_denied($$DELETE FROM public.official_source_evidence WHERE source_id='00000000-0000-4000-8000-000000000102'$$,'duta_app evidence delete');
 
 RESET ROLE;
 SET LOCAL ROLE anon;
 SELECT pg_temp.assert_denied('SELECT * FROM public.official_source_governance','anon governance select');
-SELECT pg_temp.assert_denied($$INSERT INTO public.official_source_governance (source_id) VALUES ('00000000-0000-4000-8000-000000000103')$$,'anon governance insert');
+SELECT pg_temp.assert_denied($$INSERT INTO public.official_source_governance (source_id) VALUES ('00000000-0000-4000-8000-000000000101')$$,'anon governance insert');
 SELECT pg_temp.assert_denied('SELECT * FROM public.official_source_evidence','anon evidence select');
-SELECT pg_temp.assert_denied($$INSERT INTO public.official_source_evidence (source_id,evidence_url,evidence_type,checked_at) VALUES ('00000000-0000-4000-8000-000000000103','https://evidence.example.invalid/anon','PRIMARY_OFFICIAL_SOURCE',now())$$,'anon evidence insert');
+SELECT pg_temp.assert_denied($$INSERT INTO public.official_source_evidence (source_id,evidence_url,evidence_type,checked_at) VALUES ('00000000-0000-4000-8000-000000000101','https://evidence.example.invalid/anon','PRIMARY_OFFICIAL_SOURCE',now())$$,'anon evidence insert');
 RESET ROLE;
 SET LOCAL ROLE authenticated;
 SELECT pg_temp.assert_denied('SELECT * FROM public.official_source_governance','authenticated governance select');
-SELECT pg_temp.assert_denied($$INSERT INTO public.official_source_governance (source_id) VALUES ('00000000-0000-4000-8000-000000000103')$$,'authenticated governance insert');
+SELECT pg_temp.assert_denied($$INSERT INTO public.official_source_governance (source_id) VALUES ('00000000-0000-4000-8000-000000000101')$$,'authenticated governance insert');
 SELECT pg_temp.assert_denied('SELECT * FROM public.official_source_evidence','authenticated evidence select');
-SELECT pg_temp.assert_denied($$INSERT INTO public.official_source_evidence (source_id,evidence_url,evidence_type,checked_at) VALUES ('00000000-0000-4000-8000-000000000103','https://evidence.example.invalid/authenticated','PRIMARY_OFFICIAL_SOURCE',now())$$,'authenticated evidence insert');
+SELECT pg_temp.assert_denied($$INSERT INTO public.official_source_evidence (source_id,evidence_url,evidence_type,checked_at) VALUES ('00000000-0000-4000-8000-000000000101','https://evidence.example.invalid/authenticated','PRIMARY_OFFICIAL_SOURCE',now())$$,'authenticated evidence insert');
 RESET ROLE;
 SET LOCAL ROLE duta_system;
 SELECT pg_temp.assert_denied('SELECT * FROM public.official_source_governance','duta_system governance select');

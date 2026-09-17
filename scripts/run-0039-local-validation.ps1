@@ -14,8 +14,8 @@ $image = 'postgres:16-alpine'
 $expected = @{
     Prestate = '467027a30647438637335c1a406e4cf4d89c7bb991c8632215aa1bebb8f0dff2'
     Migration = '5d7d68730f12dce3a2c8d87ff589cfa1e3bd90d9fe6df28932703ccf82da0a30'
-    Verify = '8a48b8ff1bd426554c82bf7326f6456d926b37dff5120fff0938c71917257ca1'
-    SecurityVerify = 'a4d394f0b6f0f9bb4f6d98aa8db4463c1444ef2075e29b95d6f5101d307dc26a'
+    Verify = 'a93e06c32585e13def8b3e97381566af2abc3e711032a464bcefed988d072698'
+    SecurityVerify = 'f42252761080f429bd7b0a187a2bc63190da975e116e3276511e71082bab9341'
 }
 $repositoryRoot = Split-Path -Parent $PSScriptRoot
 $artifacts = [ordered]@{
