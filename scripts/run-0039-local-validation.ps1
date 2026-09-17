@@ -65,7 +65,7 @@ function Assert-ContainerIdentity {
     $configuredImage = (& $script:docker inspect --format '{{.Config.Image}}' $container).Trim()
     Require-ExitCode 'Docker image check'
     if ($configuredImage -notmatch '^postgres:16(?:[.-]|$)') { Fail 'TARGET_IDENTITY_FAILED' 'Container image is not PostgreSQL major version 16.' }
-    $binding = (& $script:docker inspect --format '{{range (index .HostConfig.PortBindings "5432/tcp")}}{{.HostIp}}:{{.HostPort}}{{end}}' $container).Trim()
+    $binding = (& $script:docker port $container '5432/tcp').Trim()
     Require-ExitCode 'Docker port-binding check'
     if ($binding -ne "$hostAddress`:$port") { Fail 'TARGET_IDENTITY_FAILED' 'Container does not have the required loopback-only port binding.' }
 }
