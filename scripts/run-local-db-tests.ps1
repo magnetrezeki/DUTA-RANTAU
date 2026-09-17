@@ -100,7 +100,7 @@ try {
     Push-Location $repositoryRoot
     try {
         & npm test -- tests/source-integrity.test.ts tests/ai-router.test.ts
-        if ($LASTEXITCODE -ne 0) { throw 'The six APP_DATABASE_URL-blocked tests failed.' }
+        if ($LASTEXITCODE -ne 0) { throw 'The APP_DATABASE_URL-backed source and AI-router tests failed.' }
 
         if ($RunFullSuite) {
             & npm test

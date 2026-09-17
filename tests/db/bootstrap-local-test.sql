@@ -1,7 +1,7 @@
 -- LOCAL TEST ONLY. NOT FOR PRODUCTION. DO NOT APPLY TO HOSTED SUPABASE.
 -- Run solely against a disposable local database.
--- This file intentionally creates only the minimum surface required by the six
--- APP_DATABASE_URL-blocked source and AI-router tests.
+-- This file intentionally creates only the minimum surface required by the
+-- APP_DATABASE_URL-backed source and AI-router tests.
 \set ON_ERROR_STOP on
 
 BEGIN;
@@ -36,6 +36,14 @@ EXCEPTION
 END
 $$;
 
+DO $$
+BEGIN
+  CREATE TYPE public.source_purpose AS ENUM ('NEWS', 'CONSULAR_SERVICE', 'CONTACT');
+EXCEPTION
+  WHEN duplicate_object THEN NULL;
+END
+$$;
+
 CREATE TABLE IF NOT EXISTS public.official_sources (
   id uuid PRIMARY KEY,
   institution text NOT NULL,
@@ -47,6 +55,7 @@ CREATE TABLE IF NOT EXISTS public.official_sources (
   last_checked timestamptz NOT NULL,
   checksum text NOT NULL,
   active boolean NOT NULL DEFAULT true,
+  source_purpose public.source_purpose DEFAULT NULL,
   created_at timestamptz NOT NULL DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now()
 );

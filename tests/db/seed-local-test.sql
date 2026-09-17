@@ -7,7 +7,7 @@ TRUNCATE TABLE public.official_sources;
 
 INSERT INTO public.official_sources (
   id, institution, channel, url, category, priority, trust_level,
-  last_checked, checksum, active, created_at, updated_at
+  last_checked, checksum, active, source_purpose, created_at, updated_at
 ) VALUES
   (
     '00000000-0000-4000-8000-000000000101',
@@ -20,6 +20,7 @@ INSERT INTO public.official_sources (
     '2026-08-16T00:00:00Z',
     'synthetic-checksum-penang-v1',
     true,
+    'CONSULAR_SERVICE',
     '2026-08-16T00:00:00Z',
     '2026-08-16T00:00:00Z'
   ),
@@ -34,6 +35,7 @@ INSERT INTO public.official_sources (
     '2026-08-15T00:00:00Z',
     'synthetic-checksum-inactive-v1',
     false,
+    NULL,
     '2026-08-15T00:00:00Z',
     '2026-08-15T00:00:00Z'
   );
