@@ -6,10 +6,10 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-$container = 'duta-local-test-db'
+$container = 'duta-local-test-db-clean'
 $database = 'duta_local_test'
 $hostAddress = '127.0.0.1'
-$port = 55433
+$port = 55434
 $image = 'postgres:16-alpine'
 $expected = @{
     Prestate = '467027a30647438637335c1a406e4cf4d89c7bb991c8632215aa1bebb8f0dff2'
@@ -105,7 +105,7 @@ $docker = Get-Command docker -ErrorAction SilentlyContinue
 $psql = Get-Command psql -ErrorAction SilentlyContinue
 if ($null -eq $docker) { Fail 'ENVIRONMENT_BLOCKED' 'Docker CLI is required.' }
 if ($null -eq $psql) { Fail 'ENVIRONMENT_BLOCKED' 'Host psql is required; container-internal execution is not substituted.' }
-if ($container -ne 'duta-local-test-db' -or $database -ne 'duta_local_test' -or $hostAddress -ne '127.0.0.1' -or $port -ne 55433) { Fail 'ENVIRONMENT_BLOCKED' 'Locked local target invariant failed.' }
+if ($container -ne 'duta-local-test-db-clean' -or $database -ne 'duta_local_test' -or $hostAddress -ne '127.0.0.1' -or $port -ne 55434) { Fail 'ENVIRONMENT_BLOCKED' 'Locked local target invariant failed.' }
 
 Assert-Artifacts
 if (-not $Execute) {
