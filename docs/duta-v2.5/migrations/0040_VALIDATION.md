@@ -3,8 +3,8 @@
 | Field | Value |
 | --- | --- |
 | Migration | `0040_restrict_sensitive_table_default_acl.sql` |
-| Repository lifecycle | `PROPOSED` |
-| Validation status | `PENDING_MA03` |
+| Repository lifecycle | `AUTHORITY_ACCEPTED` |
+| Validation status | `COMPLETE_MA03` |
 | Data effect | `NONE` |
 | Schema effect | `NONE` |
 | Security effects | `AUTHORIZATION` |
@@ -62,10 +62,10 @@ unrelated ACL change.
 
 ## Authority and environment disclaimer
 
-This is a Commit A proposal scaffold. Its manifest checksum and
-`introducedCommit` remain null until independent validation and a separate
-Commit B authority decision. It authorizes no staging or production SQL and
-does not change the classification of staging attempt 0039.
+Repository authority acceptance authorizes no staging or production SQL and
+does not change the classification of staging attempt 0039. Environment
+execution still requires fresh target prestate, recovery readiness, and an
+explicit environment-specific execution authorization.
 
 ## Proposal-stage local evidence
 
@@ -100,6 +100,42 @@ removed after validation.
 | Migration authority guard | `PASS (historical=35, forward=2)` |
 | Repository enforcement tests | `PASS (13/13)` |
 
-This is proposal-stage validation, not independent review or authority
+This local evidence was independently reviewed before repository authority
 acceptance. Provider-specific staging semantics still require post-apply
 verification if a later gate authorizes execution.
+
+## Independent review evidence
+
+Independent review re-derived the correction from the accepted 0039 verifier,
+the captured staging object/default ACLs, PostgreSQL default-privilege scope,
+and disposable local tests. It did not rely only on the proposal rationale.
+
+The falsification run verified:
+
+- only the two named current table ACLs are directly changed;
+- the default change is limited to owner `postgres`, schema `public`, object
+  class tables, and grantees `anon` and `authenticated`;
+- defaults for sequences and functions, another schema, and another owner are
+  unchanged;
+- an unrelated existing table retains its ACL;
+- a future `postgres`-owned public table excludes `anon` and `authenticated`
+  while preserving `service_role`;
+- a second local application succeeds with the same poststate;
+- the exact reverse procedure restores both current-object and default ACLs.
+
+All structural, RLS, policy, runtime-role, service-role, and zero-data
+invariants passed. Repository enforcement passed `13/13`. The independent
+review reference is
+`docs/duta-v2.5/migrations/0040_AUTHORITY_REVIEW.md`.
+
+## Provenance and acceptance evidence
+
+- Canonical SQL SHA-256:
+  `b59dcfea09b1ebbc023783eff4e280e3e74bfe04bfe34a6d741a21839bbc4697`.
+- Commit A / introducedCommit:
+  `0b2f0e97007ba5647e9888a2d286a06b57c70f60`.
+- Commit A is the unique earliest non-merge path-add for the canonical SQL.
+- Local reproduction, remediation, future-object, scope-isolation,
+  repeat-application, negative authorization, and reverse-procedure checks:
+  `PASS`.
+- Authority acceptance requires and is recorded by the separate Commit B.

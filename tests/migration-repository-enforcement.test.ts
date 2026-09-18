@@ -102,7 +102,7 @@ afterEach(() => {
 afterAll(() => rmSync(fixtureTemplate, { recursive: true, force: true }));
 
 describe('MA-05 repository migration enforcement', { timeout: 30_000 }, () => {
-  it('accepts authority-accepted 0039 plus proposed 0040 and exposes the package guard command', () => {
+  it('accepts authority-accepted 0039 and 0040 and exposes the package guard command', () => {
     expect(checkMigrationAuthority(repositoryRoot)).toEqual({ historicalCount: 35, forwardCount: 2 });
     expect(readManifest(repositoryRoot).migrations).toEqual([
       expect.objectContaining({
@@ -111,7 +111,9 @@ describe('MA-05 repository migration enforcement', { timeout: 30_000 }, () => {
         introducedCommit: '9865917b6c8a6da4d5cf90df5a82d90dc6c07cd5',
       }),
       expect.objectContaining({
-        number: '0040', status: 'PROPOSED', checksum: null, introducedCommit: null,
+        number: '0040', status: 'AUTHORITY_ACCEPTED',
+        checksum: 'sha256:b59dcfea09b1ebbc023783eff4e280e3e74bfe04bfe34a6d741a21839bbc4697',
+        introducedCommit: '0b2f0e97007ba5647e9888a2d286a06b57c70f60',
       }),
     ]);
     expect(JSON.parse(readFileSync(join(repositoryRoot, 'package.json'), 'utf8')).scripts['migration:check'])

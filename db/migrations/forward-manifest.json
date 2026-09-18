@@ -241,8 +241,8 @@
         "extensions": [],
         "security": ["OWNER:postgres:public.official_source_governance,public.official_source_evidence", "DEFAULT_PRIVILEGES:postgres:public:TABLES:anon,authenticated,service_role", "GRANT:anon,authenticated,service_role:public.official_source_governance,public.official_source_evidence:ALL", "RLS:public.official_source_governance,public.official_source_evidence"]
       },
-      "checksum": null,
-      "introducedCommit": null,
+      "checksum": "sha256:b59dcfea09b1ebbc023783eff4e280e3e74bfe04bfe34a6d741a21839bbc4697",
+      "introducedCommit": "0b2f0e97007ba5647e9888a2d286a06b57c70f60",
       "schemaEffect": "NONE",
       "securityEffects": ["AUTHORIZATION"],
       "requiresRlsValidation": false,
@@ -252,10 +252,10 @@
         "classification": "REVERSIBLE"
       },
       "validationContract": {
-        "status": "PENDING_MA03",
-        "reference": null
+        "status": "COMPLETE_MA03",
+        "reference": "docs/duta-v2.5/migrations/0040_VALIDATION.md"
       },
-      "status": "PROPOSED"
+      "status": "AUTHORITY_ACCEPTED"
     }
   ]
 }
