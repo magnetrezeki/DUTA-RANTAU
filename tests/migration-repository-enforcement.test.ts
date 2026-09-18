@@ -33,6 +33,7 @@ function commit(root: string, message: string) {
 function initializeFixture(root: string) {
   cpSync(join(repositoryRoot, 'db/migrations'), join(root, 'db/migrations'), { recursive: true });
   rmSync(join(root, 'db/migrations/0039_source_registry_governance_foundation.sql'));
+  rmSync(join(root, 'db/migrations/0040_restrict_sensitive_table_default_acl.sql'));
   const manifest = readManifest(root);
   manifest.migrations = [];
   writeManifest(root, manifest);
@@ -101,13 +102,18 @@ afterEach(() => {
 afterAll(() => rmSync(fixtureTemplate, { recursive: true, force: true }));
 
 describe('MA-05 repository migration enforcement', { timeout: 30_000 }, () => {
-  it('accepts the current authority-accepted 0039 baseline and exposes the package guard command', () => {
-    expect(checkMigrationAuthority(repositoryRoot)).toEqual({ historicalCount: 35, forwardCount: 1 });
-    expect(readManifest(repositoryRoot).migrations).toEqual([expect.objectContaining({
-      number: '0039', status: 'AUTHORITY_ACCEPTED',
-      checksum: 'sha256:5d7d68730f12dce3a2c8d87ff589cfa1e3bd90d9fe6df28932703ccf82da0a30',
-      introducedCommit: '9865917b6c8a6da4d5cf90df5a82d90dc6c07cd5',
-    })]);
+  it('accepts authority-accepted 0039 plus proposed 0040 and exposes the package guard command', () => {
+    expect(checkMigrationAuthority(repositoryRoot)).toEqual({ historicalCount: 35, forwardCount: 2 });
+    expect(readManifest(repositoryRoot).migrations).toEqual([
+      expect.objectContaining({
+        number: '0039', status: 'AUTHORITY_ACCEPTED',
+        checksum: 'sha256:5d7d68730f12dce3a2c8d87ff589cfa1e3bd90d9fe6df28932703ccf82da0a30',
+        introducedCommit: '9865917b6c8a6da4d5cf90df5a82d90dc6c07cd5',
+      }),
+      expect.objectContaining({
+        number: '0040', status: 'PROPOSED', checksum: null, introducedCommit: null,
+      }),
+    ]);
     expect(JSON.parse(readFileSync(join(repositoryRoot, 'package.json'), 'utf8')).scripts['migration:check'])
       .toBe('node scripts/check-migration-authority.mjs');
   });

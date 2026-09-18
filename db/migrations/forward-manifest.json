@@ -227,6 +227,35 @@
         "reference": "docs/duta-v2.5/migrations/0039_VALIDATION.md"
       },
       "status": "AUTHORITY_ACCEPTED"
+    },
+    {
+      "number": "0040",
+      "filename": "0040_restrict_sensitive_table_default_acl.sql",
+      "purpose": "Remove unintended anon and authenticated privileges from the two sensitive migration 0039 tables and from future postgres-owned table defaults in schema public while preserving service_role and unrelated ACLs.",
+      "dependsOn": {
+        "migrations": ["0039"],
+        "tables": ["public.official_source_governance", "public.official_source_evidence", "public.official_sources"],
+        "columns": [],
+        "functions": [],
+        "roles": ["postgres", "anon", "authenticated", "service_role", "duta_app", "duta_system"],
+        "extensions": [],
+        "security": ["OWNER:postgres:public.official_source_governance,public.official_source_evidence", "DEFAULT_PRIVILEGES:postgres:public:TABLES:anon,authenticated,service_role", "GRANT:anon,authenticated,service_role:public.official_source_governance,public.official_source_evidence:ALL", "RLS:public.official_source_governance,public.official_source_evidence"]
+      },
+      "checksum": null,
+      "introducedCommit": null,
+      "schemaEffect": "NONE",
+      "securityEffects": ["AUTHORIZATION"],
+      "requiresRlsValidation": false,
+      "requiresDataBackfill": false,
+      "dataEffect": "NONE",
+      "rollback": {
+        "classification": "REVERSIBLE"
+      },
+      "validationContract": {
+        "status": "PENDING_MA03",
+        "reference": null
+      },
+      "status": "PROPOSED"
     }
   ]
 }
