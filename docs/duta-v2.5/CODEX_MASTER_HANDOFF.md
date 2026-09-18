@@ -1,5 +1,13 @@
 # DUTA RANTAU v2.5 — Codex master handoff
 
+> PRODUCT AUTHORITY UPDATE — 2026-09-18: KPP-01A founder decisions FD-01
+> through FD-05 supersede earlier active product assumptions in this handoff
+> about Auth/onboarding, public-vs-auth value, primary navigation, organization
+> commercialization and 18+ enforcement. See
+> `killer-product/KPP01_FOUNDER_DECISIONS.md` and
+> `killer-product/KPP02_UX_ARCHITECTURE_ENTRY_CONTRACT.md`. Historical
+> implementation evidence below remains evidence, not current product authority.
+
 > CURRENT-STATE UPDATE — 2026-09-18: This document is retained as historical
 > takeover context. Its SR-01 current-state and permission statements are
 > superseded by repository evidence at and after Commit B

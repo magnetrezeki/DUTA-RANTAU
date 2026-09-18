@@ -4,18 +4,25 @@ Date: 2026-09-18.
 
 ## Dependency sequence
 
-1. **KPP-01 — Product Contract Reconciliation.** Complete this evidence gate and
-   obtain decisions FD-01 through FD-05.
+1. **KPP-01 / KPP-01A — Product Contract Reconciliation and Decision Lock.**
+   Complete. FD-01 through FD-05 are locked; FD-05 remains subject to legal
+   review before release.
 2. **KPP-02 — UX Architecture Freeze.** Freeze public/auth boundaries, target Auth
    entry points, five primary intents, Jaga Diri persistence, route groups and
-   honest locked/empty states. Auth contract is an input, not deferred until KPP-05.
+   honest locked/empty states. It must obey Google-first entry with magic-link
+   fallback, value before login, minimal onboarding, TODAY / ASK DUTA / ESSENTIAL /
+   CONNECT / ME, persistent Jaga Diri, progressive disclosure, free organization
+   presence with no paid purchase path, and lightweight 18+ self-attestation with
+   no default full-DOB collection. KPP-02 entry is governed by
+   `KPP02_UX_ARCHITECTURE_ENTRY_CONTRACT.md`.
 3. **KPP-03 — Five-Second WOW + Human-Cinematic Visual System.** Apply a cohesive
    visual language only after navigation and promise hierarchy are frozen.
 4. **KPP-04 — Thirty-Second Clarity + Progressive Disclosure.** Prove a new arrival
    can reach official help, work discovery, connection and safety without an account.
-5. **KPP-05 — Authentication/Onboarding Simplification.** Implement only the
-   founder-accepted provider set, linking/recovery contract, age mechanism and
-   minimal post-login context.
+5. **KPP-05 — Authentication/Onboarding Simplification.** Implement Google OAuth
+   primary and magic-link fallback, compatible legacy-password treatment,
+   collision-tested linking/recovery, minimal post-login context and the legally
+   reviewed age mechanism.
 6. **KPP-06 — Cakap ke DUTA / Magic Moment.** Complete intent → trusted information
    → relevant action → continuation. Keep voice optional and text-complete.
 7. **KPP-07 — DUTA Today.** Replace demo personalization with sourced, empty-safe
@@ -37,11 +44,10 @@ Date: 2026-09-18.
 
 ## Adjustment from the conceptual order
 
-The implementation sequence remains broadly intact, but the **Auth contract must
-be decided before KPP-02**, not first considered in KPP-05. Navigation, public
-value, continuation, profile and onboarding cannot be frozen without knowing the
-identity entry points. KPP-05 remains the implementation phase.
+The implementation sequence remains broadly intact. The Auth, public-value,
+intent, organization commercialization and age-policy directions are now locked
+before KPP-02. KPP-02 freezes architecture; KPP-05 remains the Auth/onboarding
+implementation phase. FD-05 legal review remains a release condition.
 
 Trust-label rules begin during KPP-02 and source-content operations must run in
 parallel with KPP-03–KPP-07; visual work cannot manufacture source coverage.
-

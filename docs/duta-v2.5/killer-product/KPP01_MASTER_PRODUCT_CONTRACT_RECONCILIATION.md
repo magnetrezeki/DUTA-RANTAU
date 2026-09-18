@@ -1,7 +1,9 @@
 # KPP-01 Master Product Contract Reconciliation
 
 Date: 2026-09-18  
-Mode: audit, reconciliation and design-decision preparation only.
+Mode: audit and authoritative contract reconciliation.
+Authority update: FD-01 through FD-05 were locked by the founder in KPP-01A and
+supersede the proposal language recorded during KPP-01.
 
 ## 1. Authority and method
 
@@ -34,21 +36,22 @@ working controls. Admin routes are hidden from the main navigation but the
 profile exposes an admin Preview link. No separate notification or general
 search results route exists.
 
-## 3. Authentication and onboarding target proposal
+## 3. Authentication and onboarding locked contract
 
 **CURRENT IMPLEMENTATION:** email/password register/login/recovery, Supabase
 session cookies and callback routes exist. A Google OAuth button calls Supabase,
 but the staging provider is disabled. Positive email/password lifecycle evidence
 was deferred by owner product decision. Phone/WhatsApp Auth is absent.
 
-**PROPOSAL:** Google OAuth primary; passwordless email magic-link fallback;
+**LOCKED:** Google OAuth primary; passwordless email magic-link fallback;
 temporarily preserve password login only for compatible existing accounts until
 a deliberate migration/retirement decision. Do not select phone or WhatsApp OTP
 for initial launch without provider cost, delivery, number recycling, recovery,
 privacy and abuse evidence. Account linking must be explicit, collision-tested
 and recoverable; email/phone equality alone must not silently merge accounts.
 
-Google one-tap may be evaluated as progressive enhancement after ordinary OAuth
+Phone OTP and WhatsApp OTP are deferred pending the required evidence. Google
+one-tap may be evaluated as progressive enhancement after ordinary OAuth
 is proven. It must not obscure provider disclosure, silently create accounts or
 be the only route. Rate limiting, generic recovery responses and session
 invalidation remain mandatory.
@@ -65,13 +68,14 @@ invalidation remain mandatory.
 | Precise location | Browser permission in safety UI | SENSITIVE_REQUIRES_EXPLICIT_REASON | Device-local, action-specific, default off |
 | Profession, origin, interests | Profile copy implies future use | OPTIONAL / JUST_IN_TIME | Collect only for a chosen feature |
 | Full birth date | Absent | UNNECESSARY_FOR_V2_5 | Prefer proportionate 18+ attestation if accepted |
-| 18+ attestation | Absent | REQUIRED_AT_ACCOUNT_OR_USER_CONTENT_ACTION pending FD-05 | Current launch policy |
+| 18+ attestation | Absent | REQUIRED_AT_ACCOUNT_OR_USER_CONTENT_ACTION | Lightweight self-attestation subject to legal review |
 
-Onboarding minimization is **DECISIONS_REQUIRED** until FD-01 and FD-05.
+Onboarding minimization is **LOCKED_WITH_LEGAL_REVIEW**: no full date of birth
+or unnecessary birth-year collection by default.
 
 ## 4. Public versus authenticated contract
 
-**PROPOSAL:** before login, provide landing, official services, Jaga Diri,
+**LOCKED — VALUE BEFORE LOGIN:** before login, provide landing, official services, Jaga Diri,
 source-backed work/community/organization discovery, living guides and a bounded
 DUTA demonstration. After login, allow saving, joining, creating, continuation,
 coarse personalization and profile/privacy controls. After explicit context or
@@ -79,8 +83,10 @@ permission, allow browser-local proximity, microphone and organization-role
 tools. Restricted/unavailable: marketplace execution, finance execution, health,
 e-voting, CCTV, MyDigital ID and uncontrolled Citizen Report publishing.
 
-The contract is **DECISIONS_REQUIRED** only for the public DUTA limit and the
-exact Auth entry; its safety boundaries are already governed.
+Authentication is required for save, join, create, submit, personalize,
+persisted continuation, profile/organization management, user-generated content
+and other identity-bound actions. Public DUTA remains bounded by existing AI,
+source and security contracts. The contract is **LOCKED**.
 
 ## 5. Information architecture baseline
 
@@ -91,9 +97,11 @@ Search icons route to DUTA AI, while page-level filters are fragmented and not
 evidenced as functional. Locked Pasar receives equal prominence; Jaga Diri is
 high value but competes with modules.
 
-**PROPOSAL:** freeze intent-led architecture around Today, Ask DUTA, Essential,
+**LOCKED:** freeze intent-led architecture around Today, Ask DUTA, Essential,
 Connect and Me, with a persistent Jaga Diri shortcut. Do not freeze visual design
-yet. Navigation evidence is **READY_FOR_KPP02**, subject to FD-03.
+yet; preserve valid modules through progressive disclosure. Locked/deferred
+modules receive no misleading primary prominence. Navigation evidence is
+**READY_FOR_KPP02**.
 
 ## 6. Magic Moment readiness
 
@@ -166,7 +174,7 @@ without reactivating deferred scopes.
 | Tanya DUTA | CONSISTENT | CLEAR | CLEAR | ADEQUATE | GOOD | loading/error/success/voice permission; empty/provider states partial |
 | Kerja | CONSISTENT | CLEAR | UNCLEAR | WEAK | PARTIAL | empty silently blank; locked create CTA |
 | Komuniti | CONSISTENT | CLEAR | UNCLEAR | WEAK | PARTIAL | empty silently blank; create not wired |
-| Organisasi | CONSISTENT | CLEAR | UNCLEAR | WEAK | PARTIAL | empty handled weakly; pricing/provider mismatch |
+| Organisasi | CONSISTENT | CLEAR | UNCLEAR | WEAK | PARTIAL | free presence target; paid CTAs/prices must be hidden |
 | Pasar | CONSISTENT | CLEAR | MISSING | ADEQUATE | GOOD | honest unavailable state |
 | Layanan RI | CONSISTENT | CLEAR | CLEAR | ADEQUATE | GOOD | empty silently blank; source cards strong |
 | Jaga Diri | CONSISTENT | CLEAR | CLEAR | ADEQUATE | GOOD | permission/fallback/error covered; offline not explicit |
@@ -180,17 +188,19 @@ The target contract preserves: DUTA AI as guidance; Kerja as discovery;
 KBRI/KJRI as official-channel referral; finance as inform/connect/authorised-party
 execution; Citizen Report as private/moderator-first; Pasar withheld; health,
 e-voting, CCTV and MyDigital ID deferred; precise location restricted; initial
-public launch 18+ with enforcement still requiring FD-05.
+public launch 18+ with lightweight self-attestation for account creation and
+identity-bound user action, subject to legal review and without default full-DOB
+collection.
 
 Fourteen material conflicts are recorded in `KPP01_CONFLICT_REGISTER.md`. Five
 founder decisions are isolated in `KPP01_FOUNDER_DECISIONS.md`.
 
 ## 12. Exit decision
 
-KPP-01 documentation is complete. No critical technical blocker prevents founder
-decisions or KPP-02 preparation. Because FD-01–FD-05 materially shape the frozen
-architecture, classification is `KPP01_COMPLETE_READY_FOR_FOUNDER_DECISIONS`, not
-automatic entry into KPP-02.
+KPP-01A documentation is complete. FD-01–FD-05 are locked and no additional
+material founder decision was discovered. Classification is
+`KPP01_FOUNDER_DECISIONS_LOCKED_READY_FOR_KPP02`. This does not authorize or
+start KPP-02.
 
 No application behavior, database, migration, provider, Supabase/Vercel setting,
 Production system or deployment was changed.
