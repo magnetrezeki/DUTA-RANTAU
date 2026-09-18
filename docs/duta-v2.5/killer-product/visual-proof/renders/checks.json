@@ -1,0 +1,44 @@
+[
+  {
+    "screen": "01-landing-desktop",
+    "width": 1440,
+    "scrollWidth": 1440,
+    "height": 900,
+    "imagesReady": true
+  },
+  {
+    "screen": "02-landing-mobile",
+    "width": 390,
+    "scrollWidth": 390,
+    "height": 968,
+    "imagesReady": true
+  },
+  {
+    "screen": "03-today",
+    "width": 390,
+    "scrollWidth": 390,
+    "height": 1157,
+    "imagesReady": true
+  },
+  {
+    "screen": "04-ask",
+    "width": 390,
+    "scrollWidth": 390,
+    "height": 928,
+    "imagesReady": true
+  },
+  {
+    "screen": "05-jaga-diri",
+    "width": 390,
+    "scrollWidth": 390,
+    "height": 963,
+    "imagesReady": true
+  },
+  {
+    "screen": "06-auth",
+    "width": 390,
+    "scrollWidth": 390,
+    "height": 938,
+    "imagesReady": true
+  }
+]
