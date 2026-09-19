@@ -223,11 +223,13 @@ describe('forward migration manifest', () => {
     });
   });
 
-  it('recognizes the current first governed migration as authority-accepted without applied-state authority', () => {
+  it('recognizes governed migrations as authority-accepted without applied-state authority', () => {
     const migrations = manifest.migrations as Array<Record<string, unknown>>;
-    expect(migrations).toHaveLength(1);
+    expect(migrations.length).toBeGreaterThanOrEqual(1);
 
-    const [migration] = migrations;
+    const migration = migrations.find((entry) => entry.number === '0039');
+    expect(migration).toBeDefined();
+    if (!migration) throw new Error('0039 migration is missing');
     expect(migration).toMatchObject({
       number: '0039',
       filename: '0039_source_registry_governance_foundation.sql',

@@ -1,22 +1,15 @@
 import { NextResponse } from "next/server";
 
-export async function GET() {
-  return NextResponse.json({
-    ok: true,
-    message: "Marketplace detail placeholder"
-  });
-}
+const unavailable = () => NextResponse.json(
+  {
+    error: "Detail Pasar Rantau belum tersedia untuk beta publik.",
+    code: "MARKETPLACE_DETAIL_UNAVAILABLE",
+  },
+  { status: 503, headers: { "Cache-Control": "no-store" } },
+);
 
-export async function PATCH() {
-  return NextResponse.json({
-    ok: true,
-    message: "Marketplace update placeholder"
-  });
-}
-
-export async function DELETE() {
-  return NextResponse.json({
-    ok: true,
-    message: "Marketplace delete placeholder"
-  });
-}
+// No endpoint may report successful Marketplace actions until the approved
+// discovery/evaluate/connect data contract and authorization boundary exist.
+export async function GET() { return unavailable(); }
+export async function PATCH() { return unavailable(); }
+export async function DELETE() { return unavailable(); }

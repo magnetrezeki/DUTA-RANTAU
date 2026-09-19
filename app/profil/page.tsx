@@ -1,2 +1,15 @@
-import Link from 'next/link';import { PageHeader } from '@/components/ui';import { LogoutButton } from '@/components/logout-button';import { Bell,Bookmark,ChevronRight,Globe2,Lock,MapPin,Shield,Trash2,UserRound } from 'lucide-react';export const metadata={title:'Profil Saya'};export default function Page(){return <div className="page"><PageHeader eyebrow="AKUN & PRIVASI" title="Profil Saya"/><div className="profile-layout"><section className="profile-card"><div className="big-avatar">AR</div><div><span className="badge demo">AKUN PREVIEW</span><h2>Anda Rantau</h2><p><MapPin/> Kuala Lumpur, Malaysia</p></div><button>Edit profil</button></section></div><div className="settings"><h2>Pengaturan</h2>{([[UserRound,'Data profil','Kelola nama, profesi, dan minat'],[Lock,'Privasi','Profil, lokasi, kontak, komunitas'],[Bell,'Notifikasi','Jenis dan prioritas notifikasi'],[Globe2,'Bahasa','Bahasa Indonesia'],[Bookmark,'Aktivitas saya','Simpan, posting, kerja, pasar, event'],[Shield,'Keamanan akun','Sesi dan kata sandi']] as const).map(([Icon,title,desc])=><button key={title}><Icon/><span><b>{title}</b><small>{desc}</small></span><ChevronRight/></button>)}<button className="danger"><Trash2/><span><b>Hapus akun</b><small>Hapus data dan akses akun secara permanen</small></span><ChevronRight/></button></div><LogoutButton/><div className="admin-link"><Link href="/admin">Buka Admin Dashboard (preview) <ChevronRight/></Link></div></div>}
+import { redirect } from 'next/navigation';
+import { PageHeader } from '@/components/ui';
+import { LogoutButton } from '@/components/logout-button';
+import { Lock, MapPin, Shield } from 'lucide-react';
+import { getCurrentUser } from '@/lib/auth/session';
+
+export const metadata = { title: 'Profil Saya' };
+
+export default async function Page() {
+  const user = await getCurrentUser();
+  if (!user) redirect('/masuk');
+  const initial = user.name.trim().slice(0, 2).toUpperCase() || 'DR';
+  return <div className="page"><PageHeader eyebrow="AKUN & PRIVASI" title="Profil Saya" description="Informasi yang ditampilkan berasal dari sesi akun Anda." /><div className="profile-layout"><section className="profile-card"><div className="big-avatar" aria-hidden="true">{initial}</div><div><h2>{user.name}</h2><p>{user.city ? <><MapPin />{user.city}, Malaysia</> : 'Lokasi belum ditambahkan.'}</p></div></section></div><section className="settings" aria-label="Status akun"><h2>Akun</h2><div className="notice"><Lock /><div><b>Pengelolaan profil dan preferensi belum aktif.</b><p>DUTA tidak menampilkan riwayat, notifikasi, lencana, atau pengaturan rekaan. Hubungi dukungan bila perlu memperbarui data akun.</p></div></div><div className="notice"><Shield /><div><b>Privasi tetap dikendalikan.</b><p>Jaga Diri dan layanan publik tetap dapat diakses tanpa membuat data aktivitas rekaan pada profil Anda.</p></div></div></section><LogoutButton /></div>;
+}
 

@@ -36,7 +36,7 @@ describe('public landing and preserved application home', () => {
     expect(html).toContain('class="sidebar"');
     expect(html).toContain('href="/beranda"');
     expect(html).toContain('data-live-ai');
-    for (const text of ['Layanan untuk Anda', 'Dekat Anda', 'DEMO DATA']) expect(html).toContain(text);
+    for (const text of ['Layanan untuk Anda', 'Dekat Anda', 'DUTA tidak menampilkan kegiatan rekaan sebagai data langsung.']) expect(html).toContain(text);
     for (const text of ['DUTA MEMBER', 'RM9.90', '/membership']) expect(html).not.toContain(text);
   });
   it('retains the application shell on existing URLs', () => {

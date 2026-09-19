@@ -1,61 +1,34 @@
-import { DemoBadge,PageHeader,TrustBadge } from '@/components/ui';
-import { SearchFilter } from '@/components/search-filter';
-import { Bookmark,Briefcase,Clock,MapPin,Plus } from 'lucide-react';
-import { jobs } from '@/db/schema';
-import { withPublicTransaction } from '@/lib/db/identity-bridge';
+import { PageHeader,TrustBadge } from '@/components/ui';
+import { Briefcase,ExternalLink } from 'lucide-react';
 
 export const dynamic='force-dynamic';
 
 export const metadata={title:'Kerja'};
 
-async function getJobs() {
-    return await withPublicTransaction(async (tx) => {
-        return await tx.select().from(jobs);
-    });
-}
-
-export default async function Page() {
-
-    const jobs = await getJobs().catch(() => []);
+export default function Page() {
 
     return (
         <div className="page">
             <PageHeader
                 eyebrow="PELUANG UNTUK PERANTAU"
                 title="Temukan pekerjaan"
-                description="Jelajahi lowongan komunitas."
-                action={<button className="primary"><Plus/>Pasang lowongan</button>}
+                description="Informasi kerja dan navigasi ke sumber resmi. DUTA tidak menerima lamaran atau memasang lowongan dalam beta publik awal."
             />
-
-            <SearchFilter placeholder="Posisi, perusahaan, atau lokasi…" />
 
             <div className="content-layout">
                 <div className="cards-list jobs">
-                    {jobs.map((x:any)=>
-                        <article className="job-card" key={x.id}>
+                    <article className="job-card">
                             <div className="job-logo"><Briefcase/></div>
 
                             <div className="job-main">
-                                <div className="badge-row">
-                                    <DemoBadge/>
-                                    <TrustBadge/>
-                                </div>
+                                <div className="badge-row"><TrustBadge/></div>
 
-                                <h2>{x.title}</h2>
-
-                                <b>{x.employer}</b>
-
-                                <div className="meta">
-                                    <span><MapPin/>{x.city}</span>
-                                    <span><Clock/>{x.employmentType}</span>
-                                </div>
+                                <h2>Lowongan resmi untuk penempatan di Malaysia</h2>
+                                <p>Periksa ketersediaan, syarat, dan proses lamaran langsung pada portal resmi SISKOP2MI / KP2MI.</p>
+                                <a className="primary" href="https://siskop2mi.bp2mi.go.id/lowongan/list" target="_blank" rel="noreferrer">Buka sumber resmi <ExternalLink size={16}/></a>
                             </div>
 
-                            <button className="icon-btn">
-                                <Bookmark/>
-                            </button>
                         </article>
-                    )}
                 </div>
             </div>
         </div>

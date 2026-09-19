@@ -17,6 +17,7 @@ export default defineConfig([
     ".next/**",
     "node_modules/**",
     "coverage/**",
+    "docs/**",
     "phase3-package/.next/**",
     "phase3-package/node_modules/**",
     "phase3-package/supabase/.temp/**",
