@@ -19,16 +19,16 @@ const services = [
   { href: '/pasar', title: 'Pasar Rantau', text: 'Jelajahi produk dan jasa komunitas.', icon: ShoppingBag },
   { href: '/jaga-diri', title: 'Jaga Diri', text: 'Akses bantuan, rujukan, dan kontak penting.', icon: ShieldCheck },
 ];
-const navigation = [['#tentang', 'Tentang'], ['#layanan', 'Layanan'], ['#duta-ai', 'DUTA AI'], ['#keselamatan', 'Jaga Diri'], ['#komuniti', 'Komuniti']];
+const navigation = [['/beranda', 'Hari Ini'], ['/tanya', 'Tanya DUTA'], ['/layanan', 'Keperluan'], ['/komunitas', 'Rantau'], ['/profil', 'Saya']];
 
 export default function PublicLanding() {
   return <div className={styles.landing}>
     <a className={styles.skip} href="#konten">Langsung ke isi</a>
     <header className={styles.header}>
       <Link className={styles.brand} href="/" aria-label="DUTA RANTAU — beranda publik"><Image src="/logo.png" alt="" width={42} height={42} priority /><span><b>DUTA</b> RANTAU<small>INDONESIA · MALAYSIA</small></span></Link>
-      <nav className={styles.desktopNav} aria-label="Navigasi publik">{navigation.map(([href, label]) => <a key={href} href={href}>{label}</a>)}</nav>
+      <nav className={styles.desktopNav} aria-label="Navigasi utama">{navigation.map(([href, label]) => <Link key={href} href={href}>{label}</Link>)}<Link href="/jaga-diri">Jaga Diri</Link></nav>
       <div className={styles.headerActions}><Link href="/masuk">Masuk</Link><LandingCta /></div>
-      <details className={styles.mobileMenu}><summary>Menu</summary><nav aria-label="Navigasi publik mobile">{navigation.map(([href, label]) => <a key={href} href={href}>{label}</a>)}<Link href="/masuk">Masuk</Link></nav></details>
+      <details className={styles.mobileMenu}><summary>Menu</summary><nav aria-label="Navigasi utama mobile">{navigation.map(([href, label]) => <Link key={href} href={href}>{label}</Link>)}<Link href="/jaga-diri">Jaga Diri</Link><Link href="/masuk">Masuk</Link></nav></details>
     </header>
     <main id="konten">
       <section className={styles.hero}>

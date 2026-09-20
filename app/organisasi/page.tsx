@@ -1,15 +1,6 @@
 import Link from "next/link";
 import { PageHeader } from "@/components/ui";
-import {
-  ArrowRight,
-  Building2,
-  FileText,
-  Landmark,
-  Plus,
-  Sparkles,
-  Users,
-  Wallet,
-} from "lucide-react";
+import { ArrowRight, Building2, FileText, Landmark, Users, Wallet } from "lucide-react";
 import { getOrganizations } from "@/lib/services/organizations";
 
 export const metadata = {
@@ -26,25 +17,10 @@ export default async function Page() {
       <PageHeader
         eyebrow="KANTOR DIGITAL"
         title="Organisasi Anda"
-        description="Kelola anggota, kegiatan, administrasi, publikasi, rapat, surat, dan kas sesuai paket serta izin organisasi."
-        action={
-          <button className="primary">
-            <Plus />
-            Buat organisasi
-          </button>
-        }
+        description="Jelajahi organisasi yang tersedia. Pendaftaran dan pengelolaan organisasi belum dibuka untuk beta publik awal."
       />
 
-      <Link href="/organisasi/paket" className="package-banner">
-        <div>
-          <span>PAKET DUTA ORGANISASI</span>
-          <h2>Dari halaman organisasi gratis hingga staf virtual PRO</h2>
-          <p>Gratis · Organisasi+ RM49.90/bulan · PRO RM99.90/bulan</p>
-        </div>
-        <b>
-          Lihat paket <ArrowRight />
-        </b>
-      </Link>
+      <div className="notice"><Building2/><div><b>Ruang organisasi sedang dibatasi kepada penemuan.</b><p>DUTA tidak memaparkan pakej, pembayaran atau tindakan pendaftaran yang belum tersedia.</p></div></div>
 
       <div className="org-summary">
         <div>
@@ -102,29 +78,6 @@ export default async function Page() {
           </article>
         ))}
       </div>
-
-      <section className="secretary-promo">
-        <Sparkles />
-
-        <div>
-          <span>ORGANISASI+ & PRO</span>
-          <h2>Sekretaris Digital + Publikasi</h2>
-          <p>
-            Staf komunikasi virtual untuk dokumen, proposal, laporan, poster,
-            flyer, kartu ucapan, dan undangan digital.
-          </p>
-        </div>
-
-        {organizations[0] ? (
-          <Link href={`/organisasi/${organizations[0].id}/sekretaris`}>
-            Buka ruang kerja <ArrowRight />
-          </Link>
-        ) : (
-          <Link href="/organisasi/paket">
-            Lihat paket <ArrowRight />
-          </Link>
-        )}
-      </section>
 
       <section className="permission-panel">
         <div>
