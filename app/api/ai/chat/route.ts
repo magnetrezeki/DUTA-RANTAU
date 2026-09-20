@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
       return Number.isFinite(elapsed) ? Math.max(0, elapsed) : 0;
     };
     const emit = (quotaOutcome: 'allowed' | 'denied' | 'error' | 'not_applicable', success: boolean, errorCode: string | null, provider: string | null = plan.provider === 'duta' ? null : plan.provider) =>
-      void persistAiTelemetry(buildAiTelemetry({ correlationId, userRef: auth.user!.id, intent: plan.intent, risk: plan.risk, sensitivity: plan.sensitivity, modelClass: plan.modelClass, provider, model: null, sourceRequirement: plan.sourceRequirement, sourceTier: sourceAnswer?.sources?.length ? 'TIER_1' : null, quotaOutcome, weightedUnits: quotaOutcome === 'allowed' ? plan.weight : 0, input: body.message, latencyMs: totalLatencyMs(), success, errorCode, fallbackUsed: false }));
+      void persistAiTelemetry(auth.user!, buildAiTelemetry({ correlationId, userRef: auth.user!.id, intent: plan.intent, risk: plan.risk, sensitivity: plan.sensitivity, modelClass: plan.modelClass, provider, model: null, sourceRequirement: plan.sourceRequirement, sourceTier: sourceAnswer?.sources?.length ? 'TIER_1' : null, quotaOutcome, weightedUnits: quotaOutcome === 'allowed' ? plan.weight : 0, input: body.message, latencyMs: totalLatencyMs(), success, errorCode, fallbackUsed: false }));
     if (plan.sourceRequirement === 'OFFICIAL_REQUIRED' && !sourceAnswer?.sources?.length) {
       emit('not_applicable', false, 'AUTHORITATIVE_SOURCE_REQUIRED', null);
       return NextResponse.json({ error: 'Maklumat ini memerlukan sumber berkuasa yang masih belum tersedia.', code: 'AUTHORITATIVE_SOURCE_REQUIRED' }, { status: 422 });

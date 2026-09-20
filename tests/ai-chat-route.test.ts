@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const s = vi.hoisted(() => ({
   calls: [] as string[], quotaRequestIds: [] as string[], kind: 'L1_SIMPLE', requirement: 'NONE', quota: 'allowed',
-  sources: [{ id: 's' }] as unknown[], events: [] as unknown[], enabled: true,
+  sources: [{ id: 's' }] as unknown[], events: [] as unknown[], identities: [] as unknown[], enabled: true,
   authenticated: true, providerFailure: false, telemetrySucceeds: true,
 }));
 
@@ -23,16 +23,16 @@ vi.mock('@/lib/services/ai-provider-execution', () => ({ executePlannedProvider:
   s.calls.push(`provider:${modelClass}`);
   return s.providerFailure ? { success: false, provider: 'fallback', latencyMs: 15_000, errorCategory: 'TIMEOUT' } : { success: true, text: 'generated', provider: 'gemini', latencyMs: 1 };
 } }));
-vi.mock('@/lib/services/ai-telemetry-repository', () => ({ persistAiTelemetry: async (event: unknown) => { s.events.push(event); return s.telemetrySucceeds; } }));
+vi.mock('@/lib/services/ai-telemetry-repository', () => ({ persistAiTelemetry: async (identity: unknown, event: unknown) => { s.identities.push(identity); s.events.push(event); return s.telemetrySucceeds; } }));
 
 const { POST } = await import('../app/api/ai/chat/route');
 const req = (message = 'hello', extra = {}) => new Request('http://localhost/api/ai/chat', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ message, ...extra }) }) as never;
 
 describe('production AI chat boundary', () => {
-  beforeEach(() => { Object.assign(s, { calls: [], quotaRequestIds: [], events: [], kind: 'L1_SIMPLE', requirement: 'NONE', quota: 'allowed', sources: [{ id: 's' }], enabled: true, authenticated: true, providerFailure: false, telemetrySucceeds: true }); });
+  beforeEach(() => { Object.assign(s, { calls: [], quotaRequestIds: [], events: [], identities: [], kind: 'L1_SIMPLE', requirement: 'NONE', quota: 'allowed', sources: [{ id: 's' }], enabled: true, authenticated: true, providerFailure: false, telemetrySucceeds: true }); });
 
   it('keeps L0 quota/provider free and emits safe telemetry', async () => {
-    s.kind = 'L0_DETERMINISTIC'; expect((await POST(req())).status).toBe(200); expect(s.calls).toEqual([]); expect(s.events).toHaveLength(1); expect(JSON.stringify(s.events[0])).toContain('L0_DETERMINISTIC');
+    s.kind = 'L0_DETERMINISTIC'; expect((await POST(req())).status).toBe(200); expect(s.calls).toEqual([]); expect(s.events).toHaveLength(1); expect(JSON.stringify(s.events[0])).toContain('L0_DETERMINISTIC'); expect((s.identities[0] as { id?: string }).id).toBe('00000000-0000-4000-8000-000000000001');
   });
   it('denies unsupported official requests before provider and keeps prompt private', async () => {
     s.requirement = 'OFFICIAL_REQUIRED'; s.sources = []; const response = await POST(req('PRIVATE_MARKER_12345'));

@@ -44,82 +44,82 @@
       {
         "number": "0008",
         "filename": "0008_phase4_real_content_rls.sql",
-        "sha256": "a21f1105d458502f10929a87399742559070100b2ec70796eed91b1fc065298a"
+        "sha256": "0ef016377cde9dfc6705d01b7698e1e2a4a377cefb710895fd48e4d11a9532ba"
       },
       {
         "number": "0009",
         "filename": "0009_organization_archival_workflow.sql",
-        "sha256": "c7958ef37664f14fa10c707dcbaef581fcf49122c183014d7c28bd3b8dab96de"
+        "sha256": "13be9dc4570c243e4d6dbe05b31066d1ee84be60d1eb1912bb477033a4ab69ab"
       },
       {
         "number": "0010",
         "filename": "0010_runtime_database_roles.sql",
-        "sha256": "5cd6e95fea83195b6c4180195f0b0db3831547c4451286f09df8508ab79d1b11"
+        "sha256": "d00d1811ddd3f2197165ba58a704604d38dfd377e2b869663786075de56fcb2c"
       },
       {
         "number": "0011",
         "filename": "0011_runtime_identity_bridge.sql",
-        "sha256": "fb145a5e75ef8ef3f6ae2f4fabb36463f305e230019f25fb52192448c8d59560"
+        "sha256": "6f1f36d4dffeef94681852ec86543166d4734adff268295be5a9d5c87800c372"
       },
       {
         "number": "0012",
         "filename": "0012_runtime_role_grants.sql",
-        "sha256": "f97306021959cc9c3b44cd53dc7b781b37a041b41d4bddf9139014021f4f73c8"
+        "sha256": "ad8be9b5b2bc00b3592ac9dfbca647eab9d6e9cd6cd9fee36b78692513b047de"
       },
       {
         "number": "0013",
         "filename": "0013_runtime_official_sources_rls.sql",
-        "sha256": "f0add334d1d477608a751d44b15e0506924b4c7d52affc06930a34ab2c2f379a"
+        "sha256": "e052bba49ffd5480a7bd92aa9c463c85b97376d541d4289dd794923eda5d0e36"
       },
       {
         "number": "0014",
         "filename": "0014_runtime_users_select.sql",
-        "sha256": "d5cf126fc1a5fa552910e2023b698ef9d2892eb6cf89fe88a493b51dfc075d0c"
+        "sha256": "4e93837dacb9cf37c91b143584406a016430908bf663f74dd9da2ed534ffcf12"
       },
       {
         "number": "0015",
         "filename": "0015_runtime_users_rls.sql",
-        "sha256": "14d3af2421cb736593f669d622f2ddce20c03333c22e5fd323993ed433065e0d"
+        "sha256": "3331002991fc532d1d89abc63a9cf1b32a66412fdc690055728e8fd1c55bdae8"
       },
       {
         "number": "0016",
         "filename": "0016_runtime_content_select.sql",
-        "sha256": "69151c85695146561e156cb45aaf5f2dbc1e037da69f62e37ed5f87ca2ceacd0"
+        "sha256": "f4a2572d5835d6152fe464175cd0e3abf847e3fc81f62f8a2b3a4622e454503c"
       },
       {
         "number": "0017",
         "filename": "0017_runtime_sellers_select.sql",
-        "sha256": "c79b1c2552089a4e1f2dc0cbd773aa9fca27ba9a79a1026d9b9fdd0048d5bb58"
+        "sha256": "2a0890c65cc9261828d922711839eceb256a205d2651e38968dbde709b269dfb"
       },
       {
         "number": "0018",
         "filename": "0018_runtime_users_self_update.sql",
-        "sha256": "2167d9dafaac3b1158e8f5e7fe3e87c697bcbdb43e0ac2c059b77b1169a3d787"
+        "sha256": "f40bb0ab5d3dc5928c1ed956ed1b81fdd76edb5c0a481faadf0b13344c719d08"
       },
       {
         "number": "0019",
         "filename": "0019_runtime_audit_self_insert.sql",
-        "sha256": "ed8b0c2f0cfeaa46af9cac29927254a485ff8a8a6164ed64eff6dc88ff6074f1"
+        "sha256": "1822025c6ac043188a1f71e734cd71219a69d89da34181b872e4cab0b855f9b2"
       },
       {
         "number": "0020",
         "filename": "0020_account_deletion_audit_hardening.sql",
-        "sha256": "5b40df02b3825f8001e489df7ff0cb078d2f55af7047981189d265e912bd4043"
+        "sha256": "9e321a5c1c289d6e2029ccf8176e37dd2513973e6a6863e5fa628349877d5024"
       },
       {
         "number": "0021",
         "filename": "0021_remove_broad_audit_self_insert.sql",
-        "sha256": "4babcf72a83dbf9f04a7ce86420ef57f033d47e16f5277409c2a68dd5df1ccbd"
+        "sha256": "5b4cede060ccd156e498b048e6abe4d376a9a40a3d4ad1144cb2ea90376e7d23"
       },
       {
         "number": "0022",
         "filename": "0022_account_deletion_function.sql",
-        "sha256": "ed6c00409cc9a55100152f885df9c6bdc0b8fb9294b0c5ddb6e17fd82c4f90b5"
+        "sha256": "d936558adc375f6d7957f8ce81bf563311c960ff944a8ac63d24a80b924468cd"
       },
       {
         "number": "0023",
         "filename": "0023_entity_legal_status_foundation.sql",
-        "sha256": "899383f05bfccd20966e7ca2ebf106cb5141b4ce8a84ac96fc5194c85e84b961"
+        "sha256": "affe777c636d1a80b552ddb2f1a1d6412b8ea263fbcaa47cbe67a3a4c8ba195e"
       },
       {
         "number": "0024",
@@ -139,7 +139,7 @@
       {
         "number": "0027",
         "filename": "0027_community_membership_growth_foundation.sql",
-        "sha256": "3b1e525a66941c99dc20f0d1b4e4d7e17ba266ac8aa34ec3850335f18510df7c"
+        "sha256": "90f867003e378158f9ec031baf690777aadd36c2b48ec1db407213bc8b7f6373"
       },
       {
         "number": "0028",
@@ -169,7 +169,7 @@
       {
         "number": "0033",
         "filename": "0033_moderation_trust_foundation.sql",
-        "sha256": "6500789fd1146c0078675e0d22eb5fd66089bae908c14da9a7b2de87e9ed7bba"
+        "sha256": "154d4b6f0edf11819cd1990aa1b79962aa6131b7af536e4714085968ca13b68a"
       },
       {
         "number": "0034",
@@ -189,14 +189,26 @@
       {
         "number": "0037",
         "filename": "0037_runtime_identity_helpers.sql",
-        "sha256": "c7b6842eddcca24bc782e7835ac8ff3cc141cafdb5600db1615fe98e6099da64"
+        "sha256": "0969a263c26762ae7407fe1b8961633b7895062b550f31f11f5102a26638f41f"
       },
       {
         "number": "0038",
         "filename": "0038_core_runtime_rls_enforcement.sql",
-        "sha256": "f10294dc62ca3f4312a71cb38ab62a973b4d6209f89232785f5edb75de89f11b"
+        "sha256": "0162ab50ec6b679cb3ac1520891be4e37aa33be8aa50b072dab3cf229e0e86c0"
       }
-    ]
+    ],
+    "reconciliation": {
+      "record": "docs/duta-v2.5/migrations/HISTORICAL_HASH_RECONCILIATION_001.md",
+      "date": "2026-09-20",
+      "reason": "Twenty of the thirty-five pinned historical digests were recorded from a CRLF working copy and never matched any committed artifact, so the mutation detector failed closed on every run. Digests were corrected to the committed LF bytes. No historical SQL was modified and no history was rewritten.",
+      "correctedEntries": 20,
+      "correctedByLineEndings": 19,
+      "correctedByProvenanceLoss": [
+        "0033_moderation_trust_foundation.sql"
+      ],
+      "migrationSqlModified": false,
+      "historyRewritten": false
+    }
   },
   "migrations": [
     {
@@ -204,18 +216,47 @@
       "filename": "0039_source_registry_governance_foundation.sql",
       "purpose": "Add additive governance for existing official sources: purpose classification, restricted verification and approval metadata, currentness, and source-specific evidence without ingestion, publication, booking, AI execution, runtime reviewer workflow, or mission-data insertion.",
       "dependsOn": {
-        "migrations": ["0000", "0008", "0010", "0011", "0012", "0013", "0038"],
-        "tables": ["public.official_sources", "public.users"],
-        "columns": ["public.official_sources.id", "public.official_sources.active", "public.official_sources.last_checked", "public.users.id"],
+        "migrations": [
+          "0000",
+          "0008",
+          "0010",
+          "0011",
+          "0012",
+          "0013",
+          "0038"
+        ],
+        "tables": [
+          "public.official_sources",
+          "public.users"
+        ],
+        "columns": [
+          "public.official_sources.id",
+          "public.official_sources.active",
+          "public.official_sources.last_checked",
+          "public.users.id"
+        ],
         "functions": [],
-        "roles": ["duta_app", "duta_system"],
-        "extensions": ["pgcrypto"],
-        "security": ["RLS:public.official_sources", "POLICY:public.official_sources:official_sources_public", "POLICY:public.official_sources:official_sources_admin_all", "GRANT:duta_app:public.official_sources:SELECT,INSERT,UPDATE,DELETE"]
+        "roles": [
+          "duta_app",
+          "duta_system"
+        ],
+        "extensions": [
+          "pgcrypto"
+        ],
+        "security": [
+          "RLS:public.official_sources",
+          "POLICY:public.official_sources:official_sources_public",
+          "POLICY:public.official_sources:official_sources_admin_all",
+          "GRANT:duta_app:public.official_sources:SELECT,INSERT,UPDATE,DELETE"
+        ]
       },
       "checksum": "sha256:5d7d68730f12dce3a2c8d87ff589cfa1e3bd90d9fe6df28932703ccf82da0a30",
       "introducedCommit": "9865917b6c8a6da4d5cf90df5a82d90dc6c07cd5",
       "schemaEffect": "ADDITIVE",
-      "securityEffects": ["RLS", "AUTHORIZATION"],
+      "securityEffects": [
+        "RLS",
+        "AUTHORIZATION"
+      ],
       "requiresRlsValidation": true,
       "requiresDataBackfill": false,
       "dataEffect": "NONE",
@@ -233,18 +274,38 @@
       "filename": "0040_restrict_sensitive_table_default_acl.sql",
       "purpose": "Remove unintended anon and authenticated privileges from the two sensitive migration 0039 tables and from future postgres-owned table defaults in schema public while preserving service_role and unrelated ACLs.",
       "dependsOn": {
-        "migrations": ["0039"],
-        "tables": ["public.official_source_governance", "public.official_source_evidence", "public.official_sources"],
+        "migrations": [
+          "0039"
+        ],
+        "tables": [
+          "public.official_source_governance",
+          "public.official_source_evidence",
+          "public.official_sources"
+        ],
         "columns": [],
         "functions": [],
-        "roles": ["postgres", "anon", "authenticated", "service_role", "duta_app", "duta_system"],
+        "roles": [
+          "postgres",
+          "anon",
+          "authenticated",
+          "service_role",
+          "duta_app",
+          "duta_system"
+        ],
         "extensions": [],
-        "security": ["OWNER:postgres:public.official_source_governance,public.official_source_evidence", "DEFAULT_PRIVILEGES:postgres:public:TABLES:anon,authenticated,service_role", "GRANT:anon,authenticated,service_role:public.official_source_governance,public.official_source_evidence:ALL", "RLS:public.official_source_governance,public.official_source_evidence"]
+        "security": [
+          "OWNER:postgres:public.official_source_governance,public.official_source_evidence",
+          "DEFAULT_PRIVILEGES:postgres:public:TABLES:anon,authenticated,service_role",
+          "GRANT:anon,authenticated,service_role:public.official_source_governance,public.official_source_evidence:ALL",
+          "RLS:public.official_source_governance,public.official_source_evidence"
+        ]
       },
       "checksum": "sha256:b59dcfea09b1ebbc023783eff4e280e3e74bfe04bfe34a6d741a21839bbc4697",
       "introducedCommit": "0b2f0e97007ba5647e9888a2d286a06b57c70f60",
       "schemaEffect": "NONE",
-      "securityEffects": ["AUTHORIZATION"],
+      "securityEffects": [
+        "AUTHORIZATION"
+      ],
       "requiresRlsValidation": false,
       "requiresDataBackfill": false,
       "dataEffect": "NONE",
@@ -256,6 +317,53 @@
         "reference": "docs/duta-v2.5/migrations/0040_VALIDATION.md"
       },
       "status": "AUTHORITY_ACCEPTED"
+    },
+    {
+      "number": "0041",
+      "filename": "0041_audit_runtime_write_grant.sql",
+      "purpose": "Grant the application runtime role the audit_logs INSERT privilege that the existing audit policies already authorize, so audit_logs_content_admin and audit_user_insert become reachable and RLS (not the privilege check) decides every audit write.",
+      "dependsOn": {
+        "migrations": [
+          "0008",
+          "0009",
+          "0020",
+          "0038"
+        ],
+        "tables": [
+          "public.audit_logs"
+        ],
+        "columns": [],
+        "functions": [
+          "public.current_app_user_id()"
+        ],
+        "roles": [
+          "duta_app",
+          "duta_system"
+        ],
+        "extensions": [],
+        "security": [
+          "POLICY:duta_app:public.audit_logs:INSERT:audit_user_insert",
+          "POLICY:duta_app:public.audit_logs:INSERT:audit_logs_content_admin",
+          "GRANT:duta_system:public.audit_logs:INSERT"
+        ]
+      },
+      "checksum": null,
+      "introducedCommit": null,
+      "schemaEffect": "NONE",
+      "securityEffects": [
+        "ROLE_GRANT"
+      ],
+      "requiresRlsValidation": true,
+      "requiresDataBackfill": false,
+      "dataEffect": "NONE",
+      "rollback": {
+        "classification": "REVERSIBLE"
+      },
+      "validationContract": {
+        "status": "PENDING_MA03",
+        "reference": null
+      },
+      "status": "PROPOSED"
     }
   ]
 }

@@ -9,6 +9,7 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:ai-db": "node scripts/test-ai-quota-db.mjs",
+    "test:identity-bridge-db": "node scripts/test-identity-bridge-db.mjs",
     "migration:check": "node scripts/check-migration-authority.mjs",
     "test:migration:enforcement": "vitest run tests/migration-repository-enforcement.test.ts --pool threads",
     "db:generate": "drizzle-kit generate",

@@ -1,6 +1,6 @@
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { cpSync, existsSync, mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdtempSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { afterAll, afterEach, describe, expect, it } from 'vitest';
@@ -32,8 +32,15 @@ function commit(root: string, message: string) {
 }
 function initializeFixture(root: string) {
   cpSync(join(repositoryRoot, 'db/migrations'), join(root, 'db/migrations'), { recursive: true });
-  rmSync(join(root, 'db/migrations/0039_source_registry_governance_foundation.sql'));
-  rmSync(join(root, 'db/migrations/0040_restrict_sensitive_table_default_acl.sql'));
+  // Start every fixture from the real frozen historical set and an empty
+  // forward lifecycle. Strip the whole governed forward namespace
+  // generically rather than by hardcoded filename, so introducing a new
+  // forward migration cannot silently break this suite.
+  for (const name of readdirSync(join(root, 'db/migrations'))) {
+    if (/^\d{4}_.+\.sql$/.test(name) && Number(name.slice(0, 4)) >= 39) {
+      rmSync(join(root, 'db/migrations', name));
+    }
+  }
   const manifest = readManifest(root);
   manifest.migrations = [];
   writeManifest(root, manifest);
@@ -102,8 +109,8 @@ afterEach(() => {
 afterAll(() => rmSync(fixtureTemplate, { recursive: true, force: true }));
 
 describe('MA-05 repository migration enforcement', { timeout: 30_000 }, () => {
-  it('accepts authority-accepted 0039 and 0040 and exposes the package guard command', () => {
-    expect(checkMigrationAuthority(repositoryRoot)).toEqual({ historicalCount: 35, forwardCount: 2 });
+  it('accepts the governed forward lifecycle and exposes the package guard command', () => {
+    expect(checkMigrationAuthority(repositoryRoot)).toEqual({ historicalCount: 35, forwardCount: 3 });
     expect(readManifest(repositoryRoot).migrations).toEqual([
       expect.objectContaining({
         number: '0039', status: 'AUTHORITY_ACCEPTED',
@@ -114,6 +121,11 @@ describe('MA-05 repository migration enforcement', { timeout: 30_000 }, () => {
         number: '0040', status: 'AUTHORITY_ACCEPTED',
         checksum: 'sha256:b59dcfea09b1ebbc023783eff4e280e3e74bfe04bfe34a6d741a21839bbc4697',
         introducedCommit: '0b2f0e97007ba5647e9888a2d286a06b57c70f60',
+      }),
+      expect.objectContaining({
+        number: '0041', status: 'PROPOSED',
+        checksum: null, introducedCommit: null,
+        validationContract: { status: 'PENDING_MA03', reference: null },
       }),
     ]);
     expect(JSON.parse(readFileSync(join(repositoryRoot, 'package.json'), 'utf8')).scripts['migration:check'])
