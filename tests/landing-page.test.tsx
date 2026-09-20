@@ -19,15 +19,14 @@ describe('public landing and preserved application home', () => {
   it('renders marketing content without app chrome or live AI', () => {
     routing.path = '/';
     const html = renderToStaticMarkup(<AppShell><Landing /></AppShell>);
-    expect(html).toContain('Rumah Digital Orang Indonesia');
-    expect(html).toContain('href="/daftar"');
-    expect(html).toContain('href="/masuk"');
+    expect(html).toContain('Teman menjalani hidup di Malaysia.');
+    expect(html).toContain('href="/tanya"');
+    expect(html).toContain('href="/beranda"');
     expect(html).not.toContain('class="sidebar"');
     expect(html).not.toContain('class="topbar"');
     expect(html).not.toContain('data-live-ai');
-    expect(html).toContain('SEGERA HADIR');
-    expect(html).toContain('Peta interaktif belum tersedia');
-    expect(html).toContain('tidak mewakili KBRI/KJRI');
+    expect(html).toContain('Jelajahi kebutuhan');
+    expect(html).toContain('Independen. Bukan layanan pemerintah.');
     for (const claim of ['E-Undi', 'Citizen Report', 'Trust Score', 'wallet', 'investasi', 'e-learning']) expect(html).not.toContain(claim);
   });
   it('keeps the application home and navigation without a consumer membership offer', () => {
@@ -36,7 +35,7 @@ describe('public landing and preserved application home', () => {
     expect(html).toContain('class="sidebar"');
     expect(html).toContain('href="/beranda"');
     expect(html).toContain('data-live-ai');
-    for (const text of ['Layanan untuk Anda', 'Dekat Anda', 'DUTA tidak menampilkan kegiatan rekaan sebagai data langsung.']) expect(html).toContain(text);
+    for (const text of ['Penting Hari Ini', 'Untuk Anda', 'Sekitar Anda', 'Penemuan tanpa lokasi presisi atau aktivitas rekaan.']) expect(html).toContain(text);
     for (const text of ['DUTA MEMBER', 'RM9.90', '/membership']) expect(html).not.toContain(text);
   });
   it('retains the application shell on existing URLs', () => {
