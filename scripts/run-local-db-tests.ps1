@@ -103,7 +103,7 @@ try {
         if ($LASTEXITCODE -ne 0) { throw 'The APP_DATABASE_URL-backed source and AI-router tests failed.' }
 
         if ($RunFullSuite) {
-            & npm test
+            & npm test -- --pool threads
             if ($LASTEXITCODE -ne 0) { throw 'The full test suite failed.' }
         }
     } finally {

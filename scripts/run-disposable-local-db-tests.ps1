@@ -1,13 +1,19 @@
 [CmdletBinding()]
-param()
+param(
+    [ValidatePattern('^duta-local-test-db(?:-[a-z0-9-]+)?$')]
+    [string]$ContainerName = 'duta-local-test-db',
+
+    [ValidateRange(55433, 55499)]
+    [int]$LoopbackPort = 55433
+)
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 $docker = 'C:\Users\User\AppData\Local\Programs\DockerDesktop\resources\bin\docker.exe'
-$container = 'duta-local-test-db'
+$container = $ContainerName
 $database = 'duta_local_test'
-$port = 55433
+$port = $LoopbackPort
 $image = 'postgres:16-alpine'
 $repo = Split-Path -Parent $PSScriptRoot
 
@@ -16,7 +22,7 @@ function New-LocalPassword {
 }
 
 function Assert-DisposableTarget {
-    if ($container -ne 'duta-local-test-db' -or $database -ne 'duta_local_test') { throw 'Unexpected disposable target.' }
+    if ($container -notmatch '^duta-local-test-db(?:-[a-z0-9-]+)?$' -or $database -ne 'duta_local_test') { throw 'Unexpected disposable target.' }
     if (-not (Test-Path -LiteralPath $docker -PathType Leaf)) { throw 'Docker executable not found.' }
     & $docker version --format '{{.Server.Version}}' | Out-Null
     if ($LASTEXITCODE -ne 0) { throw 'Docker daemon is not reachable.' }
@@ -33,6 +39,7 @@ $runtimeUrl = "postgresql://duta_app:$appPassword@127.0.0.1:$port/$database"
 $tempDir = Join-Path ([IO.Path]::GetTempPath()) ("duta-local-psql-$PID")
 $shim = Join-Path $tempDir 'psql.cmd'
 $originalPath = $env:PATH
+$originalNpmPrefix = $env:NPM_CONFIG_PREFIX
 $created = $false
 
 try {
@@ -71,11 +78,14 @@ exit /b %errorlevel%
     if (-not $ready) { throw 'Disposable PostgreSQL container did not become ready.' }
 
     $env:PATH = "$tempDir;C:\Program Files\nodejs;$env:PATH"
+    $env:NPM_CONFIG_PREFIX = 'C:\Program Files\nodejs'
     & (Join-Path $repo 'scripts\run-local-db-tests.ps1') -LocalDatabaseUrl $runtimeUrl -BootstrapDatabaseUrl $bootstrapUrl -Execute -RunFullSuite
     if ($LASTEXITCODE -ne 0) { throw 'Isolated local database tests failed.' }
     Write-Host 'Disposable local database test suite completed.'
 } finally {
     $env:PATH = $originalPath
+    if ($null -eq $originalNpmPrefix) { Remove-Item Env:NPM_CONFIG_PREFIX -ErrorAction SilentlyContinue }
+    else { $env:NPM_CONFIG_PREFIX = $originalNpmPrefix }
     Remove-Item Env:DUTA_LOCAL_DOCKER,Env:DUTA_LOCAL_CONTAINER,Env:DUTA_LOCAL_DATABASE,Env:DUTA_LOCAL_APP_PASSWORD -ErrorAction SilentlyContinue
     Remove-Item -LiteralPath $tempDir -Recurse -Force -ErrorAction SilentlyContinue
     if ($created) { & $docker rm -f $container 1>$null 2>$null }
