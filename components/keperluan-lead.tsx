@@ -1,0 +1,5 @@
+import Link from 'next/link';
+import { ArrowUpRight, Briefcase, MapPin, ShoppingBag } from 'lucide-react';
+import styles from './keperluan-world.module.css';
+const paths = [['/kerja', 'Langkah kerja berikutnya', 'Informasi dan sumber pekerjaan', Briefcase], ['/pasar', 'Kebutuhan dari sesama perantau', 'Pasar Rantau · discovery yang dibatasi', ShoppingBag], ['/layanan#sekitar', 'Kenali yang ada di sekitar', 'Pilih jalur dan perwakilan secara manual', MapPin]] as const;
+export function KeperluanLead(){return <section className={styles.lead}><div className={styles.intro}><span className="eyebrow">KEPERLUAN</span><h1>Apa yang perlu<br/><em>Anda urus?</em></h1><p>Urusan sehari-hari terasa lebih ringan saat tahu harus mulai dari mana.</p><Link href="#layanan-ri">Jelajahi Layanan RI <ArrowUpRight size={16}/></Link></div><div className={styles.paths}>{paths.map(([href,title,description,Icon])=><Link className={styles.path} href={href} key={href}><span><b>{title}</b><span>{description}</span></span><Icon size={20}/></Link>)}</div></section>}

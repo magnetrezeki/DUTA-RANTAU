@@ -1,12 +1,1 @@
-import Link from 'next/link';
-import { EmptyState, PageHeader } from '@/components/ui';
-import { Banknote, Bus, GraduationCap, HeartPulse, Home, Landmark, MapPinned, Phone, Scale, ShoppingBag, Utensils } from 'lucide-react';
-
-const unavailableCategories = [[Bus, 'Transportasi'], [Home, 'Tempat tinggal'], [GraduationCap, 'Pendidikan'], [HeartPulse, 'Kesehatan'], [Banknote, 'Perbankan'], [Phone, 'Telekomunikasi'], [Utensils, 'Makanan'], [ShoppingBag, 'Belanja'], [Scale, 'Dasar hukum'], [Landmark, 'Layanan publik']] as const;
-
-export const metadata = { title: 'Info Rantau' };
-
-export default function Page() {
-  return <div className="page"><PageHeader eyebrow="PANDUAN HIDUP DI MALAYSIA" title="Info Rantau" description="Konten berbasis lokasi dengan sumber, tanggal, kategori, dan status verifikasi yang jelas."/><div className="category-grid"><Link href="/info/tempat-wisata" aria-label="Tempat Wisata"><MapPinned/><span>Tempat Wisata</span></Link>{unavailableCategories.map(([Icon, label]) => <button key={label} type="button" disabled aria-label={`${label}: belum tersedia`}><Icon/><span>{label}</span></button>)}</div><section className="section"><div className="section-title"><h2>Informasi terbaru</h2><span>Hanya konten yang telah memiliki sumber</span></div><EmptyState title="Belum ada artikel terverifikasi." description="Admin dapat menambahkan konten melalui CMS setelah sumber diperiksa."/></section></div>;
-}
-
+import Link from 'next/link';import { ArrowUpRight,Landmark,MapPinned,ShieldCheck } from 'lucide-react';import styles from '@/components/keperluan-world.module.css';export const metadata={title:'Info Rantau'};export default function Page(){return <div className="page"><header className="page-header"><span className="eyebrow">INFO RANTAU</span><h1>Informasi yang<br/><em>bisa diperiksa.</em></h1><p>Penemuan panduan hidup di Malaysia dengan sumber, tanggal, dan status yang jelas.</p></header><section className={styles.context}><ShieldCheck/><div><b>Belum ada artikel terverifikasi untuk diterbitkan.</b><p>DUTA tidak membuat suapan berita atau rekomendasi tanpa provenance dan tanggal pemeriksaan.</p></div></section><section className={styles.sectionTitle}><h2>Mulai dari jalur yang tersedia.</h2><p>Informasi bukan pengganti Tanya DUTA; gunakan Tanya bila Anda perlu mengurai urusan tertentu.</p><div className={styles.actions}><Link href="/info/tempat-wisata">Tempat Wisata <MapPinned size={15}/></Link><Link href="/layanan">Layanan RI <Landmark size={15}/></Link><Link href="/tanya">Tanya DUTA <ArrowUpRight size={15}/></Link></div></section></div>}

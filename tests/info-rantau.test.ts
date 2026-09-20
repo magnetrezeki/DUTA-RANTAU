@@ -13,6 +13,7 @@ describe("Info Rantau categories", () => {
   it("keeps unavailable categories controlled until verified content exists", () => {
     const infoPage = readFileSync(resolve("app/info/page.tsx"), "utf8");
 
-    expect(infoPage).toContain('disabled aria-label={`${label}: belum tersedia`}');
+    expect(infoPage).toContain('Belum ada artikel terverifikasi untuk diterbitkan.');
+    expect(infoPage).toContain('tidak membuat suapan berita atau rekomendasi tanpa provenance');
   });
 });

@@ -1,13 +1,1 @@
-import { PageHeader } from '@/components/ui';
-
-export const metadata = { title: 'Pasar Rantau' };
-
-export default function Page() {
-  return <div className="page">
-    <PageHeader
-      eyebrow="PASAR RANTAU"
-      title="Sedang dipersiapkan"
-      description="Pasar Rantau akan tersedia setelah kontrol informasi, pengaduan, dan moderasi disiapkan dengan baik."
-    />
-  </div>;
-}
+import Link from 'next/link';import { ArrowUpRight,ShieldAlert,ShoppingBag } from 'lucide-react';import styles from '@/components/keperluan-world.module.css';export const metadata={title:'Pasar Rantau'};export default function Page(){return <div className="page"><header className="page-header"><span className="eyebrow">PASAR RANTAU</span><h1>Sedang dipersiapkan<br/>dengan lebih <em>berhati-hati.</em></h1><p>Ruang discovery, evaluate, dan connect hanya dibuka saat kontrol informasinya siap.</p></header><section className={styles.context}><ShoppingBag/><div><b>Discovery Pasar Rantau belum tersedia.</b><p>Listing, seller, dan kontak tidak ditampilkan sebelum kontrol informasi, pengaduan, serta moderasi siap dan divalidasi.</p></div></section><section className={styles.sectionTitle}><h2>Tidak ada transaksi tersembunyi.</h2><p>DUTA tidak menjalankan checkout, wallet, escrow, pembayaran, refund, atau pengiriman pada tahap ini.</p><div className={styles.actions}><Link href="/tanya">Tanya DUTA untuk kebutuhan lain <ArrowUpRight size={15}/></Link></div></section><section className={styles.context}><ShieldAlert/><div><b>Pasar tidak dibuat kelihatan aktif.</b><p>Keadaan ini sengaja fail-closed sehingga tidak ada listing, harga, atau hasil carian rekaan.</p></div></section></div>}
