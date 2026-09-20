@@ -15,5 +15,8 @@ describe("Info Rantau categories", () => {
 
     expect(infoPage).toContain('Belum ada artikel terverifikasi untuk diterbitkan.');
     expect(infoPage).toContain('tidak membuat suapan berita atau rekomendasi tanpa provenance');
+    const tourismPage = readFileSync(resolve('app/info/tempat-wisata/page.tsx'), 'utf8');
+    expect(tourismPage).toContain('Belum ada tempat wisata terverifikasi.');
+    expect(tourismPage).toContain('Tidak ada rekomendasi dianggap official, fresh, atau verified');
   });
 });
