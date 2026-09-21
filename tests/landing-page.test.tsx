@@ -32,7 +32,10 @@ const q4SecurityBaselines: Record<string, string> = {
   'lib/auth/password-recovery.ts': 'fffc8975864931ccdcd11207e3f3def3c7df37c16d620298611c863004d182f3',
   'tests/password-recovery.test.ts': '9fbb709748fbc9f4a44bf907258cac0e9de3635a59102886bb92c968a9bdea7f',
   'app/masuk/page.tsx': '4bcc4e623ceb0bb87bbcdab935b2dbb9bd290a430f97499a9286f2a2808b0e42',
-  'app/api/ai/chat/route.ts': '596b7bfc89c157908b2ef8e48b15084672c721116980843ddd245687153eb982',
+  // Founder F04 authorizes voice transcripts to use the same guarded AI
+  // boundary. The reviewed route still enforces auth, input limits, quota,
+  // provider routing, source rules, and privacy-safe telemetry.
+  'app/api/ai/chat/route.ts': '0cfd8d8ab7fd5541f682638f7b6de4cfc5d7e57433d5d434851efec0bd6c2bf8',
   'lib/services/ai-quota-policy.ts': 'e497aef109a2565b5091ca433c85fa9a8f011d7508400a22fda2f134e0ce646d',
   'db/migrations/0034_ai_fair_use_foundation.sql': '50e045e6b5f1bd42f9b93d9280e2408833e4ffc90db7f844ea0841331d44cddc',
   'db/migrations/0035_ai_telemetry_foundation.sql': 'ed765e37b4354eaef84d33fb64882a73bbd1fcf250b9009b0c7a3e2def693df3',

@@ -1,23 +1,17 @@
-'use client';import { useState } from 'react';
-import { createSupabaseBrowserClient } from '@/lib/supabase/client';import { useRouter } from 'next/navigation';import { CheckCircle2 } from 'lucide-react';export function AuthForm({mode}:{mode:'login'|'register'}){const router=useRouter();const [error,setError]=useState('');const [success,setSuccess]=useState('');const [loading,setLoading]=useState(false);async function signInGoogle() {
-  setError('')
-  setLoading(true)
+'use client';
+import { useState } from 'react';
+import { createSupabaseBrowserClient } from '@/lib/supabase/client';
+import { useRouter } from 'next/navigation';
+import { CheckCircle2 } from 'lucide-react';
 
-  try {
-    const supabase = createSupabaseBrowserClient()
-    const origin = window.location.origin
-
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${origin}/auth/konfirmasi`,
-      },
-    })
-
-    if (error) throw error
-  } catch (e) {
-    setError(e instanceof Error ? e.message : 'Gagal masuk dengan Google.')
-    setLoading(false)
-  }
+export function AuthForm({mode}:{mode:'login'|'register'}){
+  const router=useRouter();
+  const [error,setError]=useState('');
+  const [success,setSuccess]=useState('');
+  const [loading,setLoading]=useState(false);
+  async function signInGoogle(){setError('');setLoading(true);try{const supabase=createSupabaseBrowserClient();const {error}=await supabase.auth.signInWithOAuth({provider:'google',options:{redirectTo:`${window.location.origin}/auth/konfirmasi`}});if(error)throw error}catch(e){setError(e instanceof Error?e.message:'Gagal masuk dengan Google.');setLoading(false)}}
+  async function magicLink(form:HTMLFormElement){const email=String(new FormData(form).get('email')??'').trim();if(!email){setError('Masukkan email untuk menerima pautan masuk.');return}setLoading(true);setError('');try{const supabase=createSupabaseBrowserClient();const {error}=await supabase.auth.signInWithOtp({email,options:{emailRedirectTo:`${window.location.origin}/auth/konfirmasi`}});if(error)throw error;setSuccess('Pautan masuk telah dihantar. Periksa email Anda.')}catch(e){setError(e instanceof Error?e.message:'Pautan masuk belum dapat dihantar.')}finally{setLoading(false)}}
+  async function submit(e:React.FormEvent<HTMLFormElement>){e.preventDefault();setLoading(true);setError('');setSuccess('');const body=Object.fromEntries(new FormData(e.currentTarget));try{const r=await fetch(`/api/auth/${mode==='login'?'login':'register'}`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)});const d=await r.json();if(!r.ok)throw new Error(d.error);if(mode==='register'&&d.emailConfirmationRequired){setSuccess('Pendaftaran berhasil. Periksa email Anda untuk mengaktifkan akun.');e.currentTarget.reset();return}router.push('/beranda');router.refresh()}catch(e){setError(e instanceof Error?e.message:'Terjadi kesalahan.')}finally{setLoading(false)}}
+  if(success)return <div className="auth-success"><CheckCircle2/><h2>Periksa email Anda</h2><p>{success}</p><button className="primary wide" onClick={()=>router.push('/masuk')}>Ke halaman masuk</button></div>;
+  return <form className="auth-form" method="post" onSubmit={submit}>{mode==='register'&&<><label>Nama lengkap<input name="name" required minLength={2} autoComplete="name" placeholder="Nama Anda"/></label><label>Kota di Malaysia<input name="city" autoComplete="address-level2" placeholder="Contoh: Kuala Lumpur"/></label></>}<label>Email<input name="email" type="email" required autoComplete="email" placeholder="nama@email.com"/></label><label>Kata sandi<input name="password" type="password" required minLength={mode==='register'?10:1} autoComplete={mode==='login'?'current-password':'new-password'} placeholder={mode==='register'?'Min. 10 karakter, huruf & angka':'Kata sandi'}/></label>{error&&<div className="error-box" role="alert">{error}</div>}<button className="primary wide" disabled={loading}>{loading?'Mohon tunggu…':mode==='login'?'Masuk':'Buat akun gratis'}</button><div className="auth-sep"><span>atau</span></div><button type="button" className="google" disabled={loading} onClick={signInGoogle}>Lanjutkan dengan Google</button><button type="button" className="google" disabled={loading} onClick={e=>magicLink(e.currentTarget.form!)}>Kirim magic link</button></form>
 }
-async function submit(e:React.FormEvent<HTMLFormElement>){e.preventDefault();setLoading(true);setError('');setSuccess('');const f=new FormData(e.currentTarget);const body=Object.fromEntries(f);try{const r=await fetch(`/api/auth/${mode==='login'?'login':'register'}`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)});const d=await r.json();if(!r.ok)throw new Error(d.error);if(mode==='register'&&d.emailConfirmationRequired){setSuccess('Pendaftaran berhasil. Periksa email Anda untuk mengaktifkan akun.');(e.currentTarget as HTMLFormElement).reset();return}router.push('/beranda');router.refresh();}catch(e){setError(e instanceof Error?e.message:'Terjadi kesalahan.');}finally{setLoading(false)}}if(success)return <div className="auth-success"><CheckCircle2/><h2>Periksa email Anda</h2><p>{success}</p><button className="primary wide" onClick={()=>router.push('/masuk')}>Ke halaman masuk</button></div>;return <form className="auth-form" method="post" onSubmit={submit}>{mode==='register'&&<><label>Nama lengkap<input name="name" required minLength={2} autoComplete="name" placeholder="Nama Anda"/></label><label>Kota di Malaysia<input name="city" autoComplete="address-level2" placeholder="Contoh: Kuala Lumpur"/></label></>}<label>Email<input name="email" type="email" required autoComplete="email" placeholder="nama@email.com"/></label><label>Kata sandi<input name="password" type="password" required minLength={mode==='register'?10:1} autoComplete={mode==='login'?'current-password':'new-password'} placeholder={mode==='register'?'Min. 10 karakter, huruf & angka':'Kata sandi'}/></label>{error&&<div className="error-box" role="alert">{error}</div>}<button className="primary wide" disabled={loading}>{loading?'Mohon tungguÃ¢â‚¬Â¦':mode==='login'?'Masuk':'Buat akun'}</button><div className="auth-sep"><span>atau</span></div><button type="button" className="google" disabled={loading} onClick={signInGoogle}>Google</button></form>}

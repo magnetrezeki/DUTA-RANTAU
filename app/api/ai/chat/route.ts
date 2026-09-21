@@ -36,7 +36,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Pertanyaan melebihi had aksara.', code: 'INPUT_TOO_LARGE' }, { status: 400 });
     }
     const body = input.parse(rawBody);
-    if (body.channel === 'voice') return NextResponse.json({ error: 'Input suara belum tersedia.' }, { status: 422 });
     const ip = req.headers.get('x-forwarded-for')?.split(',')[0] ?? 'local';
     if (!rateLimit(`ai:${ip}`, 15).ok) return NextResponse.json({ error: 'Terlalu banyak permintaan. Coba lagi sebentar.', code: 'RATE_LIMITED' }, { status: 429 });
     const plan = planAiExecution(body.message);
