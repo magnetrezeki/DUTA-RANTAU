@@ -1,10 +1,4 @@
-import { NextResponse } from 'next/server';
-
-// Seller listing creation remains unavailable while marketplace onboarding
-// and operator controls are under review.
-export async function POST() {
-  return NextResponse.json(
-    { error: 'Pembuatan listing penjual saat ini belum tersedia.' },
-    { status: 410 },
-  );
-}
+import { NextRequest,NextResponse } from 'next/server';import { eq } from 'drizzle-orm';import { z } from 'zod';import { products } from '@/db/schema';import { authorizePlatformApi } from '@/lib/auth/api-guard';import { withUserTransaction } from '@/lib/db/identity-bridge';
+const input=z.object({id:z.string().uuid(),decision:z.enum(['APPROVE','REJECT','ARCHIVE'])});
+export async function POST(){return NextResponse.json({error:'Pembuatan listing penjual saat ini belum tersedia.'},{status:410})}
+export async function PATCH(req:NextRequest){const auth=await authorizePlatformApi(req,'moderation.manage');if(auth.response)return auth.response;const parsed=input.safeParse(await req.json());if(!parsed.success)return NextResponse.json({error:'Keputusan tidak valid.'},{status:400});return withUserTransaction(auth.user!,async tx=>{const status=parsed.data.decision==='APPROVE'?'ACTIVE':parsed.data.decision==='REJECT'?'REJECTED':'ARCHIVED';const [row]=await tx.update(products).set({recordStatus:status}).where(eq(products.id,parsed.data.id)).returning();return row?NextResponse.json({data:row}):NextResponse.json({error:'Produk tidak ditemukan.'},{status:404})})}

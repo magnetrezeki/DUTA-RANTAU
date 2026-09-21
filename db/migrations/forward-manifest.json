@@ -364,6 +364,30 @@
         "reference": null
       },
       "status": "PROPOSED"
+    },
+    {
+      "number": "0042",
+      "filename": "0042_product_capability_completion.sql",
+      "purpose": "Enable owner-scoped moderated product contributions, persistent community membership, organization ownership, and recipient-scoped notifications without enabling publication, verification, payments, or regulated execution.",
+      "dependsOn": {
+        "migrations": ["0023","0024","0027","0028","0031","0038","0041"],
+        "tables": ["public.entities","public.entity_eligibilities","public.jobs","public.sellers","public.products","public.communities","public.community_members","public.organizations","public.organization_members","public.entity_responsible_persons","public.notifications","public.audit_logs"],
+        "columns": [],
+        "functions": ["public.current_app_user_id()","public.enforce_job_posting_safety()"],
+        "roles": ["duta_app"],
+        "extensions": ["pgcrypto"],
+        "security": ["RLS:owner-scoped contributions","RLS:recipient-scoped notifications","AUTHORIZATION:moderation-before-publication"]
+      },
+      "checksum": null,
+      "introducedCommit": null,
+      "schemaEffect": "ADDITIVE",
+      "securityEffects": ["RLS","AUTHORIZATION","ROLE_GRANT"],
+      "requiresRlsValidation": true,
+      "requiresDataBackfill": false,
+      "dataEffect": "NONE",
+      "rollback": {"classification":"REVERSIBLE"},
+      "validationContract": {"status":"PENDING_MA03","reference":null},
+      "status": "PROPOSED"
     }
   ]
 }

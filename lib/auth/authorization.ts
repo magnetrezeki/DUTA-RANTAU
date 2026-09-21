@@ -1,5 +1,5 @@
 import type { UserRole } from '@/types';
-const hierarchy:UserRole[]=['GUEST','USER','MEMBER','VERIFIED_MEMBER','SELLER','ORG_STAFF','ORG_ADMIN','EDITOR','MODERATOR','SUPER_ADMIN'];
+const hierarchy:UserRole[]=['GUEST','USER','MEMBER','VERIFIED_MEMBER','SELLER','ORG_STAFF','ORG_ADMIN','EDITOR','MODERATOR','COMPLIANCE_ADMIN','VERIFICATION_REVIEWER','SUPER_ADMIN'];
 export function hasRole(actual:UserRole,minimum:UserRole){return hierarchy.indexOf(actual)>=hierarchy.indexOf(minimum)}
 const base=['organization.view'];
 export const orgRolePermissions:Record<string,string[]>={

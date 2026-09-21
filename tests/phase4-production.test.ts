@@ -22,12 +22,13 @@ describe('Phase 4 production data boundaries', () => {
     }
   });
 
-  it('withholds marketplace discovery before a database read', async () => {
+  it('opens marketplace discovery through an ACTIVE-only database read', async () => {
     const response = await getMarketplace();
 
     expect(response.status).toBe(503);
     await expect(response.json()).resolves.toEqual({ error: 'Data marketplace belum tersedia. Pasar Rantau sedang dipersiapkan.' });
-    expect(read('app/api/marketplace/route.ts')).not.toMatch(/withPublicTransaction|withUserTransaction/);
+    expect(read('app/api/marketplace/route.ts')).toContain('withPublicTransaction');
+    expect(read('app/api/marketplace/route.ts')).toContain("eq(products.recordStatus,'ACTIVE')");
   });
 
   it('ships admin mutation boundaries for all requested content modules', () => {
@@ -39,7 +40,7 @@ describe('Phase 4 production data boundaries', () => {
     for (const policy of ['jobs_admin_all', 'products_admin_all', 'communities_admin_all', 'organizations_admin_insert', 'official_sources_admin_all']) expect(rls).toContain(policy);
   });
 
-  it('withholds employer and seller submission before authorization or database mutation', async () => {
+  it('keeps deprecated admin creation closed and opens authenticated owner submission', async () => {
     const [jobResponse, listingResponse] = await Promise.all([
       submitEmployerJob(),
       createSellerListing(),
@@ -47,8 +48,11 @@ describe('Phase 4 production data boundaries', () => {
 
     expect(jobResponse.status).toBe(410);
     expect(listingResponse.status).toBe(410);
-    expect(read('app/api/admin/jobs/route.ts')).not.toContain('withUserTransaction');
-    expect(read('app/api/admin/marketplace/route.ts')).not.toContain('withUserTransaction');
+    for (const path of ['app/api/jobs/route.ts','app/api/marketplace/route.ts']) {
+      expect(read(path)).toContain('authorizeApi');
+      expect(read(path)).toContain('withUserTransaction');
+      expect(read(path)).toContain("recordStatus:'PENDING'");
+    }
   });
 
   it('hardens organization deletion into archival-only workflow', () => {

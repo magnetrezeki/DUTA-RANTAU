@@ -4,7 +4,7 @@ import { eq } from "drizzle-orm";
 import { organizations } from "@/db/schema";
 import { withPublicTransaction } from "@/lib/db/identity-bridge";
 
-export async function getOrganizations() {
+export async function getOrganizations(): Promise<(typeof organizations.$inferSelect)[]> {
   return withPublicTransaction(async (tx) => {
     return tx
       .select()

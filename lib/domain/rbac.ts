@@ -35,6 +35,8 @@ export function canUseEntityPermission(role: string | undefined, permission: str
 // entity role and do not grant compliance or verification review authority.
 export function legacyPlatformRoles(role: UserRole): PlatformRole[] {
   if (role === 'SUPER_ADMIN') return ['super_admin'];
+  if (role === 'COMPLIANCE_ADMIN') return ['compliance_admin'];
+  if (role === 'VERIFICATION_REVIEWER') return ['verification_reviewer'];
   if (role === 'MODERATOR') return ['moderation_admin'];
   return [];
 }

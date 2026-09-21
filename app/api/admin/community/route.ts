@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { communities } from "@/db/schema";
-import { authorizeApi } from "@/lib/auth/api-guard";
+import { authorizeApi, authorizePlatformApi } from "@/lib/auth/api-guard";
 import { withUserTransaction } from "@/lib/db/identity-bridge";
+import { eq } from 'drizzle-orm';
 
 const input = z.object({
   name: z.string().trim().min(2).max(200),
@@ -61,3 +62,6 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+
+const decisionInput=z.object({id:z.string().uuid(),decision:z.enum(['APPROVE','REJECT','ARCHIVE'])});
+export async function PATCH(req:NextRequest){const auth=await authorizePlatformApi(req,'moderation.manage');if(auth.response)return auth.response;const parsed=decisionInput.safeParse(await req.json());if(!parsed.success)return NextResponse.json({error:'Keputusan tidak valid.'},{status:400});return withUserTransaction(auth.user!,async tx=>{const status=parsed.data.decision==='APPROVE'?'ACTIVE':parsed.data.decision==='REJECT'?'REJECTED':'ARCHIVED';const [row]=await tx.update(communities).set({recordStatus:status}).where(eq(communities.id,parsed.data.id)).returning();return row?NextResponse.json({data:row}):NextResponse.json({error:'Komuniti tidak ditemukan.'},{status:404})})}

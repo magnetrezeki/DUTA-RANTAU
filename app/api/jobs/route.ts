@@ -1,19 +1,4 @@
-import { NextResponse } from "next/server";
-import { eq } from "drizzle-orm";
-import { jobs } from "@/db/schema";
-import { withPublicTransaction } from "@/lib/db/identity-bridge";
-
-export async function GET() {
-  try {
-    const data = await withPublicTransaction(async (tx) => {
-      return await tx.select().from(jobs).where(eq(jobs.recordStatus, "ACTIVE"));
-    });
-
-    return NextResponse.json({ data });
-  } catch {
-    return NextResponse.json(
-      { error: "Data lowongan belum tersedia" },
-      { status: 503 }
-    );
-  }
-}
+import { NextRequest,NextResponse } from 'next/server';import { eq } from 'drizzle-orm';import { z } from 'zod';import { auditLogs,entities,entityEligibilities,jobs,notifications } from '@/db/schema';import { withPublicTransaction,withUserTransaction } from '@/lib/db/identity-bridge';import { authorizeApi } from '@/lib/auth/api-guard';
+const input=z.object({title:z.string().trim().min(3).max(160),employer:z.string().trim().min(2).max(160),description:z.string().trim().min(20).max(5000),city:z.string().trim().max(100).optional(),state:z.string().trim().max(100).optional(),employmentType:z.string().trim().min(2).max(80),applicationMethod:z.string().trim().min(5).max(500),source:z.string().url().max(1000).optional()});
+export async function GET(){try{return NextResponse.json({data:await withPublicTransaction(tx=>tx.select().from(jobs).where(eq(jobs.recordStatus,'ACTIVE')))})}catch{return NextResponse.json({error:'Data lowongan belum tersedia'},{status:503})}}
+export async function POST(req:NextRequest){const auth=await authorizeApi(req);if(auth.response)return auth.response;const parsed=input.safeParse(await req.json());if(!parsed.success)return NextResponse.json({error:'Data info kerja tidak valid.'},{status:400});return withUserTransaction(auth.user!,async(tx,actor)=>{const {source,...job}=parsed.data;const [entity]=await tx.insert(entities).values({entityType:'business',displayName:job.employer,slug:`employer-${crypto.randomUUID()}`,ownerUserId:actor.id,recordStatus:'PENDING',legalStatus:'unknown'}).returning();await tx.insert(entityEligibilities).values({entityId:entity.id,eligibilityType:'employer',status:'pending',decisionSource:'manual_review'});const [row]=await tx.insert(jobs).values({...job,ownerId:actor.id,employerEntityId:entity.id,postingKind:'direct_employer',employerEligibilitySnapshot:'pending',requirements:source?`Sumber/provenance: ${source}`:undefined,trustLevel:'USER_GENERATED',recordStatus:'PENDING'}).returning();await tx.insert(notifications).values({userId:actor.id,type:'JOB_SUBMITTED',priority:'NORMAL',title:'Info kerja dikirim untuk moderasi',body:`${row.title} belum dipublikasikan sebelum disetujui.`});await tx.insert(auditLogs).values({actorId:actor.id,action:'job.submitted',entityType:'job',entityId:row.id,metadata:{status:'PENDING'}});return NextResponse.json({data:row},{status:201})}).catch(()=>NextResponse.json({error:'Pengajuan belum dapat disimpan.'},{status:503}))}

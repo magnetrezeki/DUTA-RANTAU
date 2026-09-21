@@ -81,10 +81,10 @@ export async function POST(req: NextRequest) {
 }
 
 export async function PATCH(req: NextRequest) {
-  const auth = await authorizePlatformApi(req, "platform.config.manage");
-  if (auth.response) return auth.response;
-
   const body = updateInput.parse(await req.json());
+  const moderationDecision = body.recordStatus === 'ACTIVE' || body.recordStatus === 'SUSPENDED';
+  const auth = await authorizePlatformApi(req, moderationDecision ? 'moderation.manage' : 'platform.config.manage');
+  if (auth.response) return auth.response;
   const { organizationId, ...changes } = body;
 
   return withUserTransaction(auth.user!, async (tx, actor) => {
@@ -98,17 +98,6 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json(
         { error: "Organisasi tidak ditemukan." },
         { status: 404 },
-      );
-    }
-
-    if (
-      changes.recordStatus === "ACTIVE" &&
-      changes.verification !== "DUTA_VERIFIED" &&
-      existing[0].verification !== "DUTA_VERIFIED"
-    ) {
-      return NextResponse.json(
-        { error: "Organisasi harus DUTA_VERIFIED sebelum diaktifkan." },
-        { status: 400 },
       );
     }
 

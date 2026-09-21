@@ -3,7 +3,6 @@ import { readFileSync } from 'node:fs';
 import { evaluateMarketplaceListingPermission } from '../lib/domain/marketplace-compliance';
 import { POST as createAdminListing } from '../app/api/admin/marketplace/route';
 import { POST as createListing } from '../app/api/marketplace/create/route';
-import { GET as getMarketplace } from '../app/api/marketplace/route';
 
 const approved = { type: 'commercial' as const, status: 'approved' as const, expiresAt: null };
 const allowedBusiness = { entityType: 'business' as const, entityActive: true, actorAuthorized: true, commercialEligibility: approved, category: 'ordinary_goods' };
@@ -59,11 +58,14 @@ describe('marketplace compliance', () => {
     await expect(adminResponse.json()).resolves.toEqual({ error: 'Pembuatan listing penjual saat ini belum tersedia.' });
   });
 
-  it('withholds public marketplace discovery and preserves the absence of checkout', async () => {
-    const response = await getMarketplace();
-    expect(response.status).toBe(503);
-    await expect(response.json()).resolves.toEqual({ error: 'Data marketplace belum tersedia. Pasar Rantau sedang dipersiapkan.' });
-    expect(readFileSync('app/pasar/page.tsx', 'utf8')).toContain('Sedang dipersiapkan');
+  it('opens moderated seller submission while preserving the absence of checkout', async () => {
+    const route = readFileSync('app/api/marketplace/route.ts', 'utf8');
+    const page = readFileSync('app/pasar/page.tsx', 'utf8');
+    expect(route).toContain('export async function POST');
+    expect(route).toContain("recordStatus:'PENDING'");
+    expect(route).toContain("eligibilityType:'commercial'");
+    expect(page).toContain('ContributionForm');
+    expect(page).toContain('moderasi');
     expect(() => readFileSync('app/api/marketplace/checkout/route.ts', 'utf8')).toThrow();
     expect(() => readFileSync('app/api/membership/checkout/route.ts', 'utf8')).toThrow();
   });
