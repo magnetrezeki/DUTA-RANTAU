@@ -110,7 +110,7 @@ afterAll(() => rmSync(fixtureTemplate, { recursive: true, force: true }));
 
 describe('MA-05 repository migration enforcement', { timeout: 30_000 }, () => {
   it('accepts the governed forward lifecycle and exposes the package guard command', () => {
-    expect(checkMigrationAuthority(repositoryRoot)).toEqual({ historicalCount: 35, forwardCount: 4 });
+    expect(checkMigrationAuthority(repositoryRoot)).toEqual({ historicalCount: 35, forwardCount: 5 });
     expect(readManifest(repositoryRoot).migrations).toEqual([
       expect.objectContaining({
         number: '0039', status: 'AUTHORITY_ACCEPTED',
@@ -129,6 +129,11 @@ describe('MA-05 repository migration enforcement', { timeout: 30_000 }, () => {
       }),
       expect.objectContaining({
         number: '0042', status: 'PROPOSED',
+        checksum: null, introducedCommit: null,
+        validationContract: { status: 'PENDING_MA03', reference: null },
+      }),
+      expect.objectContaining({
+        number: '0043', status: 'PROPOSED',
         checksum: null, introducedCommit: null,
         validationContract: { status: 'PENDING_MA03', reference: null },
       }),

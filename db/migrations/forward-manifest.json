@@ -388,6 +388,30 @@
       "rollback": {"classification":"REVERSIBLE"},
       "validationContract": {"status":"PENDING_MA03","reference":null},
       "status": "PROPOSED"
+    },
+    {
+      "number": "0043",
+      "filename": "0043_runtime_auth_dependency_remediation.sql",
+      "purpose": "Remove the duta_app runtime dependency on provider-owned auth.uid() from the organization member trigger and legacy JWT read policies while preserving Supabase anon/authenticated behavior.",
+      "dependsOn": {
+        "migrations": ["0029", "0037", "0038", "0042"],
+        "tables": ["public.organization_members", "public.communities", "public.jobs", "public.products", "public.sellers"],
+        "columns": [],
+        "functions": ["public.current_app_user_id()", "public.current_app_has_org_role(uuid,public.organization_role[])", "public.enforce_organization_member_role_change()"],
+        "roles": ["postgres", "anon", "authenticated", "duta_app"],
+        "extensions": [],
+        "security": ["IDENTITY_BRIDGE:app.user_id", "AUTH_SCHEMA:NO_DUTA_APP_USAGE", "RLS:JWT_AND_RUNTIME_ROLE_SEPARATION"]
+      },
+      "checksum": null,
+      "introducedCommit": null,
+      "schemaEffect": "ADDITIVE",
+      "securityEffects": ["RLS", "AUTHORIZATION"],
+      "requiresRlsValidation": true,
+      "requiresDataBackfill": false,
+      "dataEffect": "NONE",
+      "rollback": {"classification":"REVERSIBLE"},
+      "validationContract": {"status":"PENDING_MA03","reference":null},
+      "status": "PROPOSED"
     }
   ]
 }
