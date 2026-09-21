@@ -1,4 +1,25 @@
-import Link from 'next/link';import { AiChat } from '@/components/ai-chat';import { HomeGreeting } from '@/components/home-greeting';import { Briefcase,Landmark,MapPin,Shield,Users,ArrowUpRight } from 'lucide-react';
+import Link from 'next/link';
+import { ArrowUpRight } from 'lucide-react';
 import { HariIniMember } from '@/components/hari-ini-member';
-const services=[['/layanan','Layanan RI','Cari jalur dan sumber resmi',Landmark],['/kerja','Kerja','Langkah kerja dari sumber resmi',Briefcase],['/komunitas','Kawan Rantau','Temukan ruang yang tersedia',Users],['/info','Info Rantau','Jelajahi panduan dan sumber',MapPin]] as const;
-export default function Home(){return <><HariIniMember/><div className="page home hari-public"><section className="welcome"><div><p className="eyebrow">HARI INI · UMUM</p><HomeGreeting/><p>Apa yang paling perlu Anda urus hari ini?</p></div><Link className="safety-link" href="/jaga-diri"><Shield size={18}/>Jaga Diri</Link></section><AiChat compact/><section className="section"><div className="section-title"><h2>Penting Hari Ini</h2><span>Mulai dengan hal yang nyata dan tersedia.</span></div><div className="notice"><Landmark/><div><b>Periksa sumber resmi sebelum mengambil langkah.</b><p>Informasi terbaru mungkin berubah. DUTA membantu Anda menemukan jalur yang relevan tanpa mengada-adakan pembaruan.</p><Link href="/layanan">Buka Layanan RI <ArrowUpRight size={14}/></Link></div></div></section><section className="section"><div className="section-title"><h2>Untuk Anda</h2><span>Pilih satu kebutuhan untuk memulai.</span></div><div className="service-grid">{services.map(([href,title,desc,Icon])=><Link href={href} key={href} className="service-card"><i><Icon size={22}/></i><div><b>{title}</b><span>{desc}</span></div><ArrowUpRight size={17}/></Link>)}</div></section><section className="section panel"><div className="section-title"><h2>Sekitar Anda</h2><span>Penemuan tanpa lokasi presisi atau aktivitas rekaan.</span></div><div className="notice"><Users/><div><b>Belum ada kegiatan yang dapat ditampilkan.</b><p>Jelajahi Kawan Rantau untuk melihat komunitas yang tersedia. Keanggotaan dan aktiviti kekal mengikut sempadan beta semasa.</p><Link href="/komunitas">Buka Kawan Rantau</Link></div></div></section><section className="section"><div className="section-title"><h2>Update Resmi</h2><span>Teroka arkib dan sumber, bukan suapan rekaan.</span></div><Link className="primary" href="/info">Jelajahi Info Rantau <ArrowUpRight size={16}/></Link></section><section className="disclaimer-wide"><Shield size={21}/><div><b>DUTA RANTAU bukan institusi pemerintah</b><p>Kami membantu Anda menemukan informasi dari sumber resmi. Selalu periksa prosedur terbaru pada kanal institusi terkait.</p></div></section></div></>}
+
+function Row({ href, title, text }: { href: string; title: string; text: string }) {
+  return <Link className="vp-row" href={href}><span><strong>{title}</strong><small>{text}</small></span><ArrowUpRight size={20}/></Link>;
+}
+
+export default function Home() {
+  return <>
+    <HariIniMember />
+    <div className="vp-page vp-wide vp-hari-public">
+      <header className="vp-top"><span className="vp-eyebrow">Hari Ini · Untuk semua</span><h1>Satu hari.<br/><em>Banyak kemungkinan.</em></h1><p className="vp-lead">Mulai dari hal yang paling berguna untuk hidup di Malaysia.</p></header>
+      <div className="vp-grid vp-hari-grid">
+        <div>
+          <section className="vp-feature"><span className="vp-kicker">Penting Hari Ini</span><h2>Urus dokumen,<br/>dengan arah yang jelas.</h2><p>Kenali perwakilan yang melayani wilayah Anda sebelum membuka layanan.</p><div className="vp-actions"><Link className="vp-btn" href="/layanan">Mulai dari Layanan RI <ArrowUpRight size={17}/></Link></div></section>
+          <section className="vp-section"><h2>Untuk semua</h2><Row href="/kerja" title="Sedang mencari informasi kerja?" text="Buka sumber yang dapat Anda periksa"/><Row href="/komunitas" title="Baru mulai mengenal sekitar?" text="Temukan ruang untuk terhubung"/></section>
+        </div>
+        <div><figure className="vp-scene"><img src="/visual-r21f/hari-commute.webp" alt="Ilustrasi AI perempuan di perjalanan kota Malaysia; bukan pengguna nyata"/><figcaption>Momen Hari Ini · prototipe AI</figcaption></figure><section className="vp-section"><h2>Sekitar Anda</h2><Row href="/layanan#sekitar" title="Pilih area, temukan yang dekat" text="Lokasi perangkat selalu opsional; hasil sekitar belum tersedia"/></section></div>
+      </div>
+      <div className="vp-grid"><section className="vp-section"><h2>Update Resmi</h2><span className="vp-note">Sumber perlu diverifikasi</span><h3>Kenali kanal perwakilan Anda.</h3><p>Belum ada berita terverifikasi untuk ditampilkan.</p><div className="vp-actions"><Link className="vp-quiet" href="/layanan">Lihat kanal & tindakan <ArrowUpRight size={16}/></Link><Link className="vp-quiet" href="/info">Lihat update lain <ArrowUpRight size={16}/></Link></div></section><section className="vp-section"><h2>Mulai dari yang berguna</h2><p>Hal yang Anda simpan akan mudah ditemukan kembali setelah kemampuan itu tersedia.</p><Link className="vp-outline" href="/profil">Kenali Member gratis <ArrowUpRight size={16}/></Link></section></div>
+      <footer className="vp-footer"><span>DUTA RANTAU independen. Periksa langkah terbaru di kanal resmi.</span><Link href="/tanya">Tanya DUTA <ArrowUpRight size={16}/></Link></footer>
+    </div>
+  </>;
+}

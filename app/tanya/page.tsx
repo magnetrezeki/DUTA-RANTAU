@@ -1,2 +1,3 @@
-import { AiChat } from '@/components/ai-chat';import { PageHeader } from '@/components/ui';import { Bot,Database,Route,ShieldCheck } from 'lucide-react';export const metadata={title:'Tanya DUTA'};export default function Page(){return <div className="page"><PageHeader eyebrow="TANYA DUTA · MULAI DARI CERITA ANDA" title="Apa yang ingin Anda urus?" description="Tulis dengan bahasa sehari-hari. DUTA membantu mencari langkah seterusnya dan menunjukkan batas sumbernya."/><AiChat/><div className="info-grid four"><div><Route/><b>Memahami tujuan</b><span>Mulai dari kebutuhan Anda</span></div><div><Database/><b>Mendahulukan sumber</b><span>Rujukan terlihat bila tersedia</span></div><div><Bot/><b>Jawaban ke tindakan</b><span>Ke ruang DUTA yang tepat</span></div><div><ShieldCheck/><b>Jujur saat terbatas</b><span>Tidak mengada-adakan jawapan</span></div></div></div>}
-
+import { AiChat } from '@/components/ai-chat';
+export const metadata={title:'Tanya DUTA'};
+export default function Page(){return <AiChat/>}

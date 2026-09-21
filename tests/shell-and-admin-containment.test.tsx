@@ -67,9 +67,11 @@ describe('shell trust residuals', () => {
   it('keeps the application shell on existing URLs and exactly five bottom-nav items', () => {
     for (const path of ['/beranda', '/masuk', '/profil', '/tanya']) {
       const html = shellHtml(path);
-      expect(html).toContain('class="sidebar"');
-      const bottom = html.slice(html.indexOf('class="bottom-nav"'));
-      expect((bottom.match(/<a /g) ?? []).length).toBe(5);
+      expect(html).toContain('class="vp-app"');
+      const primary = html.match(/<nav class="vp-navigation"[^>]*>(.*?)<\/nav>/)?.[1] ?? '';
+      expect((primary.match(/<a /g) ?? []).length).toBe(5);
+      expect(primary).not.toContain('href="/jaga-diri"');
+      expect(html).toContain('class="vp-safety"');
     }
   });
 

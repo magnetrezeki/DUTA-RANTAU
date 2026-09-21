@@ -9,9 +9,7 @@ import Home from '@/app/beranda/page';
 import { AppShell } from '@/components/app-shell';
 
 const routing = vi.hoisted(() => ({ path: '/' }));
-vi.mock('next/navigation', () => ({ usePathname: () => routing.path }));
-vi.mock('@/components/ai-chat', () => ({ AiChat: () => React.createElement('div', { 'data-live-ai': true }, 'App AI') }));
-vi.mock('@/components/home-greeting', () => ({ HomeGreeting: () => React.createElement('h1', null, 'Kawan Rantau') }));
+vi.mock('next/navigation', () => ({ usePathname: () => routing.path, useRouter: () => ({ push: vi.fn() }) }));
 
 const base = 'c26fa221b508e59bca95efbf371fad667f93a79c';
 function baseline(file: string) { return execFileSync('git', ['show', `${base}:${file}`], { encoding: 'utf8' }).replace(/\r\n/g, '\n'); }
@@ -49,12 +47,12 @@ describe('public landing and preserved application home', () => {
   it('renders marketing content without app chrome or live AI', () => {
     routing.path = '/';
     const html = renderToStaticMarkup(<AppShell><Landing /></AppShell>);
-    expect(html).toContain('Teman menjalani hidup di Malaysia.');
+    expect(html).toContain('Teman menjalani');
+    expect(html).toContain('Malaysia.');
     expect(html).toContain('href="/tanya"');
     expect(html).toContain('href="/beranda"');
-    expect(html).not.toContain('class="sidebar"');
-    expect(html).not.toContain('class="topbar"');
-    expect(html).not.toContain('data-live-ai');
+    expect(html).not.toContain('class="vp-app"');
+    expect(html).toContain('/visual-r21f/hero.webp');
     expect(html).toContain('Jelajahi kebutuhan');
     expect(html).toContain('Independen. Bukan layanan pemerintah.');
     for (const claim of ['E-Undi', 'Citizen Report', 'Trust Score', 'wallet', 'investasi', 'e-learning']) expect(html).not.toContain(claim);
@@ -62,16 +60,21 @@ describe('public landing and preserved application home', () => {
   it('keeps the application home and navigation without a consumer membership offer', () => {
     routing.path = '/beranda';
     const html = renderToStaticMarkup(<AppShell><Home /></AppShell>);
-    expect(html).toContain('class="sidebar"');
+    expect(html).toContain('class="vp-app"');
     expect(html).toContain('href="/beranda"');
-    expect(html).toContain('data-live-ai');
-    for (const text of ['Penting Hari Ini', 'Untuk Anda', 'Sekitar Anda', 'Penemuan tanpa lokasi presisi atau aktivitas rekaan.']) expect(html).toContain(text);
+    expect(html).toContain('/visual-r21f/hari-commute.webp');
+    expect(html).not.toContain('class="ai-box');
+    for (const text of ['Penting Hari Ini', 'Untuk semua', 'Sekitar Anda', 'Update Resmi']) expect(html).toContain(text);
     for (const text of ['DUTA MEMBER', 'RM9.90', '/membership']) expect(html).not.toContain(text);
   });
   it('retains the application shell on existing URLs', () => {
     for (const path of ['/masuk', '/daftar', '/tanya', '/profil']) {
       routing.path = path;
-      expect(renderToStaticMarkup(<AppShell><div>Existing route</div></AppShell>)).toContain('class="sidebar"');
+      const html = renderToStaticMarkup(<AppShell><div>Existing route</div></AppShell>);
+      expect(html).toContain('class="vp-app"');
+      expect((html.match(/<nav class="vp-navigation"/g) ?? []).length).toBe(1);
+      expect((html.match(/<a[^>]*href="\/(?:beranda|tanya|layanan|komunitas|profil)"/g) ?? []).length).toBeGreaterThanOrEqual(5);
+      expect(html).toContain('class="vp-safety"');
     }
   });
   it('preserves Q4 Auth and AI security files exactly', () => {
