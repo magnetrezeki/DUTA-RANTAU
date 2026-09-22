@@ -3,6 +3,17 @@ import { DUTA_AI_SYSTEM_POLICY } from '@/lib/domain/duta-ai-policy';
 
 export type AIChannel = "text" | "voice";
 export type AIErrorCategory = "UNAVAILABLE" | "TIMEOUT" | "INVALID_RESPONSE";
+export type AIProviderDiagnosticCategory = "NETWORK_FAILURE" | "TIMEOUT_FAILURE" | "REQUEST_CONTRACT_FAILURE" | "AUTHENTICATION_FAILURE" | "PERMISSION_OR_ENTITLEMENT_FAILURE" | "MODEL_OR_ENDPOINT_NOT_FOUND" | "RATE_LIMIT_OR_QUOTA_FAILURE" | "PROVIDER_SERVER_FAILURE" | "RESPONSE_PARSE_FAILURE" | "RESPONSE_SCHEMA_FAILURE" | "UNKNOWN_FAILURE";
+export type AIProviderDiagnostics = {
+  expectedModel: string;
+  effectiveModel?: string;
+  httpStatus?: number;
+  providerErrorCode?: string;
+  normalizedFailureClass?: AIProviderDiagnosticCategory;
+  requestAttempted: boolean;
+  requestLeftApplication: boolean | null;
+  providerResponded: boolean;
+};
 export type AIProviderResult = {
   success: boolean;
   provider: "fallback" | "nvidia" | "gemini" | "groq" | "openai";
@@ -10,7 +21,8 @@ export type AIProviderResult = {
   text?: string;
   latencyMs: number;
   errorCategory?: AIErrorCategory;
-  _diagnosticCategory?: "NETWORK_FAILURE" | "TIMEOUT_FAILURE" | "REQUEST_CONTRACT_FAILURE" | "AUTHENTICATION_FAILURE" | "PERMISSION_OR_ENTITLEMENT_FAILURE" | "MODEL_OR_ENDPOINT_NOT_FOUND" | "RATE_LIMIT_OR_QUOTA_FAILURE" | "PROVIDER_SERVER_FAILURE" | "RESPONSE_PARSE_FAILURE" | "RESPONSE_SCHEMA_FAILURE" | "UNKNOWN_FAILURE";
+  diagnostics?: AIProviderDiagnostics;
+  _diagnosticCategory?: AIProviderDiagnosticCategory;
 };
 export type AIProviderInput = { message: string; channel: AIChannel; maxOutputTokens?: number };
 export interface AIProvider { generate(input: AIProviderInput): Promise<AIProviderResult>; healthCheck(): Promise<boolean>; }
