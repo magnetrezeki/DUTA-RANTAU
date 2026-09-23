@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
     if (!acceptedTypes.has(mimeType)) return NextResponse.json({ error: "Format audio belum didukung." }, { status: 415 });
     if (audio.size > maxBytes) return NextResponse.json({ error: "Ukuran audio melebihi 10 MB." }, { status: 413 });
     const result = await getASRProvider().transcribe({ audio, language: language === "ms" ? "ms" : "id" });
-    if (!result.success) return NextResponse.json({ error: "Transkripsi belum tersedia. Silakan ketik pertanyaan Anda.", code: "TRANSCRIPTION_PROVIDER_UNAVAILABLE", errorCategory: result.errorCategory, diagnostics: result.diagnostics }, { status: 503 });
+    if (!result.success) return NextResponse.json({ error: "Transkripsi belum tersedia. Silakan ketik pertanyaan Anda.", code: "TRANSCRIPTION_PROVIDER_UNAVAILABLE", errorCategory: result.errorCategory, diagnostics: result.diagnostics, diagnosticChain: result.diagnosticChain }, { status: 503 });
     return NextResponse.json({ transcript: result.transcript, provider: result.provider, model: result.model, language: result.language, latencyMs: result.latencyMs });
   } catch { return NextResponse.json({ error: "Rekaman audio tidak dapat diproses." }, { status: 400 }); }
 }

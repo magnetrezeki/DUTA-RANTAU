@@ -339,6 +339,77 @@ describe("R6 ASR provider routing", () => {
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 
+  it("preserves Groq and OpenAI diagnostics when both providers fail", async () => {
+    enableGroq();
+    enableOpenAI();
+
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(
+        json(
+          {
+            error: {
+              code: "rate_limit_exceeded",
+              message: "PRIVATE_GROQ_MESSAGE",
+            },
+          },
+          429,
+        ),
+      )
+      .mockResolvedValueOnce(
+        json(
+          {
+            error: {
+              code: "credit_balance_exhausted",
+              message: "PRIVATE_OPENAI_MESSAGE",
+            },
+          },
+          429,
+        ),
+      );
+
+    vi.stubGlobal("fetch", fetchMock);
+
+    const result = await getASRProvider().transcribe({
+      audio: audio(),
+      language: "id",
+    });
+
+    expect(result).toMatchObject({
+      success: false,
+      provider: "openai",
+      diagnostics: {
+        httpStatus: 429,
+        providerErrorCode: "credit_balance_exhausted",
+        normalizedFailureClass: "RATE_LIMIT_FAILURE",
+      },
+      diagnosticChain: [
+        {
+          provider: "groq",
+          diagnostics: {
+            httpStatus: 429,
+            providerErrorCode: "rate_limit_exceeded",
+            normalizedFailureClass: "RATE_LIMIT_FAILURE",
+          },
+        },
+        {
+          provider: "openai",
+          diagnostics: {
+            httpStatus: 429,
+            providerErrorCode: "credit_balance_exhausted",
+            normalizedFailureClass: "RATE_LIMIT_FAILURE",
+          },
+        },
+      ],
+    });
+
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+
+    const serialized = JSON.stringify(result);
+    expect(serialized).not.toContain("PRIVATE_GROQ_MESSAGE");
+    expect(serialized).not.toContain("PRIVATE_OPENAI_MESSAGE");
+  });
+
   it("preserves the 15 second timeout contract", () => {
     expect(ASR_TIMEOUT_MS).toBe(15_000);
   });

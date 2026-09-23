@@ -22,6 +22,11 @@ export type ASRDiagnostics = {
 
 export type ASRProviderName = "fallback" | "groq" | "openai";
 
+export type ASRDiagnosticStage = {
+  provider: "groq" | "openai";
+  diagnostics?: ASRDiagnostics;
+};
+
 export type ASRResult = {
   success: boolean;
   provider: ASRProviderName;
@@ -31,6 +36,7 @@ export type ASRResult = {
   latencyMs: number;
   errorCategory?: ASRErrorCategory;
   diagnostics?: ASRDiagnostics;
+  diagnosticChain?: ASRDiagnosticStage[];
 };
 
 export type ASRInput = {
@@ -303,7 +309,25 @@ export function getASRProvider(): ASRProvider {
   if (!eligibleForFallback(groqResult)) return groqResult;
 
   if (openai) {
-    return openai.transcribe(input);
+    const openaiResult = await openai.transcribe(input);
+
+    if (!openaiResult.success) {
+      return {
+        ...openaiResult,
+        diagnosticChain: [
+          {
+            provider: "groq",
+            diagnostics: groqResult.diagnostics,
+          },
+          {
+            provider: "openai",
+            diagnostics: openaiResult.diagnostics,
+          },
+        ],
+      };
+    }
+
+    return openaiResult;
   }
 
   // Preserve the primary provider's safe diagnostics when
