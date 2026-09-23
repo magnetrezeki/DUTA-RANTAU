@@ -40,6 +40,7 @@ export async function getOfficialSourcesForInstitution(
         and(
           eq(officialSources.institution, institution),
           eq(officialSources.priority, "P0"),
+          eq(officialSources.sourcePurpose, "CONSULAR_SERVICE"),
           eq(officialSources.active, true),
         ),
       )

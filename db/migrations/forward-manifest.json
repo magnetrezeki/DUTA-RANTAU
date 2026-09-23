@@ -412,6 +412,30 @@
       "rollback": {"classification":"REVERSIBLE"},
       "validationContract": {"status":"PENDING_MA03","reference":null},
       "status": "PROPOSED"
+    },
+    {
+      "number": "0044",
+      "filename": "0044_malaysia_official_source_registry.sql",
+      "purpose": "Populate the Founder-approved Malaysia official-source registry while preserving 0039 governance truth boundaries and purpose separation.",
+      "dependsOn": {
+        "migrations": ["0039", "0040", "0043"],
+        "tables": ["public.official_sources", "public.official_source_governance"],
+        "columns": ["public.official_sources.source_purpose"],
+        "functions": [],
+        "roles": ["duta_app"],
+        "extensions": ["pgcrypto"],
+        "security": ["RLS:public.official_sources", "GOVERNANCE:unverified-unapproved-defaults"]
+      },
+      "checksum": null,
+      "introducedCommit": null,
+      "schemaEffect": "NONE",
+      "securityEffects": ["NONE"],
+      "requiresRlsValidation": true,
+      "requiresDataBackfill": true,
+      "dataEffect": "BACKFILL",
+      "rollback": {"classification":"MANUAL_RECOVERY"},
+      "validationContract": {"status":"PENDING_MA03","reference":null},
+      "status": "PROPOSED"
     }
   ]
 }

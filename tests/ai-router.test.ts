@@ -1,8 +1,37 @@
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
+const sourceServiceMock = vi.hoisted(() => ({
+  getOfficialSourcesForInstitution: vi.fn(),
+}));
+
+vi.mock("../lib/services/sources", () => sourceServiceMock);
 import { answerQuestion, detectIntent, formatJobAnswer, formatOfficialAnswer } from "../lib/services/ai-router";
 import { officialEmergencyOffices } from "../lib/official-emergency-data";
 
 describe("AI router", () => {
+  beforeEach(() => {
+    sourceServiceMock.getOfficialSourcesForInstitution.mockReset();
+    sourceServiceMock.getOfficialSourcesForInstitution.mockImplementation(
+      async (institution: string) =>
+        institution === "KJRI Penang"
+          ? [
+              {
+                id: "p5c-0044-kjri-penang",
+                institution: "KJRI Penang",
+                channel: "WEBSITE",
+                url: "https://kemlu.go.id/penang",
+                category: "OFFICIAL_SOURCE",
+                priority: "P0",
+                trustLevel: "OFFICIAL_VERIFIED",
+                lastChecked: "2026-09-23",
+                checksum: "p5c-0044-founder-approved-registry-v1",
+                active: true,
+                sourcePurpose: "CONSULAR_SERVICE",
+              },
+            ]
+          : [],
+    );
+  });
   it("routes official questions", () =>
     expect(detectIntent("Cara perpanjang paspor?")).toBe(
       "OFFICIAL_SERVICE",
@@ -67,7 +96,7 @@ describe("AI router", () => {
 
     expect(r.sources.length).toBeGreaterThan(0);
     expect(r.sources[0].institution).toBe("KJRI Penang");
-    expect(r.sources[0].lastChecked).toBe("2026-08-16");
+    expect(r.sources[0].lastChecked).toBe("2026-09-23");
   });
 
   it("fails safely for unknown question", async () => {
