@@ -110,7 +110,7 @@ afterAll(() => rmSync(fixtureTemplate, { recursive: true, force: true }));
 
 describe('MA-05 repository migration enforcement', { timeout: 30_000 }, () => {
   it('accepts the governed forward lifecycle and exposes the package guard command', () => {
-    expect(checkMigrationAuthority(repositoryRoot)).toEqual({ historicalCount: 35, forwardCount: 6 });
+    expect(checkMigrationAuthority(repositoryRoot)).toEqual({ historicalCount: 35, forwardCount: 7 });
     expect(readManifest(repositoryRoot).migrations).toEqual([
       expect.objectContaining({
         number: '0039', status: 'AUTHORITY_ACCEPTED',
@@ -123,24 +123,29 @@ describe('MA-05 repository migration enforcement', { timeout: 30_000 }, () => {
         introducedCommit: '0b2f0e97007ba5647e9888a2d286a06b57c70f60',
       }),
       expect.objectContaining({
-        number: '0041', status: 'PROPOSED',
-        checksum: null, introducedCommit: null,
-        validationContract: { status: 'PENDING_MA03', reference: null },
+        number: '0041', status: 'AUTHORITY_ACCEPTED',
+        checksum: 'sha256:8c6944fa81956984c7f66068a11201ddabd47a5397608ebb87b19b42f3a087a0', introducedCommit: '9f8d39c1199dfa0204af77efdc5d358d8f65416e',
+        validationContract: { status: 'COMPLETE_MA03', reference: 'docs/duta-v2.5/migrations/0041_VALIDATION.md' },
       }),
       expect.objectContaining({
-        number: '0042', status: 'PROPOSED',
-        checksum: null, introducedCommit: null,
-        validationContract: { status: 'PENDING_MA03', reference: null },
+        number: '0042', status: 'AUTHORITY_ACCEPTED',
+        checksum: 'sha256:2b5393b2eea8794f8ae66f0b85889a5550f8bbed99d2ba01bf1129a9a1df883d', introducedCommit: 'c780ad4439de1f374aa9f4ea371c0a8014268292',
+        validationContract: { status: 'COMPLETE_MA03', reference: 'docs/duta-v2.5/migrations/0042_VALIDATION.md' },
       }),
       expect.objectContaining({
-        number: '0043', status: 'PROPOSED',
-        checksum: null, introducedCommit: null,
-        validationContract: { status: 'PENDING_MA03', reference: null },
+        number: '0043', status: 'AUTHORITY_ACCEPTED',
+        checksum: 'sha256:cb460b102fca46484bbf17f396ae6433d118ca43494199c51718c3dfedf6f5a8', introducedCommit: 'e6b214b995a95e131536605c42b011d726862d3b',
+        validationContract: { status: 'COMPLETE_MA03', reference: 'docs/duta-v2.5/migrations/0043_VALIDATION.md' },
       }),
       expect.objectContaining({
-        number: '0044', status: 'PROPOSED',
-        checksum: null, introducedCommit: null,
-        validationContract: { status: 'PENDING_MA03', reference: null },
+        number: '0044', status: 'AUTHORITY_ACCEPTED',
+        checksum: 'sha256:cb2a36e9ab0c7ddb8b3037a0e7bd477d346911b48405b3bbc0ad9b3d85febf65', introducedCommit: '46fd72ed1771335583db3e5858a069cc064a2a4e',
+        validationContract: { status: 'COMPLETE_MA03', reference: 'docs/duta-v2.5/migrations/0044_VALIDATION.md' },
+      }),
+      expect.objectContaining({
+        number: '0045', status: 'AUTHORITY_ACCEPTED',
+        checksum: 'sha256:55d87fb56764c47419fd61b5a85ed6d8772b6aa376c8119e4335480ddf2c8059', introducedCommit: '6d3114e33d085c5bc10f539b52aae043aedc08de',
+        validationContract: { status: 'COMPLETE_MA03', reference: 'docs/duta-v2.5/migrations/0045_VALIDATION.md' },
       }),
     ]);
     expect(JSON.parse(readFileSync(join(repositoryRoot, 'package.json'), 'utf8')).scripts['migration:check'])
@@ -306,3 +311,4 @@ describe('MA-05 repository migration enforcement', { timeout: 30_000 }, () => {
     expectFailure(root, 'AUTOMATIC_MIGRATION_EXECUTION');
   });
 });
+
