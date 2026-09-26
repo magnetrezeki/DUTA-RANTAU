@@ -442,16 +442,16 @@
       "filename": "0045_official_news_editorial_foundation.sql",
       "purpose": "Create the additive official representative News editorial, provenance, RLS, audit, and controlled collection foundation.",
       "dependsOn": {"migrations":["0039","0040","0041","0042","0043","0044"],"tables":["public.users","public.official_sources","public.official_source_governance"],"columns":["public.official_sources.source_purpose","public.official_sources.active"],"functions":["public.current_app_user_id()","public.current_app_has_role(public.user_role[])"],"roles":["duta_app"],"extensions":["pgcrypto"],"security":["RLS:official_news","SOURCE_AUTHORITY:official_sources"]},
-      "checksum": null,
-      "introducedCommit": null,
+      "checksum": "sha256:55d87fb56764c47419fd61b5a85ed6d8772b6aa376c8119e4335480ddf2c8059",
+      "introducedCommit": "6d3114e33d085c5bc10f539b52aae043aedc08de",
       "schemaEffect": "ADDITIVE",
       "securityEffects": ["MULTIPLE"],
       "requiresRlsValidation": true,
       "requiresDataBackfill": false,
       "dataEffect": "NONE",
       "rollback": {"classification":"MANUAL_RECOVERY"},
-      "validationContract": {"status":"PENDING_MA03","reference":null},
-      "status": "PROPOSED"
+      "validationContract": {"status":"COMPLETE_MA03","reference":"docs/duta-v2.5/migrations/0045_VALIDATION.md"},
+      "status": "AUTHORITY_ACCEPTED"
     }
   ]
 }
