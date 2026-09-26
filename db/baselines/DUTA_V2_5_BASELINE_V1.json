@@ -1,0 +1,10 @@
+{
+  "identity": "DUTA_V2_5_BASELINE_V1",
+  "schemaVersion": 1,
+  "boundary": "IMMEDIATELY_BEFORE_0039",
+  "historicalMigrations": "FROZEN_HISTORICAL_EVIDENCE_NOT_REPLAY_LEDGER",
+  "forwardMigrations": ["0039","0040","0041","0042","0043","0044","0045"],
+  "artifact": "db/baselines/DUTA_V2_5_BASELINE_V1.sql",
+  "checksum": "94107afd6ea93c71f308ef51a45153ae908ae43139c8cb69dd53d9288ee36b8e",
+  "dataPolicy": "SCHEMA_ONLY_ZERO_APPLICATION_ROWS"
+}
