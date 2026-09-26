@@ -347,8 +347,8 @@
           "GRANT:duta_system:public.audit_logs:INSERT"
         ]
       },
-      "checksum": null,
-      "introducedCommit": null,
+      "checksum": "sha256:8c6944fa81956984c7f66068a11201ddabd47a5397608ebb87b19b42f3a087a0",
+      "introducedCommit": "9f8d39c1199dfa0204af77efdc5d358d8f65416e",
       "schemaEffect": "NONE",
       "securityEffects": [
         "ROLE_GRANT"
@@ -360,10 +360,10 @@
         "classification": "REVERSIBLE"
       },
       "validationContract": {
-        "status": "PENDING_MA03",
-        "reference": null
+        "status": "COMPLETE_MA03",
+        "reference": "docs/duta-v2.5/migrations/0041_VALIDATION.md"
       },
-      "status": "PROPOSED"
+      "status": "AUTHORITY_ACCEPTED"
     },
     {
       "number": "0042",
@@ -433,6 +433,22 @@
       "requiresRlsValidation": true,
       "requiresDataBackfill": true,
       "dataEffect": "BACKFILL",
+      "rollback": {"classification":"MANUAL_RECOVERY"},
+      "validationContract": {"status":"PENDING_MA03","reference":null},
+      "status": "PROPOSED"
+    },
+    {
+      "number": "0045",
+      "filename": "0045_official_news_editorial_foundation.sql",
+      "purpose": "Create the additive official representative News editorial, provenance, RLS, audit, and controlled collection foundation.",
+      "dependsOn": {"migrations":["0039","0040","0041","0042","0043","0044"],"tables":["public.users","public.official_sources","public.official_source_governance"],"columns":["public.official_sources.source_purpose","public.official_sources.active"],"functions":["public.current_app_user_id()","public.current_app_has_role(public.user_role[])"],"roles":["duta_app"],"extensions":["pgcrypto"],"security":["RLS:official_news","SOURCE_AUTHORITY:official_sources"]},
+      "checksum": null,
+      "introducedCommit": null,
+      "schemaEffect": "ADDITIVE",
+      "securityEffects": ["MULTIPLE"],
+      "requiresRlsValidation": true,
+      "requiresDataBackfill": false,
+      "dataEffect": "NONE",
       "rollback": {"classification":"MANUAL_RECOVERY"},
       "validationContract": {"status":"PENDING_MA03","reference":null},
       "status": "PROPOSED"
