@@ -378,16 +378,16 @@
         "extensions": ["pgcrypto"],
         "security": ["RLS:owner-scoped contributions","RLS:recipient-scoped notifications","AUTHORIZATION:moderation-before-publication"]
       },
-      "checksum": null,
-      "introducedCommit": null,
+      "checksum": "sha256:2b5393b2eea8794f8ae66f0b85889a5550f8bbed99d2ba01bf1129a9a1df883d",
+      "introducedCommit": "c780ad4439de1f374aa9f4ea371c0a8014268292",
       "schemaEffect": "ADDITIVE",
       "securityEffects": ["RLS","AUTHORIZATION","ROLE_GRANT"],
       "requiresRlsValidation": true,
       "requiresDataBackfill": false,
       "dataEffect": "NONE",
       "rollback": {"classification":"REVERSIBLE"},
-      "validationContract": {"status":"PENDING_MA03","reference":null},
-      "status": "PROPOSED"
+      "validationContract": {"status":"COMPLETE_MA03","reference":"docs/duta-v2.5/migrations/0042_VALIDATION.md"},
+      "status": "AUTHORITY_ACCEPTED"
     },
     {
       "number": "0043",
