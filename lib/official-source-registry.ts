@@ -73,3 +73,4 @@ export function canonicalizeOfficialUrl(value: string): string {
 }
 
 export const malaysiaMissionInstitutions = ["KBRI Kuala Lumpur", "KJRI Johor Bahru", "KJRI Penang", "KJRI Kota Kinabalu", "KJRI Kuching", "KRI Tawau"] as const;
+export type MalaysiaMissionInstitution = typeof malaysiaMissionInstitutions[number];

@@ -1,4 +1,4 @@
-import { malaysiaAppointmentEndpoints } from '@/lib/official-source-registry';
+import { malaysiaAppointmentEndpoints, type MalaysiaMissionInstitution } from '@/lib/official-source-registry';
 
 export type MissionVerification = 'VERIFIED_CURRENT' | 'FOUNDER_CONFIRMED_PENDING_CURRENT_REVERIFY' | 'OFFICIAL_BUT_CURRENT_STATUS_UNCLEAR' | 'UNAVAILABLE';
 
@@ -20,7 +20,7 @@ export type MissionRecord = {
 };
 
 const consularServiceEndpoints = new Map(malaysiaAppointmentEndpoints);
-const consularServiceUrl = (institution: string) => {
+const consularServiceUrl = (institution: MalaysiaMissionInstitution) => {
   const url = consularServiceEndpoints.get(institution);
   if (!url) throw new Error(`Missing approved consular service endpoint for ${institution}`);
   return url;
