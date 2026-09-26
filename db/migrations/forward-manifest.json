@@ -402,16 +402,16 @@
         "extensions": [],
         "security": ["IDENTITY_BRIDGE:app.user_id", "AUTH_SCHEMA:NO_DUTA_APP_USAGE", "RLS:JWT_AND_RUNTIME_ROLE_SEPARATION"]
       },
-      "checksum": null,
-      "introducedCommit": null,
+      "checksum": "sha256:cb460b102fca46484bbf17f396ae6433d118ca43494199c51718c3dfedf6f5a8",
+      "introducedCommit": "e6b214b995a95e131536605c42b011d726862d3b",
       "schemaEffect": "ADDITIVE",
       "securityEffects": ["RLS", "AUTHORIZATION"],
       "requiresRlsValidation": true,
       "requiresDataBackfill": false,
       "dataEffect": "NONE",
       "rollback": {"classification":"REVERSIBLE"},
-      "validationContract": {"status":"PENDING_MA03","reference":null},
-      "status": "PROPOSED"
+      "validationContract": {"status":"COMPLETE_MA03","reference":"docs/duta-v2.5/migrations/0043_VALIDATION.md"},
+      "status": "AUTHORITY_ACCEPTED"
     },
     {
       "number": "0044",
