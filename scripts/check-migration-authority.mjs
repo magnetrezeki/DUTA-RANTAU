@@ -8,6 +8,7 @@ import path from 'node:path';
 const HISTORICAL_CEILING = 38;
 const FIRST_FORWARD = 39;
 const FORWARD_FILENAME = /^(\d{4})_([a-z0-9]+(?:_[a-z0-9]+)*)\.sql$/;
+const CANDIDATE_FILENAME = /^(\d{4})_([a-z0-9]+(?:_[a-z0-9]+)*)\.candidate\.sql$/;
 const HISTORICAL_FILENAME = /^(\d{4})_.+\.sql$/;
 const SHA256 = /^[a-f0-9]{64}$/;
 const GIT_SHA = /^[a-f0-9]{40}$/;
@@ -98,19 +99,30 @@ function verifyHistorical(root, manifest) {
 
 function discoverForwardFiles(migrationDir) {
   const canonical = [];
+  const candidates = [];
   for (const name of readdirSync(migrationDir)) {
     const full = path.join(migrationDir, name);
     if (!statSync(full).isFile()) continue;
     const digits = name.match(/^(\d+)/);
     if (!digits || Number(digits[1]) < FIRST_FORWARD) continue;
+    const candidate = name.match(CANDIDATE_FILENAME);
+    if (candidate && Number(candidate[1]) >= FIRST_FORWARD) {
+      candidates.push({ number: candidate[1], filename: name, file: full });
+      continue;
+    }
     const match = name.match(FORWARD_FILENAME);
     if (!match || Number(match[1]) < FIRST_FORWARD) fail('MALFORMED_FORWARD_FILENAME', name);
     canonical.push({ number: match[1], filename: name, file: full });
   }
   canonical.sort((a, b) => Number(a.number) - Number(b.number) || a.filename.localeCompare(b.filename));
+  candidates.sort((a, b) => Number(a.number) - Number(b.number) || a.filename.localeCompare(b.filename));
   const duplicate = canonical.find((item, index) => index > 0 && item.number === canonical[index - 1].number);
   if (duplicate) fail('DUPLICATE_FORWARD_NUMBER', `${duplicate.number}: ${duplicate.filename}`);
-  return canonical;
+  const duplicateCandidate = candidates.find((item, index) => index > 0 && item.number === candidates[index - 1].number);
+  if (duplicateCandidate) fail('DUPLICATE_CANDIDATE_NUMBER', `${duplicateCandidate.number}: ${duplicateCandidate.filename}`);
+  const collision = candidates.find((candidate) => canonical.some((accepted) => accepted.number === candidate.number));
+  if (collision) fail('CANDIDATE_ACCEPTED_COLLISION', `${collision.number}: ${collision.filename}`);
+  return { canonical, candidates };
 }
 
 function assertDependencies(entry, allEntries) {
@@ -246,7 +258,8 @@ export function checkMigrationAuthority(root = process.cwd()) {
   if (manifest.authorityVersion !== 1 || manifest.manifestSchemaVersion !== 1 || manifest.authorityModel !== 'FORWARD_ONLY_DIRECT_SQL' || manifest.historicalCeiling !== '0038' || manifest.firstForwardMigration !== '0039') fail('AUTHORITY_MODEL_MISMATCH', 'locked migration authority is not present');
   verifyHistorical(root, manifest);
   if (!Array.isArray(manifest.migrations)) fail('FORWARD_MANIFEST_INVALID', 'migrations must be an array');
-  const files = discoverForwardFiles(path.join(root, 'db', 'migrations'));
+  const discovered = discoverForwardFiles(path.join(root, 'db', 'migrations'));
+  const files = discovered.canonical;
   const entries = manifest.migrations;
   const byNumber = new Map();
   for (const entry of entries) {
@@ -260,7 +273,7 @@ export function checkMigrationAuthority(root = process.cwd()) {
   const ordered = [...byNumber.keys()].map(Number).sort((a, b) => a - b);
   ordered.forEach((number, index) => { if (number !== FIRST_FORWARD + index) fail('FORWARD_NUMBER_SEQUENCE', String(number)); });
   verifyNoAutomaticMigration(root);
-  return { historicalCount: 35, forwardCount: files.length };
+  return { historicalCount: 35, forwardCount: files.length, candidateCount: discovered.candidates.length };
 }
 
 const invokedAsCli = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);

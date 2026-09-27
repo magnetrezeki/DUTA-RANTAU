@@ -452,6 +452,30 @@
       "rollback": {"classification":"MANUAL_RECOVERY"},
       "validationContract": {"status":"COMPLETE_MA03","reference":"docs/duta-v2.5/migrations/0045_VALIDATION.md"},
       "status": "AUTHORITY_ACCEPTED"
+    },
+    {
+      "number": "0046",
+      "filename": "0046_official_news_public_publishing_contract.sql",
+      "purpose": "Add the governed public publishing contract for official News: stable public slugs, narrow public projection, canonical source attribution, and first-slug assignment without changing accepted editorial authority.",
+      "dependsOn": {
+        "migrations": ["0039", "0045"],
+        "tables": ["public.official_news_stories", "public.official_news_story_source_references", "public.official_news_events", "public.official_sources", "public.users"],
+        "columns": ["public.official_news_stories.review_state", "public.official_news_stories.publication_state", "public.official_news_stories.correction_state", "public.official_news_stories.canonical_official_source_id", "public.official_sources.source_purpose", "public.official_sources.active"],
+        "functions": ["public.current_app_user_id()", "public.current_app_has_role(public.user_role[])", "public.transition_official_news_story(uuid,public.official_news_event_type)"],
+        "roles": ["duta_app", "anon", "authenticated"],
+        "extensions": [],
+        "security": ["SECURITY_DEFINER:assign_official_news_public_slug", "RLS:official_news", "PUBLIC_PROJECTION:official_news_public_stories", "SOURCE_AUTHORITY:official_sources"]
+      },
+      "checksum": "sha256:fe6f75a5393ad376968d9c8bfd416c5d3edeb5394cd00b8251154e605a550a65",
+      "introducedCommit": "9119a7196a2ed254385d3d75be73cacb67709420",
+      "schemaEffect": "ADDITIVE",
+      "securityEffects": ["MULTIPLE"],
+      "requiresRlsValidation": true,
+      "requiresDataBackfill": true,
+      "dataEffect": "BACKFILL",
+      "rollback": {"classification": "MANUAL_RECOVERY"},
+      "validationContract": {"status": "COMPLETE_MA03", "reference": "docs/duta-v2.5/migrations/0046_VALIDATION.md"},
+      "status": "AUTHORITY_ACCEPTED"
     }
   ]
 }

@@ -110,7 +110,7 @@ afterAll(() => rmSync(fixtureTemplate, { recursive: true, force: true }));
 
 describe('MA-05 repository migration enforcement', { timeout: 30_000 }, () => {
   it('accepts the governed forward lifecycle and exposes the package guard command', () => {
-    expect(checkMigrationAuthority(repositoryRoot)).toEqual({ historicalCount: 35, forwardCount: 7 });
+    expect(checkMigrationAuthority(repositoryRoot)).toEqual({ historicalCount: 35, forwardCount: 8, candidateCount: 0 });
     expect(readManifest(repositoryRoot).migrations).toEqual([
       expect.objectContaining({
         number: '0039', status: 'AUTHORITY_ACCEPTED',
@@ -147,6 +147,11 @@ describe('MA-05 repository migration enforcement', { timeout: 30_000 }, () => {
         checksum: 'sha256:55d87fb56764c47419fd61b5a85ed6d8772b6aa376c8119e4335480ddf2c8059', introducedCommit: '6d3114e33d085c5bc10f539b52aae043aedc08de',
         validationContract: { status: 'COMPLETE_MA03', reference: 'docs/duta-v2.5/migrations/0045_VALIDATION.md' },
       }),
+      expect.objectContaining({
+        number: '0046', status: 'AUTHORITY_ACCEPTED',
+        checksum: 'sha256:fe6f75a5393ad376968d9c8bfd416c5d3edeb5394cd00b8251154e605a550a65', introducedCommit: '9119a7196a2ed254385d3d75be73cacb67709420',
+        validationContract: { status: 'COMPLETE_MA03', reference: 'docs/duta-v2.5/migrations/0046_VALIDATION.md' },
+      }),
     ]);
     expect(JSON.parse(readFileSync(join(repositoryRoot, 'package.json'), 'utf8')).scripts['migration:check'])
       .toBe('node scripts/check-migration-authority.mjs');
@@ -165,6 +170,36 @@ describe('MA-05 repository migration enforcement', { timeout: 30_000 }, () => {
     write(duplicateRoot, 'db/migrations/0039_first.sql', 'select 1;\n');
     write(duplicateRoot, 'db/migrations/0039_second.sql', 'select 1;\n');
     expectFailure(duplicateRoot, 'DUPLICATE_FORWARD_NUMBER');
+  });
+
+  it('classifies only exact candidate artifacts outside the accepted sequence', () => {
+    const root = createFixture();
+    write(root, 'db/migrations/0046_candidate_example.candidate.sql', 'select 1;\n');
+    expect(checkMigrationAuthority(root)).toEqual({ historicalCount: 35, forwardCount: 0, candidateCount: 1 });
+
+    for (const filename of ['0046_candidate-example.candidate.sql', '0046_candidate_example.candidate.sql.bak']) {
+      const malformedRoot = createFixture();
+      write(malformedRoot, `db/migrations/${filename}`, 'select 1;\n');
+      expectFailure(malformedRoot, 'MALFORMED_FORWARD_FILENAME');
+    }
+  });
+
+  it('rejects candidate ambiguity and preserves accepted duplicate protection', () => {
+    const duplicateCandidateRoot = createFixture();
+    write(duplicateCandidateRoot, 'db/migrations/0046_first.candidate.sql', 'select 1;\n');
+    write(duplicateCandidateRoot, 'db/migrations/0046_second.candidate.sql', 'select 1;\n');
+    expectFailure(duplicateCandidateRoot, 'DUPLICATE_CANDIDATE_NUMBER');
+
+    const collisionRoot = createFixture();
+    write(collisionRoot, 'db/migrations/0046_example.sql', 'select 1;\n');
+    write(collisionRoot, 'db/migrations/0046_example.candidate.sql', 'select 1;\n');
+    const manifest = readManifest(collisionRoot);
+    const accepted = entry('PROPOSED');
+    accepted.number = '0046';
+    accepted.filename = '0046_example.sql';
+    manifest.migrations = [accepted];
+    writeManifest(collisionRoot, manifest);
+    expectFailure(collisionRoot, 'CANDIDATE_ACCEPTED_COLLISION');
   });
 
   it('accepts proposed Commit A metadata but rejects an invalid lifecycle and path traversal', () => {
