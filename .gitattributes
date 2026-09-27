@@ -1,1 +1,2 @@
 db/migrations/*.sql text eol=lf
+db/migrations/0046_official_news_public_publishing_contract.sql -text -eol
