@@ -3,6 +3,7 @@ import type { UserRole } from '@/types';
 export const platformRoles = ['super_admin', 'compliance_admin', 'verification_reviewer', 'moderation_admin'] as const;
 export type PlatformRole = typeof platformRoles[number];
 export type PlatformCapability = 'platform.config.manage' | 'platform.role.assign' | 'audit.read' | 'eligibility.review' | 'verification.review' | 'moderation.manage';
+export type NewsCapability = 'news.read_published' | 'news.create_draft' | 'news.edit_draft' | 'news.verify_routine' | 'news.submit_high_risk' | 'news.publish_routine' | 'news.review_high_risk' | 'news.withdraw_or_supersede' | 'news.configure_collection' | 'news.read_audit';
 
 export const entityRoles = ['OWNER', 'ADMIN', 'SECRETARY', 'TREASURER', 'STAFF', 'MEMBER'] as const;
 export type EntityRole = typeof entityRoles[number];
@@ -22,6 +23,11 @@ const entityPermissions: Record<EntityRole, readonly string[]> = {
   STAFF: ['entity.read', 'entity.content.edit'],
   MEMBER: ['entity.read'],
 };
+const newsPermissions: Partial<Record<UserRole, readonly NewsCapability[]>> = {
+  EDITOR: ['news.read_published','news.create_draft','news.edit_draft','news.verify_routine','news.submit_high_risk','news.publish_routine'],
+  MODERATOR: ['news.read_published','news.review_high_risk','news.withdraw_or_supersede','news.read_audit'],
+  SUPER_ADMIN: ['news.read_published','news.review_high_risk','news.withdraw_or_supersede','news.configure_collection','news.read_audit'],
+};
 
 export function canUsePlatformCapability(roles: readonly PlatformRole[], capability: PlatformCapability): boolean {
   return roles.some((role) => platformPermissions[role]?.includes(capability));
@@ -29,6 +35,9 @@ export function canUsePlatformCapability(roles: readonly PlatformRole[], capabil
 
 export function canUseEntityPermission(role: string | undefined, permission: string): boolean {
   return !!role && (entityPermissions as Record<string, readonly string[]>)[role]?.includes(permission) === true;
+}
+export function canUseNewsCapability(role: UserRole, capability: NewsCapability): boolean {
+  return newsPermissions[role]?.includes(capability) === true;
 }
 
 // Legacy global roles remain a compatibility input only. They never become an
