@@ -26,6 +26,7 @@ export const appDb = appUrl
       postgres(appUrl, {
         max: 10,
         prepare: false,
+        ssl: 'require',
       }),
       { schema }
     )
