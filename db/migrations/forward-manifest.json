@@ -476,6 +476,30 @@
       "rollback": {"classification": "MANUAL_RECOVERY"},
       "validationContract": {"status": "COMPLETE_MA03", "reference": "docs/duta-v2.5/migrations/0046_VALIDATION.md"},
       "status": "AUTHORITY_ACCEPTED"
+    },
+    {
+      "number": "0047",
+      "filename": "0047_official_news_transition_execute_hardening.sql",
+      "purpose": "Restrict the accepted official News workflow transition entry point to the duta_app runtime role without changing its accepted 0045 implementation.",
+      "dependsOn": {
+        "migrations": ["0045", "0046"],
+        "tables": [],
+        "columns": [],
+        "functions": ["public.transition_official_news_story(uuid,public.official_news_event_type)"],
+        "roles": ["duta_app", "anon", "authenticated"],
+        "extensions": [],
+        "security": ["ACL:transition_official_news_story"]
+      },
+      "checksum": "sha256:98aa162496649346dff74e30a24fabda0cca1222ae0f22dae531a2e2f9f3bdf7",
+      "introducedCommit": "114c1d4ca332ce7e68e1ec24bbfebc906f7ad36a",
+      "schemaEffect": "NONE",
+      "securityEffects": ["AUTHORIZATION"],
+      "requiresRlsValidation": false,
+      "requiresDataBackfill": false,
+      "dataEffect": "NONE",
+      "rollback": {"classification": "REVERSIBLE"},
+      "validationContract": {"status": "COMPLETE_MA03", "reference": "docs/duta-v2.5/migrations/0047_VALIDATION.md"},
+      "status": "AUTHORITY_ACCEPTED"
     }
   ]
 }
