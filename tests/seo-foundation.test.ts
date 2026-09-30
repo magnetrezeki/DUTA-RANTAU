@@ -1,0 +1,3 @@
+import { describe, expect, it } from 'vitest';
+import { isProductionIndexingEnabled, publicRobots, siteUrl } from '../lib/seo';
+describe('SEO indexing foundation', () => { it('uses the approved canonical origin', () => expect(siteUrl.toString()).toBe('https://www.dutarantau.com/')); it('does not infer indexing from NODE_ENV', () => { const old = process.env.VERCEL_ENV; delete process.env.VERCEL_ENV; expect(isProductionIndexingEnabled()).toBe(false); expect(publicRobots()).toMatchObject({ index: false }); if (old === undefined) delete process.env.VERCEL_ENV; else process.env.VERCEL_ENV = old; }); });
