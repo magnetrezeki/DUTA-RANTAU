@@ -1,0 +1,7 @@
+import type { Metadata } from 'next';
+import Link from 'next/link';
+import { ArrowUpRight } from 'lucide-react';
+import { publicRobots } from '@/lib/seo';
+
+export const metadata: Metadata = { title: 'Metodologi Editorial', description: 'Cara DUTA menyiapkan ringkasan Info Rantau dan menjaga tautan ke sumber asli.', alternates: { canonical: '/metodologi-editorial' }, robots: publicRobots() };
+export default function EditorialMethodologyPage() { return <div className="vp-page vp-narrow"><header className="vp-top"><span className="vp-eyebrow">Info Rantau</span><h1>Metodologi editorial</h1><p className="vp-lead">Ringkasan yang membantu pembaca memeriksa informasi pada sumber asalnya.</p></header><section className="vp-section"><h2>Dari sumber ke ringkasan</h2><p>Informasi berasal dari sumber resmi yang telah disetujui. DUTA menyiapkan ringkasan singkat dan menandainya sebagai “Ringkasan oleh DUTA”. Tautan ke informasi asli tetap tersedia.</p></section><section className="vp-section"><h2>Batas editorial</h2><p>DUTA tidak mengisi fakta yang tidak tersedia pada sumber. Publikasi melalui verifikasi manusia; informasi berisiko tinggi menerima peninjauan yang lebih kuat. Koreksi atau penarikan dapat dilakukan bila diperlukan.</p></section><footer className="vp-footer"><Link href="/info">Buka Info Rantau <ArrowUpRight size={16}/></Link><Link href="/tentang">Tentang DUTA RANTAU <ArrowUpRight size={16}/></Link></footer></div>; }

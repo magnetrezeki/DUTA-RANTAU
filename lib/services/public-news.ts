@@ -45,4 +45,12 @@ export async function getPublicNewsPage(page = 1, pageSize = 20): Promise<Public
 }
 
 export async function getPublicNewsList(limit = 20): Promise<PublicNewsStory[]> { return (await getPublicNewsPage(1, limit)).stories; }
+export async function getAllPublicNews(): Promise<PublicNewsStory[]> {
+  const stories: PublicNewsStory[] = [];
+  for (let page = 1; ; page += 1) {
+    const result = await getPublicNewsPage(page, maxPageSize);
+    stories.push(...result.stories);
+    if (!result.hasMore) return stories;
+  }
+}
 export const getPublicNewsBySlug = cache(async (slug: string): Promise<PublicNewsStory | null> => { if (!slugPattern.test(slug) || isReservedInfoSlug(slug)) return null; const rows = await withPublicTransaction(tx => tx.execute(sql`select ${fields} from public.official_news_public_stories where public_slug=${slug}`)) as PublicNewsRow[]; if (rows.length > 1) throw new Error('Public News cardinality violation'); return rows[0] ? normalizePublicNewsStory(rows[0]) : null; });

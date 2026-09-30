@@ -2,7 +2,8 @@ import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
 import { getCurrentUser } from '@/lib/auth/session';
 import { LogoutButton } from '@/components/logout-button';
-export const metadata={title:'Profil Saya'};
+import { noIndexRobots } from '@/lib/seo';
+export const metadata={title:'Profil Saya',robots:noIndexRobots()};
 function Row({href,title,text}:{href:string;title:string;text:string}){return <Link className="vp-row" href={href}><span><strong>{title}</strong><small>{text}</small></span><ArrowUpRight size={20}/></Link>}
 export default async function Page(){const user=await getCurrentUser();return <div className="vp-page vp-narrow">
   <header className="vp-top"><span className="vp-eyebrow">Saya · {user?'Member gratis':'Ruang pribadi'}</span><h1>Hal yang berarti,<br/><em>mudah ditemukan lagi.</em></h1><p className="vp-lead">{user?'Ruang tenang untuk akun dan langkah yang benar-benar tersedia.':'Masuk untuk melihat hanya informasi akun dan kelanjutan yang benar-benar tersedia untuk Anda.'}</p></header>
