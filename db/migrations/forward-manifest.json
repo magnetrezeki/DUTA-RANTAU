@@ -524,6 +524,30 @@
       "rollback": {"classification": "MANUAL_RECOVERY"},
       "validationContract": {"status": "COMPLETE_MA03", "reference": "docs/duta-v2.5/migrations/0048_VALIDATION.md"},
       "status": "AUTHORITY_ACCEPTED"
+    },
+    {
+      "number": "0049",
+      "filename": "0049_entities_structural_reconciliation.sql",
+      "purpose": "Restore the proven missing canonical public.entities structural foundation required by the jobs reconciliation without backfill or security-state changes.",
+      "dependsOn": {
+        "migrations": ["0023"],
+        "tables": ["public.users"],
+        "columns": ["public.users.id"],
+        "functions": [],
+        "roles": [],
+        "extensions": ["pgcrypto"],
+        "security": ["NO_RLS_POLICY_GRANT_CHANGES"]
+      },
+      "checksum": "sha256:d930233d53c063d63492c774efe7343dd88dadc70aa0bb1583ead1fc1c63a3c3",
+      "introducedCommit": "22505f94e43f93ed330a8eaf855a90e15f459b75",
+      "schemaEffect": "ADDITIVE",
+      "securityEffects": ["NONE"],
+      "requiresRlsValidation": false,
+      "requiresDataBackfill": false,
+      "dataEffect": "NONE",
+      "rollback": {"classification": "MANUAL_RECOVERY"},
+      "validationContract": {"status": "COMPLETE_MA03", "reference": "docs/duta-v2.5/migrations/0049_VALIDATION.md"},
+      "status": "AUTHORITY_ACCEPTED"
     }
   ]
 }
