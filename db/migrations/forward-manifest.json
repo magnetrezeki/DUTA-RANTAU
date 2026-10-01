@@ -500,6 +500,30 @@
       "rollback": {"classification": "REVERSIBLE"},
       "validationContract": {"status": "COMPLETE_MA03", "reference": "docs/duta-v2.5/migrations/0047_VALIDATION.md"},
       "status": "AUTHORITY_ACCEPTED"
+    },
+    {
+      "number": "0048",
+      "filename": "0048_jobs_structural_reconciliation.sql",
+      "purpose": "Reconcile the proven missing public.jobs structural fields, employer foreign key, and employer/status index without changing security state or data.",
+      "dependsOn": {
+        "migrations": ["0023", "0026", "0031", "0042", "0043", "0047"],
+        "tables": ["public.jobs", "public.entities", "public.users"],
+        "columns": ["public.jobs.owner_id", "public.jobs.status", "public.entities.id"],
+        "functions": [],
+        "roles": [],
+        "extensions": ["pgcrypto"],
+        "security": ["PRESERVE_EXISTING_JOBS_SECURITY_STATE"]
+      },
+      "checksum": "sha256:624be5c20ceafb630d03e3fc29d4dbd81cce8f439653bcb8ca0de7b2beef47fc",
+      "introducedCommit": "62ff010615b3286901dc620e996f969cf62a5c63",
+      "schemaEffect": "ADDITIVE",
+      "securityEffects": ["NONE"],
+      "requiresRlsValidation": false,
+      "requiresDataBackfill": false,
+      "dataEffect": "NONE",
+      "rollback": {"classification": "MANUAL_RECOVERY"},
+      "validationContract": {"status": "COMPLETE_MA03", "reference": "docs/duta-v2.5/migrations/0048_VALIDATION.md"},
+      "status": "AUTHORITY_ACCEPTED"
     }
   ]
 }
