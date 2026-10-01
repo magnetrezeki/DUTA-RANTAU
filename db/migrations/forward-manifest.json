@@ -548,6 +548,30 @@
       "rollback": {"classification": "MANUAL_RECOVERY"},
       "validationContract": {"status": "COMPLETE_MA03", "reference": "docs/duta-v2.5/migrations/0049_VALIDATION.md"},
       "status": "AUTHORITY_ACCEPTED"
+    },
+    {
+      "number": "0050",
+      "filename": "0050_jobs_security_dependency_reconciliation.sql",
+      "purpose": "Restore the proven missing eligibility prerequisite and accepted jobs runtime safety/security contract without backfill or unrelated capability expansion.",
+      "dependsOn": {
+        "migrations": ["0026", "0031", "0042", "0043", "0048", "0049"],
+        "tables": ["public.jobs", "public.entities", "public.users"],
+        "columns": ["public.jobs.owner_id", "public.jobs.status", "public.jobs.employer_entity_id", "public.jobs.posting_kind", "public.jobs.employer_eligibility_snapshot", "public.jobs.published_at", "public.entities.id", "public.entities.owner_user_id"],
+        "functions": ["public.has_system_role(public.user_role[])", "public.current_app_user_id()", "public.current_app_has_role(public.user_role[])", "auth.uid()"],
+        "roles": ["anon", "authenticated", "duta_app"],
+        "extensions": ["pgcrypto"],
+        "security": ["RESTORE_ENTITY_ELIGIBILITY_RLS_BASELINE", "RESTORE_JOBS_RUNTIME_POLICIES", "RESTORE_JOB_POSTING_SAFETY_TRIGGER", "RESTRICT_JOBS_PUBLIC_POLICY_ROLES"]
+      },
+      "checksum": "sha256:68f1692b32e060d86733710a61f96ff2dd04c1b98dd7f0cd357f8a53562065df",
+      "introducedCommit": "e0139fc1e350d9bdb161a325776947afef757ca7",
+      "schemaEffect": "ADDITIVE",
+      "securityEffects": ["MULTIPLE"],
+      "requiresRlsValidation": true,
+      "requiresDataBackfill": false,
+      "dataEffect": "NONE",
+      "rollback": {"classification": "MANUAL_RECOVERY"},
+      "validationContract": {"status": "COMPLETE_MA03", "reference": "docs/duta-v2.5/migrations/0050_VALIDATION.md"},
+      "status": "AUTHORITY_ACCEPTED"
     }
   ]
 }
