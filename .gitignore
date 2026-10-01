@@ -15,3 +15,6 @@ supabase/.temp/
 
 /cookies.txt
 /autotest-cookies.txt
+
+.vercel
+.env*
