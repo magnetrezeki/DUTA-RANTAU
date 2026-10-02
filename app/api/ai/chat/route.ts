@@ -70,6 +70,18 @@ export async function POST(req: NextRequest) {
     }
     const generated = execution.value as AIProviderResult | undefined;
     if (!generated?.success) {
+      console.error('[DUTA_AI_PROVIDER_DIAGNOSTIC]', {
+        provider: plan.provider,
+        expectedModel: generated?.diagnostics?.expectedModel ?? null,
+        effectiveModel: generated?.diagnostics?.effectiveModel ?? null,
+        httpStatus: generated?.diagnostics?.httpStatus ?? null,
+        providerErrorCode: generated?.diagnostics?.providerErrorCode ?? null,
+        normalizedFailureClass: generated?.diagnostics?.normalizedFailureClass ?? generated?._diagnosticCategory ?? null,
+        requestAttempted: generated?.diagnostics?.requestAttempted ?? null,
+        requestLeftApplication: generated?.diagnostics?.requestLeftApplication ?? null,
+        providerResponded: generated?.diagnostics?.providerResponded ?? null,
+        errorCategory: generated?.errorCategory ?? null,
+      });
       emit('allowed', false, 'PROVIDER_UNAVAILABLE');
       return NextResponse.json({ error: 'DUTA AI belum tersedia.', code: 'PROVIDER_UNAVAILABLE' }, { status: 503 });
     }
