@@ -47,6 +47,7 @@ export type Intent =
   | "COMMUNITY_SEARCH"
   | "MARKETPLACE_SEARCH"
   | "ORGANIZATION"
+  | "REPORT"
   | "SAFETY"
   | "GENERAL";
 
@@ -75,6 +76,10 @@ export function detectIntent(message: string): Intent {
 
   if (/organisasi|rapat|anggota|surat undangan|kas/.test(q)) {
     return "ORGANIZATION";
+  }
+
+  if (/lapor|melaporkan|keluhan|masalah aplikasi|bug/.test(q)) {
+    return "REPORT";
   }
 
   return "GENERAL";
@@ -132,6 +137,8 @@ export async function answerQuestion(
       "Saya dapat membantu menjelajahi produk dan jasa komunitas. Periksa status penjual sebelum bertransaksi.",
     ORGANIZATION:
       "Permintaan ini terkait Kantor Digital. Data organisasi hanya dapat diakses sesuai peran dan izin anggota.",
+    REPORT:
+      "Saya dapat membantu mengarahkan laporan. Jelaskan masalahnya tanpa membagikan kata sandi, nomor dokumen, atau bukti sensitif; kanal laporan DUTA akan dibuka setelah diverifikasi.",
     SAFETY:
       "Jika Anda dalam bahaya langsung, utamakan keselamatan dan hubungi layanan darurat atau perwakilan resmi yang relevan melalui kanal resminya. DUTA tidak memberikan diagnosis hukum atau medis.",
     GENERAL:
