@@ -82,11 +82,75 @@ export async function POST(req: NextRequest) {
         providerResponded: generated?.diagnostics?.providerResponded ?? null,
         errorCategory: generated?.errorCategory ?? null,
       });
-      emit('allowed', false, 'PROVIDER_UNAVAILABLE');
-      return NextResponse.json({ error: 'DUTA AI belum tersedia.', code: 'PROVIDER_UNAVAILABLE' }, { status: 503 });
+
+      const safeAnswer =
+        plan.sensitivity === 'SENSITIVE' || plan.sensitivity === 'RESTRICTED'
+          ? 'Saya belum dapat menghubungi layanan AI yang dibenarkan untuk maklumat sensitif ini. Demi privasi dan keselamatan, saya tidak akan menghantar maklumat ini kepada penyedia lain atau mereka-reka jawapan. Cuba lagi sebentar atau gunakan saluran rasmi yang berkaitan.'
+          : 'Saya belum dapat menghubungi layanan AI sekarang. Saya tidak akan mereka-reka maklumat. Anda masih boleh menggunakan fungsi DUTA seperti Info Rantau, Layanan RI, Kerja, Jaga Diri, atau cuba pertanyaan ini semula sebentar lagi.';
+
+      void persistAiTelemetry(
+        auth.user!,
+        buildAiTelemetry({
+          correlationId,
+          userRef: auth.user!.id,
+          intent: plan.intent,
+          risk: plan.risk,
+          sensitivity: plan.sensitivity,
+          modelClass: plan.modelClass,
+          provider: null,
+          model: null,
+          sourceRequirement: plan.sourceRequirement,
+          sourceTier: sourceAnswer?.sources?.length ? 'TIER_1' : null,
+          quotaOutcome: 'allowed',
+          weightedUnits: plan.weight,
+          input: body.message,
+          latencyMs: totalLatencyMs(),
+          success: false,
+          errorCode: 'SAFE_PROVIDER_FALLBACK',
+          fallbackUsed: true,
+        }),
+      );
+
+      return NextResponse.json({
+        answer: safeAnswer,
+        intent: plan.intent,
+        fallback: true,
+        quota: { units: plan.weight },
+      });
     }
-    emit('allowed', true, null);
-    return NextResponse.json({ answer: generated.text, intent: plan.intent, quota: { units: plan.weight } });
+
+    const finalProvider = generated.provider === 'fallback' ? null : generated.provider;
+    const fallbackUsed = finalProvider !== null && finalProvider !== plan.provider;
+
+    void persistAiTelemetry(
+      auth.user!,
+      buildAiTelemetry({
+        correlationId,
+        userRef: auth.user!.id,
+        intent: plan.intent,
+        risk: plan.risk,
+        sensitivity: plan.sensitivity,
+        modelClass: plan.modelClass,
+        provider: finalProvider,
+        model: generated.model ?? null,
+        sourceRequirement: plan.sourceRequirement,
+        sourceTier: sourceAnswer?.sources?.length ? 'TIER_1' : null,
+        quotaOutcome: 'allowed',
+        weightedUnits: plan.weight,
+        input: body.message,
+        latencyMs: totalLatencyMs(),
+        success: true,
+        errorCode: null,
+        fallbackUsed,
+      }),
+    );
+
+    return NextResponse.json({
+      answer: generated.text,
+      intent: plan.intent,
+      fallback: fallbackUsed,
+      quota: { units: plan.weight },
+    });
   } catch (error) {
     return NextResponse.json({ error: error instanceof z.ZodError ? 'Pertanyaan tidak valid.' : 'DUTA belum dapat memeriksa sumber saat ini. Silakan coba lagi atau gunakan pertanyaan lain.' }, { status: error instanceof z.ZodError ? 400 : 503 });
   }

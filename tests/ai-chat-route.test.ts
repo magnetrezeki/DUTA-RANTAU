@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 const s = vi.hoisted(() => ({
   calls: [] as string[], quotaRequestIds: [] as string[], kind: 'L1_SIMPLE', requirement: 'NONE', quota: 'allowed',
   sources: [{ id: 's' }] as unknown[], events: [] as unknown[], identities: [] as unknown[], enabled: true,
-  authenticated: true, providerFailure: false, telemetrySucceeds: true,
+  authenticated: true, providerFailure: false, providerResult: 'gemini', telemetrySucceeds: true,
 }));
 
 vi.mock('@/lib/auth/api-guard', () => ({ authorizeApi: async () => s.authenticated
@@ -15,13 +15,13 @@ vi.mock('@/lib/rate-limit', () => ({ rateLimit: () => ({ ok: true }) }));
 vi.mock('@/lib/services/ai-execution-plan', () => ({ planAiExecution: () => ({
   intent: 'GENERAL', risk: 'low', sensitivity: 'PUBLIC', modelClass: s.kind,
   provider: s.kind === 'L1_SIMPLE' ? 'gemini' : s.kind === 'L2_ECONOMY' ? 'groq' : s.kind === 'L3_ESCALATION' ? 'openai' : 'duta',
-  weight: s.kind === 'L0_DETERMINISTIC' ? 0 : 1, sourceRequirement: s.requirement,
+  weight: s.kind === 'L0_DETERMINISTIC' ? 0 : s.kind === 'L1_SIMPLE' ? 1 : s.kind === 'L2_ECONOMY' ? 2 : 4, sourceRequirement: s.requirement,
 }) }));
 vi.mock('@/lib/services/ai-router', () => ({ answerQuestion: async () => ({ answer: 'official', sources: s.sources }) }));
 vi.mock('@/lib/services/ai-quota-repository', () => ({ consumePersistentAiQuota: async (_user: unknown, _units: number, requestId: string) => { s.calls.push('quota'); s.quotaRequestIds.push(requestId); return { status: s.quota }; } }));
 vi.mock('@/lib/services/ai-provider-execution', () => ({ executePlannedProvider: async (modelClass: string) => {
   s.calls.push(`provider:${modelClass}`);
-  return s.providerFailure ? { success: false, provider: 'fallback', latencyMs: 15_000, errorCategory: 'TIMEOUT' } : { success: true, text: 'generated', provider: 'gemini', latencyMs: 1 };
+  return s.providerFailure ? { success: false, provider: 'fallback', latencyMs: 15_000, errorCategory: 'TIMEOUT' } : { success: true, text: 'generated', provider: s.providerResult, latencyMs: 1 };
 } }));
 vi.mock('@/lib/services/ai-telemetry-repository', () => ({ persistAiTelemetry: async (identity: unknown, event: unknown) => { s.identities.push(identity); s.events.push(event); return s.telemetrySucceeds; } }));
 
@@ -29,7 +29,7 @@ const { POST } = await import('../app/api/ai/chat/route');
 const req = (message = 'hello', extra = {}) => new Request('http://localhost/api/ai/chat', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ message, ...extra }) }) as never;
 
 describe('production AI chat boundary', () => {
-  beforeEach(() => { Object.assign(s, { calls: [], quotaRequestIds: [], events: [], identities: [], kind: 'L1_SIMPLE', requirement: 'NONE', quota: 'allowed', sources: [{ id: 's' }], enabled: true, authenticated: true, providerFailure: false, telemetrySucceeds: true }); });
+  beforeEach(() => { Object.assign(s, { calls: [], quotaRequestIds: [], events: [], identities: [], kind: 'L1_SIMPLE', requirement: 'NONE', quota: 'allowed', sources: [{ id: 's' }], enabled: true, authenticated: true, providerFailure: false, providerResult: 'gemini', telemetrySucceeds: true }); });
 
   it('keeps L0 quota/provider free and emits safe telemetry', async () => {
     s.kind = 'L0_DETERMINISTIC'; expect((await POST(req())).status).toBe(200); expect(s.calls).toEqual([]); expect(s.events).toHaveLength(1); expect(JSON.stringify(s.events[0])).toContain('L0_DETERMINISTIC'); expect((s.identities[0] as { id?: string }).id).toBe('00000000-0000-4000-8000-000000000001');
@@ -62,8 +62,58 @@ describe('production AI chat boundary', () => {
     const clock = vi.spyOn(performance, 'now').mockReturnValueOnce(1000).mockReturnValue(1125);
     expect((await POST(req())).status).toBe(200); expect((s.events[0] as { latencyMs: number }).latencyMs).toBe(125); clock.mockRestore();
   });
-  it('does not replay provider or quota when provider or telemetry fails', async () => {
-    s.kind = 'L2_ECONOMY'; s.providerFailure = true; const timedOut = await POST(req()); expect((await timedOut.json()).code).toBe('PROVIDER_UNAVAILABLE'); expect(s.calls).toEqual(['quota', 'provider:L2_ECONOMY']);
-    s.calls = []; s.events = []; s.providerFailure = false; s.telemetrySucceeds = false; expect((await POST(req())).status).toBe(200); expect(s.calls).toEqual(['quota', 'provider:L2_ECONOMY']); expect(s.events).toHaveLength(1);
+  it('records the actual provider and fallback flag after successful cross-provider failover', async () => {
+    s.kind = 'L1_SIMPLE';
+    s.providerResult = 'groq';
+
+    const response = await POST(req());
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body.answer).toBe('generated');
+    expect(body.fallback).toBe(true);
+    expect(body.quota).toEqual({ units: 1 });
+    expect(s.calls).toEqual(['quota', 'provider:L1_SIMPLE']);
+    expect(s.events).toHaveLength(1);
+    expect(s.events[0]).toMatchObject({
+      provider: 'groq',
+      success: true,
+      errorCode: null,
+      weightedUnits: 1,
+      fallbackUsed: true,
+    });
+  });
+  it('returns a safe local answer without replaying quota when provider generation fails, and keeps telemetry failure non-fatal', async () => {
+    s.kind = 'L2_ECONOMY';
+    s.providerFailure = true;
+
+    const providerFailureResponse = await POST(req());
+    const providerFailureBody = await providerFailureResponse.json();
+
+    expect(providerFailureResponse.status).toBe(200);
+    expect(providerFailureBody.code).toBeUndefined();
+    expect(providerFailureBody.answer).toBeTruthy();
+    expect(providerFailureBody.fallback).toBe(true);
+    expect(providerFailureBody.quota).toEqual({ units: 2 });
+    expect(s.calls).toEqual(['quota', 'provider:L2_ECONOMY']);
+    expect(s.events).toHaveLength(1);
+    expect(s.events[0]).toMatchObject({
+      provider: null,
+      success: false,
+      errorCode: 'SAFE_PROVIDER_FALLBACK',
+      weightedUnits: 2,
+      fallbackUsed: true,
+    });
+
+    s.calls = [];
+    s.events = [];
+    s.providerFailure = false;
+    s.telemetrySucceeds = false;
+
+    const telemetryFailureResponse = await POST(req());
+
+    expect(telemetryFailureResponse.status).toBe(200);
+    expect(s.calls).toEqual(['quota', 'provider:L2_ECONOMY']);
+    expect(s.events).toHaveLength(1);
   });
 });
