@@ -18,4 +18,12 @@ describe('production sitemap', () => {
     expect(entries).toContainEqual(expect.objectContaining({ url: 'https://www.dutarantau.com/info/published-100' }));
     expect(entries).not.toContainEqual(expect.objectContaining({ lastModified: expect.anything() }));
   });
+  it('keeps core routes when optional public news lookup fails', async () => {
+    process.env.VERCEL_ENV = 'production';
+    mocked.all.mockRejectedValueOnce(new Error('temporary database outage'));
+    const entries = await sitemap();
+    expect(entries.length).toBeGreaterThan(0);
+    expect(entries.some(entry => entry.url === 'https://www.dutarantau.com/')).toBe(true);
+    expect(entries.some(entry => String(entry.url).includes('/info/'))).toBe(false);
+  });
 });
